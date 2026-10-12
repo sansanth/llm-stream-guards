@@ -1,0 +1,54 @@
+{
+  "name": "llm-stream-guards",
+  "version": "0.1.0",
+  "description": "Deterministic output guards for a streamed LLM reply: untrusted links, made-up emails, phone numbers and prices, quoted system prompts and code, stopped before they reach the screen.",
+  "keywords": [
+    "llm",
+    "streaming",
+    "guardrails",
+    "prompt-injection",
+    "output-filter",
+    "chatbot",
+    "security"
+  ],
+  "license": "MIT",
+  "author": "Sandhu Santhakumar <code@sandhu.sh>",
+  "homepage": "https://github.com/sansanth/llm-stream-guards/tree/main/js#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sansanth/llm-stream-guards.git",
+    "directory": "js"
+  },
+  "bugs": "https://github.com/sansanth/llm-stream-guards/issues",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "test": "vitest run",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.15",
+    "@types/node": "^24.19.2",
+    "@vitest/coverage-v8": "^5.0.3",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

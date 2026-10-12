@@ -1,0 +1,102 @@
+name: Release
+
+# A tag `v<version>` publishes both packages. The tag, `__version__` in the Python package and `version` in
+# js/package.json must all agree, or nothing is published. Started by hand, it publishes the Python package to TestPyPI
+# and dry-runs the npm package, and nothing else.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: The tag, the Python version and the npm version agree
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          python=$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' python/src/llm_stream_guards/__init__.py)
+          npm=$(node -p "require('./js/package.json').version")
+          echo "tag=$tag python=$python npm=$npm"
+          [ "$tag" = "$python" ] && [ "$tag" = "$npm" ]
+
+  python:
+    needs: check
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # PyPI trusted publishing: no token is stored
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --locked
+        working-directory: python
+      - run: uv run pytest
+        working-directory: python
+      - run: uv build
+        working-directory: python
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: python/dist
+
+  npm:
+    needs: check
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write  # npm provenance
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+        working-directory: js
+      - run: npm test
+        working-directory: js
+      - run: npm publish --provenance --access public
+        working-directory: js
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  python-staging:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --locked
+        working-directory: python
+      - run: uv run pytest
+        working-directory: python
+      - run: uv build
+        working-directory: python
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: python/dist
+          repository-url: https://test.pypi.org/legacy/
+
+  npm-staging:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - run: npm ci
+        working-directory: js
+      - run: npm test
+        working-directory: js
+      - run: npm publish --dry-run
+        working-directory: js

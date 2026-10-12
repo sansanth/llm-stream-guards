@@ -1,0 +1,1567 @@
+[
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [portal](https://evil.example/x) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See portal now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Go to https://evil.example for it.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Go to `evil.example` for it."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Go to www.evil.example/login.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Go to `evil.example`."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Mail sales@acme.example today.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Mail sales@acme.example today."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Read [this](https://www.acme.example/work/a) case.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Read [this](https://www.acme.example/work/a) case."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Visit https://acme.example/work/a.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Visit https://acme.example/work/a."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Visit https://sub.acme.example/a",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Visit `sub.acme.example`"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "[x](javascript:alert)",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "x"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "[x](//evil.example/a)",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "x"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "[anchor](#section) and [rel](/path)",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "[anchor](#section) and [rel](/path)"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "[mail](mailto:sales@acme.example)",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "[mail](mailto:sales@acme.example)"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "[https://evil.example](https://evil.example)",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "`evil.example`"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "[x](http://[bad)",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "x"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "no links here",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "no links here"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Set the callback to `https://yourapp.example/webhook` and verify the signature.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Set the callback to `https://yourapp.example/webhook` and verify the signature."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See <https://evil.example/x> for details.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See `evil.example` for details."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Here: ![diagram](https://evil.example/p.png)",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Here: diagram"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "![](https://evil.example/p.png)",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "`evil.example`"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [the guide][1].\n\n[1]: https://evil.example/guide",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See [the guide][1].\n\n[1]: `evil.example`"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [the guide][1].\n\n[1]: <https://evil.example/guide>",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See [the guide][1].\n\n[1]: `evil.example`"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "[1]: <https://acme.example/a>",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "[1]: <https://acme.example/a>"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Use `https://evil.example/x` or https://acme.example/a here.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Use `https://evil.example/x` or https://acme.example/a here."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Read https://en.example.org/wiki/Foo_(bar) first.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Read `en.example.org` first."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Go to https://evil.example/x。Then stop.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Go to `evil.example`。Then stop."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See <https://acme.example/a> for details.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See <https://acme.example/a> for details."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Run [it](javascript:alert) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Run it now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Run [](javascript:alert) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Run  now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Log in at https://user:pw@EVIL.example:8443/x now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Log in at `evil.example` now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Log in at https://ACME.example/x now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Log in at https://ACME.example/x now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See <http://[::1]/a>, <http://[v1.x]/a> and <http://[1.2.3.4]/a>.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See `::1`, `v1.x` and ."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](http://[fe80::1%25eth0]/a) or [y](http://[::ffff:1.2.3.4]/b).",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x or y."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Visit https://evil.example／x today.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Visit today."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Visit https://ｅｖｉｌ.example today.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Visit `ｅｖｉｌ.example` today."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Visit https://exämple.example today.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Visit `exämple.example` today."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Text\n[ref]:   https://evil.example/a  \nmore",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Text\n[ref]:   `evil.example`\nmore"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Line one https://evil.example/a,\n\thttps://evil.example/b!",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Line one `evil.example`,\n\t`evil.example`!"
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://WWW.Acme.example/a",
+        "",
+        "mailto:a@b.c",
+        "/rel",
+        "www.other.example/x",
+        "//cdn.example/x"
+      ]
+    ],
+    "returns": [
+      "acme.example",
+      "cdn.example",
+      "other.example"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "mailto:sales@example.com"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "javascript:alert(1)"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        " JavaScript:alert(1)"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "data:text/html,x"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "ftp://files.example.com/a"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "/relative"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https:///no-host"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        ""
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "HTTPS://Example.COM:80/a"
+      ]
+    ],
+    "returns": [
+      "example.com"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://[::1]:8080/a"
+      ]
+    ],
+    "returns": [
+      "::1"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://[bad/a"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "\thttps://tab.example/a\n"
+      ]
+    ],
+    "returns": [
+      "tab.example"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://a.example?q=1#f"
+      ]
+    ],
+    "returns": [
+      "a.example"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://ΣΟΦΙΑΣ.example/"
+      ]
+    ],
+    "returns": [
+      "σοφιασ.example"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[1:2:3:4:5:6:7:8]/"
+      ]
+    ],
+    "returns": [
+      "1:2:3:4:5:6:7:8"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[::]/"
+      ]
+    ],
+    "returns": [
+      "::"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[1::]/"
+      ]
+    ],
+    "returns": [
+      "1::"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[::1.2.3.4]/"
+      ]
+    ],
+    "returns": [
+      "::1.2.3.4"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[1:2:3:4:5:6:1.2.3.4]/"
+      ]
+    ],
+    "returns": [
+      "1:2:3:4:5:6:1.2.3.4"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[1:2:3:4:5:6:7:8:9]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[1::2::3]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[:1:2]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[1:2:]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[12345::]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[1:2:3:4:5:6:7::8]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[1.2.3.4]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[1.2.3.256]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[fe80::1%eth0]/"
+      ]
+    ],
+    "returns": [
+      "fe80::1%eth0"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[fe80::1%]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[fe80::1%a%b]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[v1.x]/"
+      ]
+    ],
+    "returns": [
+      "v1.x"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[vz.x]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[v1.]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://x[::1]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[::1]x/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[::1]:80/"
+      ]
+    ],
+    "returns": [
+      "::1"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://[::1"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://::1]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://u@[::1]:9/"
+      ]
+    ],
+    "returns": [
+      "::1"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://a.example@b.example/"
+      ]
+    ],
+    "returns": [
+      "b.example"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://a.example:80@b.example:8080/"
+      ]
+    ],
+    "returns": [
+      "b.example"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://exa℀mple.example/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://a＠b.example/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http://a＃b.example/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "HTTP:EXAMPLE.COM"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "http:/example.com"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "1http://a.example"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "h t t p://a.example"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "+http://a.example"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "\u0000\u0001 https://ctl.example/"
+      ]
+    ],
+    "returns": [
+      "ctl.example"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "ht\ttps://tab.example/"
+      ]
+    ],
+    "returns": [
+      "tab.example"
+    ]
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "//"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "///x"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "//?x"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://:80/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "Go to ht",
+      "tps://evil.example",
+      " now please."
+    ],
+    "shown": [
+      "Go to ",
+      "",
+      "`evil.example` now please.",
+      ""
+    ],
+    "text": "Go to `evil.example` now please.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "Pick [A",
+      " or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose "
+    ],
+    "shown": [
+      "Pick ",
+      "[A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose ",
+      ""
+    ],
+    "text": "Pick [A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "See [a\nlist"
+    ],
+    "shown": [
+      "See [a\nlist",
+      ""
+    ],
+    "text": "See [a\nlist",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "acme.example"
+        ]
+      }
+    },
+    "deltas": [
+      "Read [it](https://acme.example/a",
+      ") first."
+    ],
+    "shown": [
+      "Read ",
+      "[it](https://acme.example/a) first.",
+      ""
+    ],
+    "text": "Read [it](https://acme.example/a) first.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "acme.example"
+        ]
+      }
+    },
+    "deltas": [
+      "Pick ",
+      "[A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose ",
+      "](https://acme.example/a",
+      ") now."
+    ],
+    "shown": [
+      "Pick ",
+      "[A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose ",
+      "",
+      "](https://acme.example/a) now.",
+      ""
+    ],
+    "text": "Pick [A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose ](https://acme.example/a) now.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "acme.example"
+        ]
+      }
+    },
+    "deltas": [
+      "Pick [A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose ",
+      "](https://evil.example/a) now. ",
+      "Then more."
+    ],
+    "shown": [
+      "Pick [A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose ",
+      "A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose  now. ",
+      "Then more.",
+      ""
+    ],
+    "text": "Pick A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose  now. Then more.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "Log in at https://evil",
+      ".example/login\n",
+      "to continue."
+    ],
+    "shown": [
+      "Log in at",
+      " `evil.example`\n",
+      "to continue.",
+      ""
+    ],
+    "text": "Log in at `evil.example`\nto continue.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "Try w",
+      "ww.evil.example now.\n"
+    ],
+    "shown": [
+      "Try ",
+      "`evil.example` now.\n",
+      ""
+    ],
+    "text": "Try `evil.example` now.\n",
+    "blocked": null
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Run `[click](https://evil.example)`` now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Run `click`` now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Open https://evil.example\\@acme.example/ now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Open `evil.example` now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Open [it](/\\evil.example) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Open it now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [go][1].\n\n[1]: javascript:alert(1)",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See [go][1].\n\n[1]: "
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [go][1].\n\n[1]: //evil.example/x",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See [go][1].\n\n[1]: `evil.example`"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [go][1] and [docs][2].\n\n[1]: https://acme.example/a\n[2]: /docs",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See [go][1] and [docs][2].\n\n[1]: https://acme.example/a\n[2]: /docs"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Click <javascript:alert(1)> or <https://evil.example/a> or <mailto:sales@acme.example>.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Click  or `evil.example` or <mailto:sales@acme.example>."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "A `code` span and 0 a stray placeholder.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "A `code` span and 0 a stray placeholder."
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "See (h",
+      "ttps://evil.example/x) now."
+    ],
+    "shown": [
+      "See (",
+      "`evil.example`) now.",
+      ""
+    ],
+    "text": "See (`evil.example`) now.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "See \"www",
+      ".evil.example\" now."
+    ],
+    "shown": [
+      "See \"",
+      "`evil.example`\" now.",
+      ""
+    ],
+    "text": "See \"`evil.example`\" now.",
+    "blocked": null
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [portal](&#104;ttps://evil.example/x) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See portal now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [portal](https&#58;//evil.example/x) and [more](&#47;&#47;evil.example).",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See portal and more."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [portal](https\\://evil.example/x) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See portal now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [guide](https://acme.example/a?x=1&amp;y=2) and [page](docs/a&amp;b.html).",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See [guide](https://acme.example/a?x=1&amp;y=2) and [page](docs/a&amp;b.html)."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Docs: https://x.example``a [b](https://evil.example)``",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Docs: `x.example` ``a [b](https://evil.example)``"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Docs: https://x.example`a [b](https://evil.example)` and `[c](https://evil.example)`https://y.example",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Docs: `x.example` `a [b](https://evil.example)` and `[c](https://evil.example)` `y.example`"
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "[",
+      "ref]: h",
+      "tt",
+      "ps",
+      ":",
+      "//evil.example.[)`"
+    ],
+    "shown": [
+      "",
+      "[ref]: ",
+      "",
+      "",
+      "",
+      "`evil.example.`",
+      ""
+    ],
+    "text": "[ref]: ",
+    "blocked": null
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://a[::1]@e.example/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](https://a[::1]@e.example/) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x now."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://a[v1.x]@e.example/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](https://a[v1.x]@e.example/) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x now."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://eth0v1\t[v1.x]@é\t-"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](https://eth0v1\t[v1.x]@é\t-) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x now."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://u[x@e.example/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](https://u[x@e.example/) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x now."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://a]b@e.example/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](https://a]b@e.example/) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x now."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://a@[::1]/"
+      ]
+    ],
+    "returns": [
+      "::1"
+    ]
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](https://a@[::1]/) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x now."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://a[b]@[::1]:80/"
+      ]
+    ],
+    "returns": [
+      "::1"
+    ]
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](https://a[b]@[::1]:80/) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x now."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://a[b]@[1.2.3.4]/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](https://a[b]@[1.2.3.4]/) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x now."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "https://[::1]a@e.example/"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [x](https://[::1]a@e.example/) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See x now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Open \\`[the portal](https://evil.example/x)\\` now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Open \\`the portal\\` now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Set the callback to `https://yourapp.example/hook`, not \\\\`[a](https://evil.example)`.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Set the callback to `https://yourapp.example/hook`, not \\\\`[a](https://evil.example)`."
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "See https://evil.example\n",
+      "and www.evil.example\n",
+      "<",
+      "https://evil.example\n>",
+      "more"
+    ],
+    "shown": [
+      "See `evil.example`\n",
+      "and `evil.example`\n",
+      "",
+      "<`evil.example`\n>",
+      "more",
+      ""
+    ],
+    "text": "See `evil.example`\nand `evil.example`\n<`evil.example`\n>more",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "Wow!",
+      " See !",
+      "[d](https://evil.example/p.png)",
+      " ok",
+      "!"
+    ],
+    "shown": [
+      "Wow",
+      "! See ",
+      "d",
+      " ok",
+      "",
+      "!"
+    ],
+    "text": "Wow! See d ok!",
+    "blocked": null
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [a](https://evil.example&sol;@acme.example) and [b](https://evil.example&num;@acme.example) and [c](https://acme.example/p?x=1&amp;y=2) now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See a and b and [c](https://acme.example/p?x=1&amp;y=2) now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See https://evil.example&quest;@acme.example now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See now."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "\u0001//evil.example",
+        "\u001b\u0001 //other.example/a",
+        "\u0001/relative"
+      ]
+    ],
+    "returns": [
+      "evil.example",
+      "other.example"
+    ]
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [a](\u0001//evil.example) and <\u0001//evil.example> now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "See a and <\u0001//evil.example> now."
+  }
+]

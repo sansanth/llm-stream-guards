@@ -1,0 +1,725 @@
+[
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Here you go:\n```java\npublic class Foo {}\n```"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "public static void main(String[] args) { System.out.println(1); }"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "def bubble_sort(arr):\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Here you go:\n~~~python\nprint(1)\n~~~"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Steps:\n    total = 0;\n    for x in items: total += x;\nDone."
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "First:\n\tconst a = f(x);\n\tconst b = g(a);"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "SELECT * FROM invoices WHERE paid = false;"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "select id, name from customers;"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "INSERT INTO users (id) VALUES (1);"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "UPDATE users SET name = 'x' WHERE id = 1;"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "DELETE FROM users WHERE id = 1;"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "CREATE TABLE invoices (id int);"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "$ pip install requests"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Run this:\nsudo apt install nginx"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "pip install requests"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "npm run build"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "docker compose up -d"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "curl -X POST https://api.example.com"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Use <div class=\"a\">hi</div> for it."
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "<script>alert(1)</script>"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "const total = 5"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "let x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "#!/bin/bash\necho hi"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "services:\n  db:\n    image: postgres"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "import os"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "import numpy as np"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "import React from 'react'"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "#include <stdio.h>"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "from pathlib import Path"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "function go() {"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "const f = (x) => x"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "services:\n  web:\n    image: x"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "if x == 1:\n    run()"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "for item in items:\n    print(item)"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "    x = (1; 2)\n    y = {3; 4}"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "fn main() {}"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "func main() {}"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "<button onclick=\"go()\">"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Invoice:"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      ""
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "It sounds like you're weighing a few approaches. What's the main constraint: latency, cost, or familiarity?"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "We would select the vendor from a shortlist."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Select the vendor from the shortlist of three."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Update the plan after each sprint, and insert a review step before launch."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "A tilde ~5 days later, or ~~ roughly, is fine mid-line."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Run it as a service: services should stay small."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "You'd typically deploy with `docker compose up` and a single `SELECT` for checks."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "- Phase one:\n    a longer explanation that wraps onto an indented line with no punctuation\n    and more"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Price is (roughly) 5 = 5.\nNext point."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Let us begin with the basics; then move on."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Curl up with the requirements first."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "The div structure of the team matters."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Import the data first, then clean it."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Function calling (the LLM feature) lets the model ask for data."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Services:\n- Design\n- Build"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Delete from the list anything you do not need."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "If you want more:\n- tell us\n- we help"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "The steps are:\n    - map the users\n    - sketch the flow"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Intro\r\nimport os\r\n"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Notes:\n  services:\n    api:"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Größe:\n    straße = (1);\n    weiß = {2};"
+    ],
+    "returns": true
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Hello ",
+      "there."
+    ],
+    "shown": [
+      "Hello ",
+      "there.",
+      ""
+    ],
+    "text": "Hello there.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Here you go:\n",
+      "```py",
+      "thon\nprint(1)\n```"
+    ],
+    "shown": [
+      "Here you go:\n"
+    ],
+    "text": "Here you go:\n",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "```"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "a",
+      "`",
+      "`",
+      "`"
+    ],
+    "shown": [
+      "a",
+      "",
+      ""
+    ],
+    "text": "a",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "```"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "use `x` here"
+    ],
+    "shown": [
+      "use `x` here",
+      ""
+    ],
+    "text": "use `x` here",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "two `` ticks"
+    ],
+    "shown": [
+      "two `` ticks",
+      ""
+    ],
+    "text": "two `` ticks",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "trailing `"
+    ],
+    "shown": [
+      "trailing ",
+      "`"
+    ],
+    "text": "trailing `",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Yes. ```js\ncode"
+    ],
+    "shown": [],
+    "text": "",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "```"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Sure:\n",
+      "~~",
+      "~python\nprint(1)"
+    ],
+    "shown": [
+      "Sure:\n",
+      ""
+    ],
+    "text": "Sure:\n",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "~~~"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Text\n   ~~~\ncode"
+    ],
+    "shown": [],
+    "text": "",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "~~~"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "~~~sql\nselect 1"
+    ],
+    "shown": [],
+    "text": "",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "~~~"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Intro ",
+      "\n~~~"
+    ],
+    "shown": [
+      "Intro "
+    ],
+    "text": "Intro ",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "~~~"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Intro\n",
+      "  ",
+      "~~~\nx"
+    ],
+    "shown": [
+      "Intro\n",
+      "  "
+    ],
+    "text": "Intro\n  ",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "~~~"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "code": {
+        "deliverable": false
+      }
+    },
+    "deltas": [
+      "About ~5 days, a ~~ wave, and x ~~~ y.\n~ bullet\n~~ two"
+    ],
+    "shown": [
+      "About ~5 days, a ~~ wave, and x ~~~ y.\n~ bullet\n~~ two",
+      ""
+    ],
+    "text": "About ~5 days, a ~~ wave, and x ~~~ y.\n~ bullet\n~~ two",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Hi\n~~",
+      " done",
+      "``"
+    ],
+    "shown": [
+      "Hi\n",
+      "~~ done",
+      "",
+      "``"
+    ],
+    "text": "Hi\n~~ done``",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "def total(items):\n",
+      "    return sum(items)\n"
+    ],
+    "shown": [
+      "def total(items):\n",
+      "    return sum(items)\n"
+    ],
+    "text": "def total(items):\n    return sum(items)\n",
+    "blocked": {
+      "reason": "code",
+      "found": []
+    }
+  },
+  {
+    "stream": {
+      "code": {
+        "deliverable": false
+      }
+    },
+    "deltas": [
+      "import os"
+    ],
+    "shown": [
+      "import os",
+      ""
+    ],
+    "text": "import os",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {
+        "deliverable": false
+      }
+    },
+    "deltas": [
+      "x ```"
+    ],
+    "shown": [],
+    "text": "",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "```"
+      ]
+    }
+  }
+]
