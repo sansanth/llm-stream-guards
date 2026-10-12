@@ -1,0 +1,1785 @@
+[
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "A build like that usually lands around $50,000.",
+      []
+    ],
+    "returns": [
+      "$50,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Ballpark, 20 lakh rupees for the first phase.",
+      []
+    ],
+    "returns": [
+      "20 lakh rupees",
+      "20 lakh"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Expect roughly 40 person-days of work.",
+      []
+    ],
+    "returns": [
+      "40 person-days"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We'd be looking at about 2 crore for a build like that, before what it costs to run.",
+      []
+    ],
+    "returns": [
+      "2 crore"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Budgets like 60k are workable for a first phase.",
+      []
+    ],
+    "returns": [
+      "60k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Our rate is 120 USD an hour.",
+      []
+    ],
+    "returns": [
+      "120 USD"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "A pilot is 9,000 CHF.",
+      []
+    ],
+    "returns": [
+      "9,000 CHF"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Around 45,000 sar for the first phase.",
+      []
+    ],
+    "returns": [
+      "45,000 sar"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Roughly 2m jpy all in.",
+      []
+    ],
+    "returns": [
+      "2m jpy"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "About 30k AUD, or 27k cad.",
+      []
+    ],
+    "returns": [
+      "30k AUD",
+      "27k cad"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It lands near ¥800,000.",
+      []
+    ],
+    "returns": [
+      "¥800,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "What it costs depends on how many integrations you need and who owns the data.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The platform serves 60k users a day and scales fine.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "A first version is usually a small scope, and onboarding got 40% faster.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Tell me about the three clinics and I'll help you sharpen the scope.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We ran 3 to 5 sprints.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Around 5 lakhs, give or take.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That costs around 5 lakhs.",
+      []
+    ],
+    "returns": [
+      "5 lakhs"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That costs three crores.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs about 2 crores.",
+      []
+    ],
+    "returns": [
+      "2 crores"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Rs. 50,000 for phase one.",
+      []
+    ],
+    "returns": [
+      "Rs. 50,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "INR 1,20,000 for phase one.",
+      []
+    ],
+    "returns": [
+      "INR 1,20,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is 50 000 € all in.",
+      []
+    ],
+    "returns": [
+      "50 000 €"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is 50 000 € all in.",
+      []
+    ],
+    "returns": [
+      "50 000 €"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It comes to 40 euros.",
+      []
+    ],
+    "returns": [
+      "40 euros"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It comes to 40 US dollars.",
+      []
+    ],
+    "returns": [
+      "40 US dollars"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "About 300 engineering hours.",
+      []
+    ],
+    "returns": [
+      "300 engineering hours"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The rate is 120 per hour.",
+      []
+    ],
+    "returns": [
+      "120 per hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The rate is 120 an hour.",
+      []
+    ],
+    "returns": [
+      "120 an hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Messages go out at 120 per hour to each user.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs ₹५०० a month.",
+      []
+    ],
+    "returns": [
+      "₹५००"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Expect 1.5M to 2.5M dollars.",
+      []
+    ],
+    "returns": [
+      "2.5M dollars",
+      "1.5M to 2.5M dollars"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Pricing:\n$40 to $65\nper hour",
+      []
+    ],
+    "returns": [
+      "$40",
+      "$65",
+      "$40 to $65",
+      "65\nper hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It would cost about $5k.",
+      [
+        "5"
+      ]
+    ],
+    "returns": [
+      "$5k",
+      "5k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It would cost about $5k.",
+      [
+        "5k"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It would cost about $5k.",
+      [
+        "5000"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It would cost $500.",
+      [
+        "500"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It would cost $500.",
+      [
+        "500k",
+        "500000"
+      ]
+    ],
+    "returns": [
+      "$500"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It would cost about $2M.",
+      [
+        "2000000"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The rate is 120 an hour.",
+      [
+        "120"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We cut $2M of annual spend there.",
+      [
+        "12",
+        "2000000"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Yours would be about $80,000.",
+      [
+        "12",
+        "2000000"
+      ]
+    ],
+    "returns": [
+      "$80,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Mobile developers range from $65 to $120 per hour.",
+      [
+        "120",
+        "30",
+        "40",
+        "55",
+        "65",
+        "75",
+        "range:30-55",
+        "range:40-65",
+        "range:75-120"
+      ]
+    ],
+    "returns": [
+      "$65 to $120"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Mobile developers run $30 to $55 an hour.",
+      [
+        "120",
+        "30",
+        "40",
+        "55",
+        "65",
+        "75",
+        "range:30-55",
+        "range:40-65",
+        "range:75-120"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Backend work is $75-$120.",
+      [
+        "120",
+        "30",
+        "40",
+        "55",
+        "65",
+        "75",
+        "range:30-55",
+        "range:40-65",
+        "range:75-120"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It saved $2M to $3M a year.",
+      [
+        "2000000",
+        "3000000",
+        "range:2000000-3000000"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Around $65 to $120",
+      [
+        "65",
+        "120"
+      ]
+    ],
+    "options": {
+      "complete": false
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Around $65 to $120",
+      [
+        "65",
+        "120"
+      ]
+    ],
+    "returns": [
+      "$65 to $120"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It works out at $1.50 per seat.",
+      [
+        "1.50"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "They saved $5",
+      [
+        "500"
+      ]
+    ],
+    "options": {
+      "complete": false
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "They saved $5",
+      [
+        "500"
+      ]
+    ],
+    "returns": [
+      "$5"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "They saved $500 a month",
+      [
+        "500"
+      ]
+    ],
+    "options": {
+      "complete": false
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "They saved $50 a month",
+      [
+        "500"
+      ]
+    ],
+    "options": {
+      "complete": false
+    },
+    "returns": [
+      "$50"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It runs at 120 per",
+      []
+    ],
+    "options": {
+      "complete": false
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs 120 per hour",
+      []
+    ],
+    "options": {
+      "complete": false
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The budget is 60k",
+      []
+    ],
+    "options": {
+      "complete": false
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The budget is 60k",
+      []
+    ],
+    "returns": [
+      "60k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The budget is 60k\n",
+      []
+    ],
+    "options": {
+      "complete": false
+    },
+    "returns": [
+      "60k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Roughly 9000 nok in total.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Roughly 9000 nok in total.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_codes": [
+          "usd",
+          "eur",
+          "gbp",
+          "inr",
+          "aed",
+          "sgd",
+          "chf",
+          "sar",
+          "jpy",
+          "aud",
+          "cad",
+          "nok"
+        ]
+      }
+    },
+    "returns": [
+      "9000 nok"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Roughly 9000 usd in total.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_codes": [
+          "usd",
+          "eur",
+          "gbp",
+          "inr",
+          "aed",
+          "sgd",
+          "chf",
+          "sar",
+          "jpy",
+          "aud",
+          "cad",
+          "nok"
+        ]
+      }
+    },
+    "returns": [
+      "9000 usd"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Die Kosten liegen bei 2 Mio.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "euro"
+        ],
+        "magnitudes": {
+          "Mio": 1000000,
+          "tsd": 1000
+        },
+        "cost_words": [
+          "kosten",
+          "budget"
+        ],
+        "effort": "personentage\\b",
+        "rate": "\\s*(?:pro|je)\\s*stunde\\b",
+        "range_words": [
+          "bis"
+        ]
+      }
+    },
+    "returns": [
+      "2 Mio"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Die Kosten liegen bei 2 Mio.",
+      [
+        "2000000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "euro"
+        ],
+        "magnitudes": {
+          "Mio": 1000000,
+          "tsd": 1000
+        },
+        "cost_words": [
+          "kosten",
+          "budget"
+        ],
+        "effort": "personentage\\b",
+        "rate": "\\s*(?:pro|je)\\s*stunde\\b",
+        "range_words": [
+          "bis"
+        ]
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Etwa 40 Personentage.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "euro"
+        ],
+        "magnitudes": {
+          "Mio": 1000000,
+          "tsd": 1000
+        },
+        "cost_words": [
+          "kosten",
+          "budget"
+        ],
+        "effort": "personentage\\b",
+        "rate": "\\s*(?:pro|je)\\s*stunde\\b",
+        "range_words": [
+          "bis"
+        ]
+      }
+    },
+    "returns": [
+      "40 Personentage"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Die Kosten: 90 pro Stunde.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "euro"
+        ],
+        "magnitudes": {
+          "Mio": 1000000,
+          "tsd": 1000
+        },
+        "cost_words": [
+          "kosten",
+          "budget"
+        ],
+        "effort": "personentage\\b",
+        "rate": "\\s*(?:pro|je)\\s*stunde\\b",
+        "range_words": [
+          "bis"
+        ]
+      }
+    },
+    "returns": [
+      "90 pro Stunde"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Die Kosten für Übersetzung: 5 tsd.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "euro"
+        ],
+        "magnitudes": {
+          "Mio": 1000000,
+          "tsd": 1000
+        },
+        "cost_words": [
+          "kosten",
+          "budget"
+        ],
+        "effort": "personentage\\b",
+        "rate": "\\s*(?:pro|je)\\s*stunde\\b",
+        "range_words": [
+          "bis"
+        ]
+      }
+    },
+    "returns": [
+      "5 tsd"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Die Kostenübersicht: 5 tsd.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "euro"
+        ],
+        "magnitudes": {
+          "Mio": 1000000,
+          "tsd": 1000
+        },
+        "cost_words": [
+          "kosten",
+          "budget"
+        ],
+        "effort": "personentage\\b",
+        "rate": "\\s*(?:pro|je)\\s*stunde\\b",
+        "range_words": [
+          "bis"
+        ]
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Цена около 60 тыс.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "magnitudes": {
+          "тыс": 1000
+        },
+        "cost_words": [
+          "цена"
+        ]
+      }
+    },
+    "returns": [
+      "60 тыс"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The budget is $500, or 500 usd, 60k, 40 person-days and 120 per hour, $1-$2.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_symbols": "",
+        "currency_codes": [],
+        "currency_prefixes": [],
+        "currency_names": [],
+        "magnitudes": {},
+        "cost_words": [],
+        "effort": "",
+        "rate": "",
+        "range_words": []
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "$1.50 per seat"
+    ],
+    "returns": [
+      "1.5",
+      "1.50"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "1.0001k"
+    ],
+    "returns": [
+      "1.0001k"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "2 million euros",
+      null,
+      "in 12 weeks"
+    ],
+    "returns": [
+      "12",
+      "2000000",
+      "2million"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "from 1.5 to 2.5"
+    ],
+    "returns": [
+      "1.5",
+      "2.5",
+      "range:1.5-2.5"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "it ran $1,000–$2,000"
+    ],
+    "returns": [
+      "1000",
+      "2000",
+      "range:1000-2000"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "from 0.00001 to 0.00002 and 1e3"
+    ],
+    "returns": [
+      "0.00001",
+      "0.00002",
+      "1",
+      "3",
+      "range:1e-05-2e-05"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "५ lakh, or ५०००००"
+    ],
+    "returns": [
+      "500000",
+      "५lakh",
+      "५०००००"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "1,20,000 and 50 000 and 50 000 and 2.5bn and 10 thousands"
+    ],
+    "returns": [
+      "10000",
+      "10thousand",
+      "120000",
+      "2.5bn",
+      "2500000000",
+      "50000",
+      "range:120000-50000",
+      "range:50000-2500000000"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "von 3 bis 5"
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "euro"
+        ],
+        "magnitudes": {
+          "Mio": 1000000,
+          "tsd": 1000
+        },
+        "cost_words": [
+          "kosten",
+          "budget"
+        ],
+        "effort": "personentage\\b",
+        "rate": "\\s*(?:pro|je)\\s*stunde\\b",
+        "range_words": [
+          "bis"
+        ]
+      }
+    },
+    "returns": [
+      "3",
+      "5",
+      "range:3-5"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "60k and 3-5"
+    ],
+    "options": {
+      "locale": {
+        "currency_symbols": "",
+        "currency_codes": [],
+        "currency_prefixes": [],
+        "currency_names": [],
+        "magnitudes": {},
+        "cost_words": [],
+        "effort": "",
+        "rate": "",
+        "range_words": []
+      }
+    },
+    "returns": [
+      "3",
+      "5",
+      "60",
+      "range:3-5"
+    ]
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "They saved $5",
+      "00 a month."
+    ],
+    "shown": [
+      "They saved ",
+      "$500 a month.",
+      ""
+    ],
+    "text": "They saved $500 a month.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "They saved $5",
+      "0 a month."
+    ],
+    "shown": [
+      "They saved "
+    ],
+    "text": "They saved ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$50"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "We'd be looking at 60",
+      "k",
+      " for the whole budget."
+    ],
+    "shown": [
+      "We'd be looking at ",
+      ""
+    ],
+    "text": "We'd be looking at ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "60k"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "It serves 60k",
+      " users",
+      " and it scales and it scales and it scales and it scales and it scales and it scales and it scales and it scales and it scales and it scales",
+      "."
+    ],
+    "shown": [
+      "It serves ",
+      "",
+      "60k users and it scales and it scales and it scales and it scales and it scales and it scales and it scales and it scales and it scales and it scales",
+      ".",
+      ""
+    ],
+    "text": "It serves 60k users and it scales and it scales and it scales and it scales and it scales and it scales and it scales and it scales and it scales and it scales.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "It serves 60k users."
+    ],
+    "shown": [
+      "It serves ",
+      "60k users."
+    ],
+    "text": "It serves 60k users.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "They saved $5"
+    ],
+    "shown": [
+      "They saved "
+    ],
+    "text": "They saved ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$5"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "That is $80,000 all in."
+    ],
+    "shown": [],
+    "text": "",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$80,000"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "At 60",
+      " thou",
+      "sand users."
+    ],
+    "shown": [
+      "At ",
+      "",
+      "",
+      "60 thousand users."
+    ],
+    "text": "At 60 thousand users.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "It costs €",
+      "  ",
+      "40."
+    ],
+    "shown": [
+      "It costs ",
+      ""
+    ],
+    "text": "It costs ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "€  40"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "5"
+        ]
+      }
+    },
+    "deltas": [
+      "They saved Rs. 5",
+      " a month."
+    ],
+    "shown": [
+      "They saved ",
+      "Rs. 5 a month.",
+      ""
+    ],
+    "text": "They saved Rs. 5 a month.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "It handled 5k orders. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      " and 2 million more",
+      " for the budget."
+    ],
+    "shown": [
+      "It handled 5k orders. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      " and "
+    ],
+    "text": "It handled 5k orders. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx and ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "2 million"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "currency_names": [
+            "euro"
+          ],
+          "magnitudes": {
+            "Mio": 1000000,
+            "tsd": 1000
+          },
+          "cost_words": [
+            "kosten",
+            "budget"
+          ],
+          "effort": "personentage\\b",
+          "rate": "\\s*(?:pro|je)\\s*stunde\\b",
+          "range_words": [
+            "bis"
+          ]
+        }
+      }
+    },
+    "deltas": [
+      "Die Kosten: 2 M",
+      "io."
+    ],
+    "shown": [
+      "Die Kosten: "
+    ],
+    "text": "Die Kosten: ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "2 Mio"
+      ]
+    }
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The cost is $5 millionſ here.",
+      []
+    ],
+    "returns": [
+      "$5 millionſ",
+      "5 millionſ"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "Budget of $5 millionſ, or $2 millionſ to $3 millionſ."
+    ],
+    "returns": [
+      "2000000",
+      "2million",
+      "3000000",
+      "3million",
+      "5000000",
+      "5million",
+      "range:2000000-3000000"
+    ]
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "Over 60k fans came in cost",
+      "umes."
+    ],
+    "shown": [
+      "Over ",
+      "",
+      "60k fans came in costumes."
+    ],
+    "text": "Over 60k fans came in costumes.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "Our rate is ",
+      "120 per hour"
+    ],
+    "shown": [
+      "Our rate is ",
+      ""
+    ],
+    "text": "Our rate is ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "120 per hour"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "Our rate is ",
+      "120 per hour",
+      ", plus tax."
+    ],
+    "shown": [
+      "Our rate is ",
+      ""
+    ],
+    "text": "Our rate is ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "120 per hour"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "120"
+        ]
+      }
+    },
+    "deltas": [
+      "Our rate is ",
+      "120 per hour"
+    ],
+    "shown": [
+      "Our rate is ",
+      "120 per hour",
+      ""
+    ],
+    "text": "Our rate is 120 per hour",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "12.50"
+        ]
+      }
+    },
+    "deltas": [
+      "The plan is $12",
+      ".",
+      "50 a month."
+    ],
+    "shown": [
+      "The plan is ",
+      "$",
+      "12.50 a month.",
+      ""
+    ],
+    "text": "The plan is $12.50 a month.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "2million",
+          "2000000"
+        ]
+      }
+    },
+    "deltas": [
+      "It saved $2 mil",
+      "lion a year."
+    ],
+    "shown": [
+      "It saved $",
+      "2 million a year.",
+      ""
+    ],
+    "text": "It saved $2 million a year.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "12.50"
+        ]
+      }
+    },
+    "deltas": [
+      "The plan is $12",
+      ".",
+      "5",
+      "0 a month, or $2 mil",
+      "lion."
+    ],
+    "shown": [
+      "The plan is ",
+      "$",
+      "",
+      "12.50 a month, or $"
+    ],
+    "text": "The plan is $12.50 a month, or $",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$2 million"
+      ]
+    }
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs $1,200.00 a month.",
+      [
+        "1200"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs $1,200 a month.",
+      [
+        "1200.00"
+      ]
+    ],
+    "returns": [
+      "$1,200"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs $12.50 a month.",
+      [
+        "12.5"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs $12.5 a month.",
+      [
+        "12.50"
+      ]
+    ],
+    "returns": [
+      "$12.5"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs $12.51 a month.",
+      [
+        "12.5"
+      ]
+    ],
+    "returns": [
+      "$12.51"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs $5.00 a month.",
+      [
+        "50"
+      ]
+    ],
+    "returns": [
+      "$5.00"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It saved $2.50 million.",
+      [
+        "2.5million"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "$12.50 and $1,200.00 and 1.0 and 0.00 and 100.100"
+    ],
+    "returns": [
+      "0",
+      "0.00",
+      "1",
+      "1.0",
+      "100.1",
+      "100.100",
+      "12.5",
+      "12.50",
+      "1200",
+      "1200.00",
+      "range:1-0",
+      "range:12.5-1200"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It is USD 40 to 65 a month.",
+      [
+        "40"
+      ]
+    ],
+    "returns": [
+      "USD 40 to 65"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Between 40 and 65 euros.",
+      [
+        "65"
+      ]
+    ],
+    "returns": [
+      "40 and 65 euros"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Between 40 and 65 euros.",
+      [
+        "range:40-65"
+      ]
+    ],
+    "returns": [
+      "65 euros"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It is $40 to $65 euros a month.",
+      []
+    ],
+    "returns": [
+      "$40",
+      "$65",
+      "$40 to $65"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It is usd 2M to 3M.",
+      [
+        "range:2000000-3000000"
+      ]
+    ],
+    "returns": [
+      "usd 2M"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "From INR 1,000 - 2,000 per head.",
+      [
+        "1000",
+        "2000"
+      ]
+    ],
+    "returns": [
+      "INR 1,000 - 2,000"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "Between 40 and 65 euros, or USD 2M to 3M, or $5-$6."
+    ],
+    "returns": [
+      "2000000",
+      "2m",
+      "3000000",
+      "3m",
+      "40",
+      "5",
+      "6",
+      "65",
+      "range:2000000-3000000",
+      "range:40-65",
+      "range:5-6"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We ran 3 to 5 sprints and 40 and 65 users.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "12.5"
+        ]
+      }
+    },
+    "deltas": [
+      "It costs $12",
+      ".",
+      "50 a month."
+    ],
+    "shown": [
+      "It costs ",
+      "$",
+      "12.50 a month.",
+      ""
+    ],
+    "text": "It costs $12.50 a month.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "Between 40 and 65",
+      " euros today."
+    ],
+    "shown": [
+      "Between 40 and "
+    ],
+    "text": "Between 40 and ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "65 euros",
+        "40 and 65 euros"
+      ]
+    }
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It is $40 to 65 euros a month.",
+      []
+    ],
+    "returns": [
+      "$40",
+      "65 euros",
+      "$40 to 65"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It is $40 to 65 euros a month.",
+      [
+        "range:40-65",
+        "40",
+        "65"
+      ]
+    ],
+    "returns": []
+  }
+]

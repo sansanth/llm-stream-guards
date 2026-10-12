@@ -1,0 +1,607 @@
+[
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to hello@fabrikam.example today.",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "Write to our team today."
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to hello@fabrikam.example.",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "Write to our team."
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to <hello@fabrikam.example> or mailto:hello@fabrikam.example now.",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "Write to our team or our team now."
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "[Email us](mailto:hello@fabrikam.example?subject=Hi) now.",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "Email us now."
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "[hello@fabrikam.example](mailto:hello@fabrikam.example)",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "our team"
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "[Email us](mailto:)",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "[Email us](mailto:)"
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Reach `hello@fabrikam.example`, John.",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "Reach `our team`, John."
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Reach John.Hartwell@Acme.example or sales@acme.example.",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "Reach John.Hartwell@Acme.example or our team."
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "[mail](mailto:john@acme.example)",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "[mail](mailto:john@acme.example)"
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "No address, just an @handle and a.b version 1.2.",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "No address, just an @handle and a.b version 1.2."
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to jürgen@fabrikam.example or 山田@例え.example.",
+      [
+        "john.hartwell@acme.example",
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "replacement": "our team"
+    },
+    "returns": "Write to our team or our team."
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to hello@fabrikam.example.",
+      []
+    ],
+    "returns": "Write to [removed]."
+  },
+  {
+    "call": "emails_in",
+    "args": [
+      "Mail John@Acme.example.",
+      "",
+      null,
+      "a@b.example and c@d.example"
+    ],
+    "returns": [
+      "a@b.example",
+      "c@d.example",
+      "john@acme.example"
+    ]
+  },
+  {
+    "call": "emails_in",
+    "args": [
+      "Write to Jürgen@Fabrikam.example or ΣΟΦΙΑΣ@acme.example"
+    ],
+    "returns": [
+      "jürgen@fabrikam.example",
+      "σοφιας@acme.example"
+    ]
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call us on +44 7700 900123 today.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call us on [removed] today."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +44 7700 900123.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call [removed]."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call (415) 555-0130 or 415.555.0100 now.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call [removed] or 415.555.0100 now."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +1 415 555 0100 or +1 415 555 0101.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call +1 415 555 0100 or +1 415 555 0101."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call 415 555 0100 or 020 7946 0001.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call 415 555 0100 or 020 7946 0001."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +44 20 7946 0002 now.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call [removed] now."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Reach 9876543210 now.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Reach [removed] now."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Founded in 2018-2024, on 2026-10-07 10:30, with 1,200,000 users and 50 000 000 in v1.2.3.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Founded in 2018-2024, on 2026-10-07 10:30, with 1,200,000 users and 50 000 000 in v1.2.3."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call 12345678 or +1234567.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call 12345678 or +1234567."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +1234 5678 now.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call [removed] now."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +91 98765 43210 now.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call [removed] now."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call ९८७६५४३२१० now.",
+      [
+        "14155550100",
+        "14155550101",
+        "442079460001"
+      ]
+    ],
+    "returns": "Call [removed] now."
+  },
+  {
+    "call": "phones_in",
+    "args": [
+      "Call +44 7700 900123.",
+      "",
+      null,
+      "or 2026-10-07 10:30 and 2018-2024"
+    ],
+    "returns": [
+      "447700900123"
+    ]
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": [
+          "john@acme.example"
+        ],
+        "replacement": "our team"
+      }
+    },
+    "deltas": [
+      "Write to hel",
+      "lo",
+      "@fabrikam",
+      ".example",
+      " or john",
+      "@acme.example",
+      " now."
+    ],
+    "shown": [
+      "Write to ",
+      "",
+      "",
+      "",
+      "our team or ",
+      "",
+      "john@acme.example ",
+      "now."
+    ],
+    "text": "Write to our team or john@acme.example now.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": []
+      }
+    },
+    "deltas": [
+      "Write to <",
+      "hello@fabrikam.example",
+      "> now."
+    ],
+    "shown": [
+      "Write to ",
+      "",
+      "[removed] ",
+      "now."
+    ],
+    "text": "Write to [removed] now.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "Write to hel"
+    ],
+    "shown": [
+      "Write to hel",
+      ""
+    ],
+    "text": "Write to hel",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": []
+      }
+    },
+    "deltas": [
+      "See xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    ],
+    "shown": [
+      "See xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      ""
+    ],
+    "text": "See xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": []
+      }
+    },
+    "deltas": [
+      "Write to hello\n",
+      "@fabrikam.example now."
+    ],
+    "shown": [
+      "Write to hello\n",
+      "@fabrikam.example ",
+      "now."
+    ],
+    "text": "Write to hello\n@fabrikam.example now.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": [
+          "14155550100"
+        ]
+      }
+    },
+    "deltas": [
+      "Call +44 7",
+      "700 90",
+      "0123 or +1 415",
+      " 555 0100 now."
+    ],
+    "shown": [
+      "Call ",
+      "",
+      "[removed] or ",
+      "+1 415 555 0100 now.",
+      ""
+    ],
+    "text": "Call [removed] or +1 415 555 0100 now.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "Call +44 7"
+    ],
+    "shown": [
+      "Call +44 7",
+      ""
+    ],
+    "text": "Call +44 7",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": []
+      }
+    },
+    "deltas": [
+      "Call +",
+      "44 7700 900123 or (",
+      "415) 555-0130."
+    ],
+    "shown": [
+      "Call ",
+      "[removed] or ",
+      "",
+      "[removed]."
+    ],
+    "text": "Call [removed] or [removed].",
+    "blocked": null
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Scores:\n10\n20\n30\n40\n50\nDone",
+      []
+    ],
+    "returns": "Scores:\n10\n20\n30\n40\n50\nDone"
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call 415\n555\n0100 now, or 415 555 0100.",
+      []
+    ],
+    "returns": "Call 415\n555\n0100 now, or [removed]."
+  },
+  {
+    "call": "phones_in",
+    "args": [
+      "Scores:\n10\n20\n30\n40\n50\nDone and 415\n555\n0100 and 415 555 0100"
+    ],
+    "returns": [
+      "4155550100"
+    ]
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": []
+      }
+    },
+    "deltas": [
+      "Call +44 7700 900123",
+      "\n",
+      "then 1\n2\n3",
+      "\n4\n5\n6\n7\n8\n9\n"
+    ],
+    "shown": [
+      "Call ",
+      "[removed]\n",
+      "then 1\n2\n",
+      "3\n4\n5\n6\n7\n8\n9\n",
+      ""
+    ],
+    "text": "Call [removed]\nthen 1\n2\n3\n4\n5\n6\n7\n8\n9\n",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": []
+      }
+    },
+    "deltas": [
+      "Hello there\n",
+      "and john@acme",
+      ".example\n",
+      "ok"
+    ],
+    "shown": [
+      "Hello there\n",
+      "and ",
+      "[removed]\n",
+      "",
+      "ok"
+    ],
+    "text": "Hello there\nand [removed]\nok",
+    "blocked": null
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call 0711-12-345678 or 5551-23-4567, not 2026-10-07 10:30.",
+      []
+    ],
+    "returns": "Call [removed] or [removed], not 2026-10-07 10:30."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Connect to 192.168.100.100 and 10.0.0.1 or call 415.555.0100 or 192.168.100.1000.",
+      []
+    ],
+    "returns": "Connect to 192.168.100.100 and 10.0.0.1 or call [removed] or [removed]."
+  },
+  {
+    "call": "phones_in",
+    "args": [
+      "Connect to 192.168.100.100 or call 415.555.0100."
+    ],
+    "returns": [
+      "4155550100"
+    ]
+  }
+]

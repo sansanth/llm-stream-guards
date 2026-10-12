@@ -1,0 +1,253 @@
+[
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included."
+      },
+      "Internal pricing: the pilot costs forty thousand dollars,"
+    ],
+    "returns": "pricing"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included."
+      },
+      "Internal pricing: the pilot costs forty thousand"
+    ],
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included."
+      },
+      "costs forty thousand"
+    ],
+    "options": {
+      "words": 3
+    },
+    "returns": "pricing"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included."
+      },
+      "INTERNAL PRICING: THE PILOT COSTS FORTY THOUSAND DOLLARS, FIXED FOR SIX WEEKS"
+    ],
+    "returns": "pricing"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included."
+      },
+      "**Internal** pricing -- the *pilot* costs forty thousand dollars; fixed for six weeks"
+    ],
+    "returns": "pricing"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included."
+      },
+      "Sure! Internal   pricing:\nthe pilot costs forty thousand dollars, fixed\tfor six weeks."
+    ],
+    "returns": "pricing"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included."
+      },
+      "The pilot is about forty thousand dollars over six weeks with two engineers."
+    ],
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "short": [
+          "too short",
+          2
+        ],
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included.",
+        "other": "another protected sentence that is long enough to shingle"
+      },
+      "hello there"
+    ],
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "short": [
+          "too short",
+          2
+        ],
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included.",
+        "other": "another protected sentence that is long enough to shingle"
+      },
+      "aha Internal pricing: the pilot costs forty thousand dollars,"
+    ],
+    "returns": "pricing"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "short": [
+          "too short",
+          2
+        ],
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included.",
+        "other": "another protected sentence that is long enough to shingle"
+      },
+      "another protected sentence that is long enough to shingle"
+    ],
+    "returns": "other"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included.",
+        "colleague": [
+          "Adam will send the proposal by Friday afternoon",
+          4
+        ]
+      },
+      "As agreed, Adam will send the proposal."
+    ],
+    "returns": "colleague"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included.",
+        "colleague": [
+          "Adam will send the proposal by Friday afternoon",
+          4
+        ]
+      },
+      "Adam will send it."
+    ],
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "de": "Die Straße führt zur Brücke über den Fluss"
+      },
+      "DIE STRASSE FÜHRT ZUR BRÜCKE"
+    ],
+    "options": {
+      "words": 5
+    },
+    "returns": "de"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "el": "ΟΔΗΓΙΕΣ ΣΥΣΤΗΜΑΤΟΣ ΓΙΑ ΤΟΝ ΒΟΗΘΟ"
+      },
+      "οδηγιες συστηματος για τον"
+    ],
+    "options": {
+      "words": 4
+    },
+    "returns": "el"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "hi": "आप एक सहायक हैं और कभी कीमत न बताएं"
+      },
+      "आप एक सहायक हैं और"
+    ],
+    "options": {
+      "words": 5
+    },
+    "returns": "hi"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "ja": "あなたはアシスタントです"
+      },
+      "あなたはアシスタントです"
+    ],
+    "options": {
+      "words": 1
+    },
+    "returns": "ja"
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included."
+        }
+      }
+    },
+    "deltas": [
+      "Internal ",
+      "pricing: ",
+      "the ",
+      "pilot ",
+      "costs ",
+      "forty ",
+      "thousand ",
+      "dollars,"
+    ],
+    "shown": [
+      "Internal ",
+      "pricing: ",
+      "the ",
+      "pilot ",
+      "costs ",
+      "forty ",
+      "thousand "
+    ],
+    "text": "Internal pricing: the pilot costs forty thousand dollars,",
+    "blocked": {
+      "reason": "leak",
+      "found": [
+        "pricing"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "pricing": "Internal pricing: the pilot costs forty thousand dollars, fixed for six weeks, two engineers included."
+        }
+      }
+    },
+    "deltas": [
+      "Six weeks is a common pilot length."
+    ],
+    "shown": [
+      "Six weeks is a common pilot length.",
+      ""
+    ],
+    "text": "Six weeks is a common pilot length.",
+    "blocked": null
+  }
+]
