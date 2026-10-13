@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-10-12
+## [0.1.0] - 2026-10-13
 
 First release, for Python (PyPI) and for JavaScript and TypeScript (npm), with the same guards, the same behaviour and the
 same version number.
