@@ -61,10 +61,9 @@ jobs:
         working-directory: js
       - run: npm test
         working-directory: js
-      - run: npm publish --provenance --access public
+      - run: npm --version
+      - run: npm publish --provenance --access public  # trusted publishing: no token is stored
         working-directory: js
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   python-staging:
     if: github.event_name == 'workflow_dispatch'

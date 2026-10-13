@@ -40,7 +40,8 @@ Both packages have one version. In Python it is `__version__` in `python/src/llm
 JavaScript `version` in `js/package.json` (run `npm install --package-lock-only` in `js/` after). To release, bump both,
 move the Unreleased entries in `CHANGELOG.md` under a dated heading (and fix the links at the bottom), run `uv lock`
 in `python/`, commit, and push a tag `v<version>`. The release workflow refuses a tag that does not match both, then
-publishes to PyPI (trusted publishing, environment `pypi`) and to npm (`NPM_TOKEN`, environment `npm`, with provenance).
+publishes to PyPI (environment `pypi`) and to npm (environment `npm`, with provenance), both through trusted
+publishing, so no token is stored.
 Run the Release workflow by hand first when it has changed: it publishes the Python package to TestPyPI (environment
 `testpypi`) and dry-runs the npm package.
 
