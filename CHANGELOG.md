@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-14
+
+### Changes to what is flagged or blocked
+
+- A `class` label in prose (`**Class schedule:** Mondays and Thursdays.`) is no longer counted as code. A brace-style
+  class (`public class Booking {`) still is, and so is a Python class: `class` in lower case opening a line, an
+  optional base list, and a colon followed by the end of the line, `pass`, `def`, `...` or a docstring.
+  A Python class written another way (a comment after the colon, a one-line body, a type parameter list, a base list
+  over several lines, or a list marker or quote before `class`) is no longer flagged on its own.
+
 ## [0.2.0] - 2026-10-14
 
 ### Changes to what is flagged or blocked
@@ -55,6 +65,7 @@ the same version number.
   `finish`.
 - Python 3.11+ and Node 22+, no dependencies.
 
-[Unreleased]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/sansanth/llm-stream-guards/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sansanth/llm-stream-guards/releases/tag/v0.1.0

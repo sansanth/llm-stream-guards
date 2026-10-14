@@ -11,8 +11,17 @@ const SIGNATURE = compile(
   // "import os" and "function go() {" are code.
   String.raw`\bpublic\s+(?:static\s+)?(?:void|class)\b|\bdef\s+\w+\s*\(|\bfunction\s+\w*\s*\([^)\n]*\)\s*(?:\{|:|=>)|` +
     String.raw`^[^\S\n]*import\s+[\w.]+(?:\s+as\s+\w+)?\s*(?:;|$)|^[^\S\n]*import\s+[\w{},*\s]+\s+from\s+['"]|^[^\S\n]*#include\s*[<"]|` +
-    String.raw`^[^\S\n]*from\s+[\w.]+\s+import\b|\bclass\s+\w+\s*[{:]|\bfn\s+\w+\s*\(|\bfunc\s+\w+\s*\(|<\w+\s+on\w+=`,
+    String.raw`^[^\S\n]*from\s+[\w.]+\s+import\b|\bclass\s+\w+\s*\{|\bfn\s+\w+\s*\(|\bfunc\s+\w+\s*\(|<\w+\s+on\w+=`,
   { ignoreCase: true, multiline: true },
+);
+// A Python class counts only as Python writes one: "class" in lower case opening its line, an optional base list, then a
+// colon with nothing after it but the end of the line, `pass`, `def`, `...` or a docstring. "Class schedule: Mondays." is
+// prose.
+const PYTHON_CLASS = compile(
+  String.raw`^[ \t]*class[ \t]+\w+[ \t]*(?:\([^\n]*\))?[ \t]*:[ \t]*\r?(?:$|pass\b|def\b|\.\.\.|["']{3})`,
+  {
+    multiline: true,
+  },
 );
 // The SQL forms need statement structure after the keyword (a column list, a table name plus SET or VALUES), so
 // advice like "select the vendor from the shortlist" does not match.
@@ -43,7 +52,7 @@ const INDENTED = compile(
 
 /** Whether `text` hands over code rather than talking about it. Biased towards false positives. */
 export function containsCodeDeliverable(text: string): boolean {
-  return [FENCE, SIGNATURE, STATEMENT, INDENTED].some((pattern) => search(pattern, text) !== null);
+  return [FENCE, SIGNATURE, PYTHON_CLASS, STATEMENT, INDENTED].some((pattern) => search(pattern, text) !== null);
 }
 
 /** Whether only indentation precedes `buffer[i]` on its line; `before` is the text released ahead of `buffer`. */
