@@ -1,0 +1,313 @@
+[
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Import the data first, then clean it."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Function calling (the LLM feature) lets the model ask for data."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Services:\n- Design\n- Build"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "for i in range(10):\n    print(i)"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "from flask import Flask"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "fn main() {"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "<button onclick=\"go()\">"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Here you go:\n```python\nprint('hi')\n```"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "def bubble_sort(arr):\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "The plan has two phases. First we map the users, then we prototype."
+    ],
+    "returns": false
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The fee depends on your 401k provider.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The build costs $457.",
+      []
+    ],
+    "returns": [
+      "$457"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Budget 457 dollars.",
+      []
+    ],
+    "returns": [
+      "457 dollars"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is $401k a year.",
+      []
+    ],
+    "returns": [
+      "$401k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The build costs $1,457.",
+      []
+    ],
+    "returns": [
+      "$1,457"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "A 457 plan and a 403(b) change the fee.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The fee is 401k dollars.",
+      []
+    ],
+    "returns": [
+      "401k dollars",
+      "401k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The fee is 401k to 500k.",
+      []
+    ],
+    "returns": [
+      "401k",
+      "500k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The build would cost about $50,000.",
+      []
+    ],
+    "returns": [
+      "$50,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It will probably cost around 5 lakhs.",
+      []
+    ],
+    "returns": [
+      "5 lakhs"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Expect about Rs. 50,000 for the first phase.",
+      []
+    ],
+    "returns": [
+      "Rs. 50,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Budget INR 50,000 for the first phase.",
+      []
+    ],
+    "returns": [
+      "INR 50,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That would be about 50 000 € in total.",
+      []
+    ],
+    "returns": [
+      "50 000 €"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Plan for roughly 300 engineering hours.",
+      []
+    ],
+    "returns": [
+      "300 engineering hours"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It would cost about $5k.",
+      [
+        "3",
+        "5"
+      ]
+    ],
+    "returns": [
+      "$5k",
+      "5k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The project would run about $3M in total.",
+      [
+        "3",
+        "5"
+      ]
+    ],
+    "returns": [
+      "$3M"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "They saved $500 a month after launch. [1]",
+      [
+        "500"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Try `https://evil.example/x` in your browser.",
+      []
+    ],
+    "returns": "Try `https://evil.example/x` in your browser."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Set the callback to `https://yourapp.example/webhook` and verify the signature.",
+      []
+    ],
+    "returns": "Set the callback to `https://yourapp.example/webhook` and verify the signature."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See <https://evil.example/x> for details.",
+      []
+    ],
+    "returns": "See `evil.example` for details."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [the guide][1].\n\n[1]: https://evil.example/guide",
+      []
+    ],
+    "returns": "See [the guide][1].\n\n[1]: `evil.example`"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Here it is: ![diagram](https://evil.example/p.png)",
+      []
+    ],
+    "returns": "Here it is: diagram"
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [our case study](https://evil.example/x) for details.",
+      []
+    ],
+    "returns": "See our case study for details."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Visit https://evil.example/x for details.",
+      []
+    ],
+    "returns": "Visit `evil.example` for details."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Read more at https://www.acme.example/work today.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Read more at https://www.acme.example/work today."
+  }
+]

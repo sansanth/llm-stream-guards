@@ -1,0 +1,649 @@
+[
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ]
+      }
+    },
+    "deltas": [
+      "<think>plan here</think>\n\nAnswer."
+    ],
+    "shown": [
+      "Answer.",
+      ""
+    ],
+    "text": "Answer.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ]
+      }
+    },
+    "deltas": [
+      "<thi",
+      "nk>plan here</th",
+      "ink>\n\nAnswer <thi",
+      "nk>and more</think> end"
+    ],
+    "shown": [
+      "",
+      "",
+      "Answer ",
+      "end",
+      ""
+    ],
+    "text": "Answer end",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think",
+          "notes",
+          "transcript",
+          "operator_notes"
+        ]
+      }
+    },
+    "deltas": [
+      "Hi <notes>x</notes> there <Transcript>y</TRANSCRIPT>done <operator_notes>z</operator_notes>."
+    ],
+    "shown": [
+      "Hi there done .",
+      ""
+    ],
+    "text": "Hi there done .",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "notes"
+        ]
+      }
+    },
+    "deltas": [
+      "Answer <not",
+      "es>never closes",
+      " and goes on"
+    ],
+    "shown": [
+      "Answer ",
+      "",
+      "",
+      ""
+    ],
+    "text": "Answer ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "notes"
+        ]
+      }
+    },
+    "deltas": [
+      "Answer <not"
+    ],
+    "shown": [
+      "Answer ",
+      "<not"
+    ],
+    "text": "Answer <not",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "notes"
+        ]
+      }
+    },
+    "deltas": [
+      "Answer <not"
+    ],
+    "truncated": true,
+    "shown": [
+      "Answer ",
+      ""
+    ],
+    "text": "Answer ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "notes"
+        ]
+      }
+    },
+    "deltas": [
+      "Answer <notes>cut",
+      " off </no"
+    ],
+    "truncated": true,
+    "shown": [
+      "Answer ",
+      "",
+      ""
+    ],
+    "text": "Answer ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "notes"
+        ]
+      }
+    },
+    "deltas": [
+      "a < b and <notebook> and <b>bold</b>"
+    ],
+    "shown": [
+      "a < b and <notebook> and <b>bold</b>",
+      ""
+    ],
+    "text": "a < b and <notebook> and <b>bold</b>",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ]
+      }
+    },
+    "deltas": [
+      "<plan>",
+      "five words to plan",
+      "</plan>",
+      "  Then the reply."
+    ],
+    "shown": [
+      "",
+      "",
+      "",
+      "Then the reply.",
+      ""
+    ],
+    "text": "Then the reply.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ],
+        "max_chars": 10
+      }
+    },
+    "deltas": [
+      "<plan>",
+      "this is way too long to close"
+    ],
+    "shown": [
+      ""
+    ],
+    "text": "",
+    "blocked": {
+      "reason": "unclosed",
+      "found": [
+        "plan"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ],
+        "max_chars": 10
+      }
+    },
+    "deltas": [
+      "<plan>short</plan>ok"
+    ],
+    "shown": [
+      "ok",
+      ""
+    ],
+    "text": "ok",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ],
+        "max_chars": 10
+      }
+    },
+    "deltas": [
+      "<plan>short"
+    ],
+    "shown": [
+      ""
+    ],
+    "text": "",
+    "blocked": {
+      "reason": "unclosed",
+      "found": [
+        "plan"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ],
+        "max_chars": 30
+      }
+    },
+    "deltas": [
+      "<plan>",
+      "close",
+      "d late enough</pl",
+      "an>yes"
+    ],
+    "shown": [
+      "",
+      "",
+      "",
+      "yes",
+      ""
+    ],
+    "text": "yes",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ],
+        "max_chars": 5
+      }
+    },
+    "deltas": [
+      "<plan>",
+      "123",
+      "45</plan>fits"
+    ],
+    "shown": [
+      "",
+      "",
+      "fits",
+      ""
+    ],
+    "text": "fits",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ],
+        "max_chars": 5
+      }
+    },
+    "deltas": [
+      "<plan>",
+      "123",
+      "456</plan>too long"
+    ],
+    "shown": [
+      "",
+      ""
+    ],
+    "text": "",
+    "blocked": {
+      "reason": "unclosed",
+      "found": [
+        "plan"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ]
+      }
+    },
+    "deltas": [
+      "Keep ",
+      "<think>",
+      "<think>nested</think> still",
+      "</think> out"
+    ],
+    "shown": [
+      "Keep ",
+      "",
+      "still",
+      "</think> out",
+      ""
+    ],
+    "text": "Keep still</think> out",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ]
+      }
+    },
+    "deltas": [
+      "Line one\n<think>x</think>\nLine two"
+    ],
+    "shown": [
+      "Line one\nLine two",
+      ""
+    ],
+    "text": "Line one\nLine two",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "chain": [
+        {
+          "tag": {
+            "drop": [
+              "think"
+            ]
+          }
+        },
+        {
+          "citation": {
+            "count": 3
+          }
+        },
+        {
+          "link": {
+            "allowed_hosts": []
+          }
+        }
+      ]
+    },
+    "deltas": [
+      "<think>[1]</think>Read [1] at https://evil.example now."
+    ],
+    "shown": [
+      "Read at `evil.example` now.",
+      ""
+    ],
+    "text": "Read at `evil.example` now.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ],
+        "trim_start": true
+      }
+    },
+    "deltas": [
+      "  \n <plan>five words</plan> First part. Second part."
+    ],
+    "shown": [
+      "First part. Second part.",
+      ""
+    ],
+    "text": "First part. Second part.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ],
+        "trim_start": true
+      }
+    },
+    "deltas": [
+      "  ",
+      "\n",
+      " First",
+      " part."
+    ],
+    "shown": [
+      "",
+      "",
+      "First",
+      " part.",
+      ""
+    ],
+    "text": "First part.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ],
+        "trim_start": true
+      }
+    },
+    "deltas": [
+      "\t<pl",
+      "an>x</plan>\n\nA reply",
+      "  with  spaces <plan>y</plan> end. "
+    ],
+    "shown": [
+      "",
+      "A reply",
+      "  with  spaces end. ",
+      ""
+    ],
+    "text": "A reply  with  spaces end. ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "plan"
+        ]
+      }
+    },
+    "deltas": [
+      "  \n <plan>five words</plan> First part. Second part."
+    ],
+    "shown": [
+      "  \n First part. Second part.",
+      ""
+    ],
+    "text": "  \n First part. Second part.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ],
+        "trim_start": true
+      }
+    },
+    "deltas": [
+      "   "
+    ],
+    "shown": [
+      "",
+      ""
+    ],
+    "text": "",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ],
+        "max_chars": 500
+      }
+    },
+    "deltas": [
+      "ok <think>abc"
+    ],
+    "truncated": true,
+    "shown": [
+      "ok ",
+      ""
+    ],
+    "text": "ok ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ],
+        "max_chars": 500
+      }
+    },
+    "deltas": [
+      "ok <think>abc"
+    ],
+    "shown": [
+      "ok "
+    ],
+    "text": "ok ",
+    "blocked": {
+      "reason": "unclosed",
+      "found": [
+        "think"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ],
+        "max_chars": 2
+      }
+    },
+    "deltas": [
+      "ok <think>abcdef"
+    ],
+    "truncated": true,
+    "shown": [],
+    "text": "",
+    "blocked": {
+      "reason": "unclosed",
+      "found": [
+        "think"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ],
+        "max_chars": 500
+      }
+    },
+    "deltas": [
+      "ok <thi"
+    ],
+    "truncated": true,
+    "shown": [
+      "ok ",
+      ""
+    ],
+    "text": "ok ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ]
+      }
+    },
+    "deltas": [
+      "aİ<think>x</think> b"
+    ],
+    "shown": [
+      "aİ b",
+      ""
+    ],
+    "text": "aİ b",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think"
+        ]
+      }
+    },
+    "deltas": [
+      "aİ<think>x</thi",
+      "nk> b İ<THINK>y</Think>İ"
+    ],
+    "shown": [
+      "aİ",
+      " b İİ",
+      ""
+    ],
+    "text": "aİ b İİ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "tag": {
+        "drop": [
+          "think",
+          "plan"
+        ],
+        "max_chars": 10
+      }
+    },
+    "deltas": [
+      "ẞ<plan>İİİ</PLAN>x ß<think>"
+    ],
+    "truncated": true,
+    "shown": [
+      "ẞx ß",
+      ""
+    ],
+    "text": "ẞx ß",
+    "blocked": null
+  }
+]

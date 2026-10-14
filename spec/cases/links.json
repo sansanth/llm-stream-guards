@@ -935,7 +935,14 @@
       ""
     ],
     "text": "Go to `evil.example` now please.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example"
+      ],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -953,7 +960,12 @@
       ""
     ],
     "text": "Pick [A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose ",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -969,7 +981,12 @@
       ""
     ],
     "text": "See [a\nlist",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -989,7 +1006,12 @@
       ""
     ],
     "text": "Read [it](https://acme.example/a) first.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -1013,7 +1035,12 @@
       ""
     ],
     "text": "Pick [A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose ](https://acme.example/a) now.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -1035,7 +1062,14 @@
       ""
     ],
     "text": "Pick A or B, and then a long stretch of ordinary prose and then a long stretch of ordinary prose and then a long stretch of ordinary prose  now. Then more.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example"
+      ],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -1055,7 +1089,14 @@
       ""
     ],
     "text": "Log in at `evil.example`\nto continue.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example"
+      ],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -1073,7 +1114,14 @@
       ""
     ],
     "text": "Try `evil.example` now.\n",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example"
+      ],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "call": "strip_untrusted_links",
@@ -1171,7 +1219,14 @@
       ""
     ],
     "text": "See (`evil.example`) now.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example"
+      ],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -1189,7 +1244,14 @@
       ""
     ],
     "text": "See \"`evil.example`\" now.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example"
+      ],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "call": "strip_untrusted_links",
@@ -1275,7 +1337,14 @@
       ""
     ],
     "text": "[ref]: ",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "https:"
+      ],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "call": "hosts_of",
@@ -1494,7 +1563,14 @@
       ""
     ],
     "text": "See `evil.example`\nand `evil.example`\n<`evil.example`\n>more",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example"
+      ],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -1518,7 +1594,14 @@
       "!"
     ],
     "text": "Wow! See d ok!",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example"
+      ],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "call": "strip_untrusted_links",
@@ -1563,5 +1646,126 @@
       ]
     ],
     "returns": "See a and <\u0001//evil.example> now."
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "acme.example"
+        ],
+        "emails": [
+          "john@acme.example"
+        ],
+        "phones": [
+          "14155550100"
+        ],
+        "replacement": "our team"
+      }
+    },
+    "deltas": [
+      "See [a](https://evil.example/x) and https://EVIL.example/y and www.other.example, write to hello@fabrikam.example or John@acme.example or hello@fabrikam.example, ",
+      "call +44 7700 900123 or +1 415 555 0100 or +44 7700 900123, or [ok](https://acme.example/a)."
+    ],
+    "shown": [
+      "See a and `evil.example` and `other.example`, write to our team or John@acme.example or our team, ",
+      "call our team or +1 415 555 0100 or our team, or [ok](https://acme.example/a)",
+      "."
+    ],
+    "text": "See a and `evil.example` and `other.example`, write to our team or John@acme.example or our team, call our team or +1 415 555 0100 or our team, or [ok](https://acme.example/a).",
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example",
+        "other.example"
+      ],
+      "emails": [
+        "hello@fabrikam.example"
+      ],
+      "phones": [
+        "447700900123"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "acme.example"
+        ]
+      }
+    },
+    "deltas": [
+      "Read [it](https://acme.example/a), mail hello@fabrikam.example."
+    ],
+    "shown": [
+      "Read [it](https://acme.example/a), mail hello@fabrikam.example.",
+      ""
+    ],
+    "text": "Read [it](https://acme.example/a), mail hello@fabrikam.example.",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": []
+      }
+    },
+    "deltas": [
+      "[a](mailto:hello@fabrikam.example) and [b](javascript:alert) and `https://x.example` and <https://evil.example/q>."
+    ],
+    "shown": [
+      "a and b and `https://x.example` and `evil.example`",
+      "."
+    ],
+    "text": "a and b and `https://x.example` and `evil.example`.",
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example",
+        "javascript:"
+      ],
+      "emails": [
+        "hello@fabrikam.example"
+      ],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "acme.example"
+        ]
+      }
+    },
+    "deltas": [
+      "[a](javascript:alert) [b](DATA:text/html,x) [c](http://[bad) [d](https://evil.example/x) [e](//) ",
+      "and [f](vbscript:x) and https://evil.example/y."
+    ],
+    "shown": [
+      "a b c d e ",
+      "and f and",
+      " `evil.example`."
+    ],
+    "text": "a b c d e and f and `evil.example`.",
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "javascript:",
+        "data:",
+        "http:",
+        "evil.example",
+        "(no host)",
+        "vbscript:"
+      ],
+      "emails": [],
+      "phones": []
+    }
   }
 ]

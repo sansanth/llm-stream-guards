@@ -134,6 +134,20 @@ export function sub(pattern: RegExp, text: string, replace: (match: RegExpExecAr
 
 const SPACES = new RegExp(`^[${SPACE}]+|[${SPACE}]+$`, "gu");
 
+const SPACE_ONLY = new RegExp(`^[${SPACE}]$`, "u");
+
+/** Python's `str.isspace()` for one character. */
+export function isSpace(char: string): boolean {
+  return SPACE_ONLY.test(char);
+}
+
+const TRAILING_SPACES = new RegExp(`[${SPACE}]+$`, "u");
+
+/** Python's `str.rstrip()`. */
+export function rstrip(text: string): string {
+  return text.replace(TRAILING_SPACES, "");
+}
+
 /** Python's `str.strip()`. */
 export function strip(text: string): string {
   return text.replace(SPACES, "");

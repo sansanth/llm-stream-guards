@@ -22,14 +22,15 @@ export function nextAnchor(text: string, anchor: number, end: number, ceiling: n
   return after >= anchor ? after + 1 : anchor;
 }
 
-/** Which guard refused a reply. */
-export type BlockReason = "code" | "leak" | "amount";
+/** Which guard refused a reply: one of the built-in guards' reasons, or the `reason` of a `CheckStream`. */
+export type BlockReason = "code" | "leak" | "amount" | (string & {});
 
 /**
  * A streaming guard refused the reply: stop reading the model and replace what was shown.
  *
- * `reason` names the guard and `found` says what it caught: the fence for code, the protected text's name for a leak,
- * the figures for an amount. A guard that has thrown throws the same error on every later call.
+ * `reason` names the guard: `"code"`, `"leak"` or `"amount"` for the built-in ones, or the `reason` given to a
+ * `CheckStream`, so do not treat it as a closed set. `found` says what it caught: the fence for code, the protected
+ * text's name for a leak, the figures for an amount. A guard that has thrown throws the same error on every later call.
  */
 export class Blocked extends Error {
   override readonly name = "Blocked";
@@ -47,9 +48,17 @@ export class Blocked extends Error {
  * What every streaming guard does: `feed` takes the next piece of the reply and returns what may be shown now,
  * `finish` returns what was held back once the reply has ended, and either may throw `Blocked`.
  */
+export interface FinishOptions {
+  /**
+   * The reply was cut off, at the token limit or a deadline: whatever is still held is dropped, not released, since it
+   * was never finished (a link half written, a number still growing).
+   */
+  truncated?: boolean;
+}
+
 export interface StreamGuard {
   feed(delta: string): string;
-  finish(): string;
+  finish(options?: FinishOptions): string;
   /** Everything let through so far, as it should finally read. */
   readonly text: string;
 }
@@ -73,10 +82,10 @@ export class Chain implements StreamGuard {
     return shown;
   }
 
-  finish(): string {
+  finish(options?: FinishOptions): string {
     let tail = "";
     for (const guard of this.#guards) {
-      tail = guard.feed(tail) + guard.finish();
+      tail = guard.feed(tail) + guard.finish(options);
     }
     return tail;
   }
@@ -86,18 +95,29 @@ export class Chain implements StreamGuard {
   }
 }
 
+export interface GuardTransformOptions {
+  /**
+   * Whether the stream ended because the reply was cut off, at the token limit or a deadline, or a function that says
+   * so once the stream has ended: what the guard still holds is then dropped, not released. Default `false`.
+   */
+  truncated?: boolean | (() => boolean);
+}
+
 /**
  * A `TransformStream` that runs `guard` over a stream of text: pipe a model's text stream through it. A `Blocked`
- * errors the stream, which cancels the source it is piped from.
+ * errors the stream, which cancels the source it is piped from. Pass `truncated` when the model can be cut off.
  */
-export function guardTransform(guard: StreamGuard): TransformStream<string, string> {
+export function guardTransform(
+  guard: StreamGuard,
+  { truncated = false }: GuardTransformOptions = {},
+): TransformStream<string, string> {
   return new TransformStream<string, string>({
     transform(delta, controller) {
       const shown = guard.feed(delta);
       if (shown) controller.enqueue(shown);
     },
     flush(controller) {
-      const tail = guard.finish();
+      const tail = guard.finish({ truncated: typeof truncated === "function" ? truncated() : truncated });
       if (tail) controller.enqueue(tail);
     },
   });

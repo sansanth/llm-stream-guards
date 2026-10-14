@@ -23,8 +23,9 @@ class Blocked(Exception):
     """
     A streaming guard refused the reply: stop reading the model and replace what was shown.
 
-    `reason` names the guard (`"code"`, `"leak"`, `"amount"`) and `found` says what it caught: the protected text's
-    name for a leak, the figures for an amount. A guard that has raised raises the same exception on every later call.
+    `reason` names the guard: `"code"`, `"leak"` or `"amount"` for the built-in ones, or the `reason` given to a
+    `CheckStream`, so do not treat it as a closed set. `found` says what it caught: the protected text's name for a
+    leak, the figures for an amount. A guard that has raised raises the same exception on every later call.
     """
 
     def __init__(self, reason: str, found: tuple[str, ...] = ()):
@@ -39,12 +40,14 @@ class Blocked(Exception):
 class StreamGuard(Protocol):
     """
     What every streaming guard does: `feed` takes the next piece of the reply and returns what may be shown now,
-    `finish` returns what was held back once the reply has ended, and either may raise `Blocked`.
+    `finish` returns what was held back once the reply has ended, and either may raise `Blocked`. A reply cut off at the
+    token limit or a deadline ends with `finish(truncated=True)`: whatever is still held is dropped, not released, since
+    it was never finished (a link half written, a number still growing).
     """
 
     def feed(self, delta: str) -> str: ...
 
-    def finish(self) -> str: ...
+    def finish(self, *, truncated: bool = False) -> str: ...
 
     @property
     def text(self) -> str:
@@ -65,10 +68,10 @@ class Chain:
             delta = guard.feed(delta)
         return delta
 
-    def finish(self) -> str:
+    def finish(self, *, truncated: bool = False) -> str:
         tail = ""
         for guard in self._guards:
-            tail = guard.feed(tail) + guard.finish()
+            tail = guard.feed(tail) + guard.finish(truncated=truncated)
         return tail
 
     @property

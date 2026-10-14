@@ -62,8 +62,8 @@ def _opens_line(buf: str, i: int, before: str) -> bool:
 class CodeStream:
     """
     Blocks a reply at its first code fence: three backticks, or three tildes opening a line. A run of backticks
-    or tildes that ends a delta is held until the next one settles it. With `deliverable` (the default), `finish` also
-    blocks a finished reply that `contains_code_deliverable` flags.
+    or tildes that ends a delta is held until the next one settles it, and dropped when the reply was cut off. With
+    `deliverable` (the default), `finish` also blocks a finished reply that `contains_code_deliverable` flags.
     """
 
     def __init__(self, *, deliverable: bool = True):
@@ -79,14 +79,14 @@ class CodeStream:
     def feed(self, delta: str) -> str:
         return self._drain(delta, final=False)
 
-    def finish(self) -> str:
-        tail = self._drain("", final=True)
+    def finish(self, *, truncated: bool = False) -> str:
+        tail = self._drain("", final=True, truncated=truncated)
         if self._deliverable and contains_code_deliverable(self._text):
             self._blocked = Blocked("code")
             raise self._blocked
         return tail
 
-    def _drain(self, delta: str, *, final: bool) -> str:
+    def _drain(self, delta: str, *, final: bool, truncated: bool = False) -> str:
         if self._blocked:
             raise self._blocked
         buf = self._pending + delta
@@ -101,7 +101,9 @@ class CodeStream:
                 if end - i >= 3:
                     self._blocked = Blocked("code", (char * 3,))
                     raise self._blocked
-                if end == len(buf) and not final:
+                if end == len(buf) and (not final or truncated):
+                    # A run that ends the text may be the start of a fence: held, and dropped if the reply was cut off.
+                    i = end if final else i
                     break
                 out.append(buf[i:end])
                 i = end

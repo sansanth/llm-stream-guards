@@ -32,7 +32,7 @@ for path in sorted((SPEC / "cases").glob("*.json")):
             result = runner.stream(case)
         else:
             continue
-        if any(case.get(key) != value for key, value in result.items()):
+        if any(key not in case or case[key] != value for key, value in result.items()):
             case.update(result)
             changed = True
             filled += 1

@@ -8,11 +8,14 @@ import {
   AmountStream,
   Blocked,
   Chain,
+  CheckStream,
+  CitationStream,
   CodeStream,
   containsCodeDeliverable,
   ENGLISH,
   emailsIn,
   hostsOf,
+  isGrounded,
   LeakGuard,
   LeakStream,
   LinkStream,
@@ -21,6 +24,8 @@ import {
   phonesIn,
   type StreamGuard,
   stripUntrustedLinks,
+  TagStream,
+  tidyCutOff,
   unsupportedAmounts,
   withoutUngroundedEmails,
   withoutUngroundedPhones,
@@ -54,7 +59,9 @@ const FUNCTIONS: Record<string, (args: Json[], options: Record<string, Json>) =>
   phones_in: (texts) => phonesIn(...texts),
   unsupported_amounts: ([text, grounded], o) => unsupportedAmounts(text, grounded, o),
   numbers_in: (texts, o) => numbersIn(...texts, o),
+  is_grounded: ([number, grounded], o) => isGrounded(number, grounded, o),
   contains_code_deliverable: ([text]) => containsCodeDeliverable(text),
+  tidy_cut_off: ([text]) => tidyCutOff(text),
   "LeakGuard.match": ([protectedTexts, text], o) => new LeakGuard(protectedTexts, o).match(text),
 };
 
@@ -85,7 +92,21 @@ function guard(spec: Record<string, Json>): StreamGuard {
     case "amount":
       return new AmountStream(raw.grounded, { locale: locale(raw.locale) });
     case "leak":
-      return new LeakStream(new LeakGuard(raw.protected, { words: raw.words ?? 8 }));
+      return new LeakStream(
+        new LeakGuard(raw.protected, {
+          words: raw.words ?? 8,
+          short: raw.short ?? "error",
+          allowed: raw.allowed ?? [],
+        }),
+      );
+    case "citation":
+      return new CitationStream(raw.count);
+    case "tag":
+      return new TagStream(raw.drop, { maxChars: raw.max_chars ?? null, trimStart: raw.trim_start ?? false });
+    case "check":
+      return new CheckStream((text) => (text.includes(raw.found) ? [raw.found] : []), {
+        reason: raw.reason ?? "check",
+      });
     case "code":
       return new CodeStream({ deliverable: raw.deliverable ?? true });
     default:
@@ -99,13 +120,22 @@ function stream(test: Json): Json {
   let blocked: Json = null;
   try {
     for (const delta of test.deltas) shown.push(streaming.feed(delta));
-    shown.push(streaming.finish());
+    shown.push(streaming.finish({ truncated: test.truncated ?? false }));
   } catch (error) {
     if (!(error instanceof Blocked)) throw error;
     blocked = { reason: error.reason, found: [...error.found] };
     expect(() => streaming.feed("more")).toThrow(error);
   }
-  return { shown, text: streaming.text, blocked };
+  const result: Json = { shown, text: streaming.text, blocked };
+  if (streaming instanceof CitationStream) result.cited = [...streaming.cited];
+  if (streaming instanceof LinkStream && blocked === null) {
+    result.removed = {
+      hosts: [...streaming.removedHosts],
+      emails: [...streaming.removedEmails],
+      phones: [...streaming.removedPhones],
+    };
+  }
+  return result;
 }
 
 const files = readdirSync(SPEC)
@@ -125,7 +155,12 @@ for (const file of files) {
         if ("call" in spec) {
           expect(call(spec)).toEqual(spec.returns);
         } else {
-          expect(stream(spec)).toEqual({ shown: spec.shown, text: spec.text, blocked: spec.blocked });
+          const expected = Object.fromEntries(
+            ["shown", "text", "blocked", "removed", "cited"]
+              .filter((key) => key in spec)
+              .map((key) => [key, spec[key]]),
+          );
+          expect(stream(spec)).toEqual(expected);
         }
       });
     });

@@ -30,9 +30,9 @@ A change to what a guard does is made in both packages, and starts with a case i
   `js/src/_regex.ts`, where `\w`, `\d` and `\b` are Unicode-aware; hosts come from `js/src/_url.ts`, a port of what
   `urlparse` accepts; lengths are counted in characters, not UTF-16 units. Use those helpers, not `RegExp`, `URL` or
   `.length`, in code that decides what a guard holds or blocks.
-- A change to a pattern or a limit is worth a few thousand random cases against both packages before it is done: generate
-  them from Python, run them through the built JavaScript, and compare. Differences have been in Unicode: case folding,
-  `\b`, whitespace, and what `urlparse` raises on.
+- A change to a pattern or a limit is worth a few thousand random cases against both packages before it is done:
+  generate them from Python, run them through the built JavaScript, and compare. Differences have been in Unicode: case
+  folding, `\b`, whitespace, and what `urlparse` raises on.
 
 ## Releasing
 
@@ -42,6 +42,9 @@ move the Unreleased entries in `CHANGELOG.md` under a dated heading (and fix the
 in `python/`, commit, and push a tag `v<version>`. The release workflow refuses a tag that does not match both, then
 publishes to PyPI (environment `pypi`) and to npm (environment `npm`, with provenance), both through trusted
 publishing, so no token is stored.
+A change to what a guard flags or blocks goes under its own heading, `### Changes to what is flagged or blocked`, in the
+changelog, so that someone who reruns their own evals before updating can find it.
+
 Run the Release workflow by hand first when it has changed: it publishes the Python package to TestPyPI (environment
 `testpypi`) and dry-runs the npm package.
 

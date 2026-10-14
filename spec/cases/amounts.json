@@ -1781,5 +1781,558 @@
       ]
     ],
     "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The fee depends on your 401k provider.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Ask about the 401(k), the 403(b) and the 457 plan fees, 403B and 457(b), 401 (k).",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Your 401(k) match is 5000 euros.",
+      []
+    ],
+    "returns": [
+      "5000 euros"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "A 4010k plan, a 4570 fee and $500.",
+      []
+    ],
+    "returns": [
+      "$500",
+      "4010k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Your 401k provider costs $5.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "not_figures": []
+      }
+    },
+    "returns": [
+      "$5",
+      "401k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Our 24k gold plan costs less, and your 401k plan.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "not_figures": [
+          "\\b\\d+k gold\\b"
+        ]
+      }
+    },
+    "returns": [
+      "401k"
+    ]
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "It depends on your 40",
+      "1k provid",
+      "er, not a $",
+      "5 fee."
+    ],
+    "shown": [
+      "It depends on your ",
+      "",
+      ""
+    ],
+    "text": "It depends on your ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$5"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "Your 401",
+      "(k) is fine, ",
+      "and 457"
+    ],
+    "shown": [
+      "Your ",
+      "",
+      "",
+      "401(k) is fine, and 457"
+    ],
+    "text": "Your 401(k) is fine, and 457",
+    "blocked": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The build costs $457.",
+      []
+    ],
+    "returns": [
+      "$457"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Budget 457 dollars.",
+      []
+    ],
+    "returns": [
+      "457 dollars"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is $401k a year.",
+      []
+    ],
+    "returns": [
+      "$401k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The build costs $1,457.",
+      []
+    ],
+    "returns": [
+      "$1,457"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The build costs $1,457.",
+      [
+        "1457"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "A 457 plan, a 457(b), a 457 B and 457 bytes.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Costs $ 401(k) a year, or USD 457 plan, or Rs. 403b.",
+      []
+    ],
+    "returns": [
+      "$ 401",
+      "USD 457",
+      "Rs. 403"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It is 3.401k or 12,403(b) in total.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "The build costs $4",
+      "57 in total."
+    ],
+    "shown": [
+      "The build costs "
+    ],
+    "text": "The build costs ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$457"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "Ask about your 457",
+      " plan, then the 457(b), not a 457",
+      " fee."
+    ],
+    "shown": [
+      "Ask about your ",
+      "",
+      "457 plan, then the ",
+      "457(b), not a 457 fee."
+    ],
+    "text": "Ask about your 457 plan, then the 457(b), not a 457 fee.",
+    "blocked": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "the fee is 401k dollars",
+      []
+    ],
+    "returns": [
+      "401k dollars",
+      "401k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "the fee is 401k USD",
+      []
+    ],
+    "returns": [
+      "401k USD",
+      "401k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "the fee is 401k to 500k",
+      []
+    ],
+    "returns": [
+      "401k",
+      "500k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "the fee is 401k and 403b plans",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "your 401k to a 457 plan changes the fee",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "fee $1 457 plan",
+      []
+    ],
+    "returns": [
+      "$1 457"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "fee $1 457 plan",
+      [
+        "1457"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "A 2024 457(b) plan and 1 457 b",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Pay 50 000 457 plan or 3 457(b) plan",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "$1 457 plan and 401k dollars"
+    ],
+    "returns": [
+      "1457",
+      "401000",
+      "401k"
+    ]
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2",
+      [
+        "2000"
+      ]
+    ],
+    "options": {
+      "magnitude": "k"
+    },
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2,000",
+      [
+        "2000"
+      ]
+    ],
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2000",
+      [
+        "2000"
+      ]
+    ],
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2",
+      [
+        "2000",
+        "2k"
+      ]
+    ],
+    "options": {
+      "magnitude": "k"
+    },
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2,000",
+      [
+        "2000",
+        "2k"
+      ]
+    ],
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2000",
+      [
+        "2000",
+        "2k"
+      ]
+    ],
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2",
+      [
+        "2000"
+      ]
+    ],
+    "returns": false
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2",
+      [
+        "2k"
+      ]
+    ],
+    "returns": false
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2",
+      [
+        "2000",
+        "2k"
+      ]
+    ],
+    "returns": false
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2",
+      [
+        "2000000",
+        "2million"
+      ]
+    ],
+    "options": {
+      "magnitude": "million"
+    },
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2",
+      [
+        "2000000",
+        "2million"
+      ]
+    ],
+    "options": {
+      "magnitude": "Millions"
+    },
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2",
+      [
+        "2000000",
+        "2million"
+      ]
+    ],
+    "options": {
+      "magnitude": "k"
+    },
+    "returns": false
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "12.50",
+      [
+        "12.5"
+      ]
+    ],
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "12.5",
+      [
+        "12.5",
+        "12.50"
+      ]
+    ],
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "12.51",
+      [
+        "12.5"
+      ]
+    ],
+    "returns": false
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "50 000",
+      [
+        "50000"
+      ]
+    ],
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "1,200.00",
+      [
+        "1200"
+      ]
+    ],
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "2",
+      [
+        "2tsd",
+        "2000"
+      ]
+    ],
+    "options": {
+      "magnitude": "tsd",
+      "locale": {
+        "magnitudes": {
+          "tsd": 1000
+        }
+      }
+    },
+    "returns": true
+  },
+  {
+    "call": "is_grounded",
+    "args": [
+      "5",
+      []
+    ],
+    "options": {
+      "magnitude": null
+    },
+    "returns": false
   }
 ]

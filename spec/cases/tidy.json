@@ -1,0 +1,275 @@
+[
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "First sentence. Second is **cut"
+    ],
+    "returns": "First sentence."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "One. See [the guide](https://x.example/a"
+    ],
+    "returns": "One."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "One. And [dangling label"
+    ],
+    "returns": "One."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Intro.\n- item one\n- "
+    ],
+    "returns": "Intro."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Intro.\n1. \n2."
+    ],
+    "returns": "Intro."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "A full reply."
+    ],
+    "returns": "A full reply."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "No sentence end at all"
+    ],
+    "returns": "No sentence end at all"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      ""
+    ],
+    "returns": ""
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Ends with a question? And a bit more"
+    ],
+    "returns": "Ends with a question?"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "He said \"yes.\" Then"
+    ],
+    "returns": "He said \"yes.\""
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Cost 3.5 percent. Next (still going"
+    ],
+    "returns": "Cost 3.5 percent."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Code `inline` and `open"
+    ],
+    "returns": "Code `inline` and `open`"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Both **bold** and ** left open. More"
+    ],
+    "returns": "Both **bold** and ** left open.**"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Done! Next one is"
+    ],
+    "returns": "Done!"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "日本語です。続きは"
+    ],
+    "returns": "日本語です。"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "終わりました！次は"
+    ],
+    "returns": "終わりました！"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "What？次は"
+    ],
+    "returns": "What？"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Version 1.2 is here. Next"
+    ],
+    "returns": "Version 1.2 is here."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Item one.\n- a\n- b\n- "
+    ],
+    "returns": "Item one."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Trailing spaces.   \n\n  "
+    ],
+    "returns": "Trailing spaces."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "A. B. C"
+    ],
+    "returns": "A. B."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "See [a](b). Then [c]("
+    ],
+    "returns": "See [a](b)."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Steps:\n```python\nprint(1)\n"
+    ],
+    "returns": "Steps:\n```python\nprint(1)\n```"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Steps:\n```python\nprint(1)\n```\nDone"
+    ],
+    "returns": "Steps:\n```python\nprint(1)\n```\nDone"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "A.\n~~~\nx = 1\n"
+    ],
+    "returns": "A."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Text `code` and ``` not a fence"
+    ],
+    "returns": "Text `code` and ``` not a fence`"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "The answer is:\n42."
+    ],
+    "returns": "The answer is:\n42."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "List.\n1. a\n42."
+    ],
+    "returns": "List.\n1. a"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Contact Dr. Smith who said that the"
+    ],
+    "returns": "Contact Dr. Smith who said that the"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Ask Prof. Lee. Then"
+    ],
+    "returns": "Ask Prof. Lee."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Cost e.g. 5 dollars is next"
+    ],
+    "returns": "Cost e.g. 5 dollars is next"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Fine. Cost i.e. five. Then"
+    ],
+    "returns": "Fine. Cost i.e. five."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Intro.\n1. \n2."
+    ],
+    "returns": "Intro."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Steps.\n1."
+    ],
+    "returns": "Steps."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Steps.\n1. one\n2."
+    ],
+    "returns": "Steps.\n1. one"
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Intro.\n  - a\n  - "
+    ],
+    "returns": "Intro."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Mr. and Mrs. Jones left. Then"
+    ],
+    "returns": "Mr. and Mrs. Jones left."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "Fence.\n```\ncode with ** inside and `tick"
+    ],
+    "returns": "Fence."
+  },
+  {
+    "call": "tidy_cut_off",
+    "args": [
+      "It was approx. 5 and vs. 6"
+    ],
+    "returns": "It was approx. 5 and vs. 6"
+  }
+]

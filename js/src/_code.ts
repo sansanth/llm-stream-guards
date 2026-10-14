@@ -1,5 +1,5 @@
 import { compile, search } from "./_regex.js";
-import { Blocked, type StreamGuard } from "./_stream.js";
+import { Blocked, type FinishOptions, type StreamGuard } from "./_stream.js";
 
 // A fenced block is the surest sign that a reply hands over code rather than discussing it. The other shapes are the
 // same content asked for in another format: tilde fences, indented blocks, SQL, shell lines, markup, declarations,
@@ -83,8 +83,8 @@ export class CodeStream implements StreamGuard {
     return this.#drain(delta, false);
   }
 
-  finish(): string {
-    const tail = this.#drain("", true);
+  finish({ truncated = false }: FinishOptions = {}): string {
+    const tail = this.#drain("", true, truncated);
     if (this.#deliverable && containsCodeDeliverable(this.#text)) {
       this.#blocked = new Blocked("code");
       throw this.#blocked;
@@ -92,7 +92,7 @@ export class CodeStream implements StreamGuard {
     return tail;
   }
 
-  #drain(delta: string, final: boolean): string {
+  #drain(delta: string, final: boolean, truncated = false): string {
     if (this.#blocked) throw this.#blocked;
     const buffer = this.#pending + delta;
     let out = "";
@@ -106,7 +106,11 @@ export class CodeStream implements StreamGuard {
           this.#blocked = new Blocked("code", [char.repeat(3)]);
           throw this.#blocked;
         }
-        if (end === buffer.length && !final) break;
+        if (end === buffer.length && (!final || truncated)) {
+          // A run that ends the text may be the start of a fence: held, and dropped if the reply was cut off.
+          if (final) i = end;
+          break;
+        }
         out += buffer.slice(i, end);
         i = end;
         continue;

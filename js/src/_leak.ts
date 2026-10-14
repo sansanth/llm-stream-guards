@@ -1,5 +1,5 @@
 import { casefold, compile, findAll, search } from "./_regex.js";
-import { Blocked, type StreamGuard } from "./_stream.js";
+import { Blocked, type FinishOptions, type StreamGuard } from "./_stream.js";
 
 const WORD = compile(String.raw`\w+`);
 
@@ -12,12 +12,39 @@ function run(found: readonly string[], start: number, n: number): string {
   return found.slice(start, start + n).join(" ");
 }
 
+/** `found` cut into the stretches between the word runs of `phrases` (longest first), which are left out. */
+function withoutRuns(found: readonly string[], phrases: readonly (readonly string[])[]): string[][] {
+  const parts: string[][] = [[]];
+  let i = 0;
+  while (i < found.length) {
+    const phrase = phrases.find((candidate) => candidate.every((word, offset) => found[i + offset] === word));
+    if (phrase === undefined) {
+      (parts.at(-1) as string[]).push(found[i] as string);
+      i++;
+    } else {
+      parts.push([]);
+      i += phrase.length;
+    }
+  }
+  return parts;
+}
+
 /** A protected text, or a text with its own run length. */
 export type Protected = string | readonly [text: string, words: number];
 
 export interface LeakGuardOptions {
   /** How many words in a row make a quotation. Default 8. */
   words?: number;
+  /**
+   * What to do with a text that has fewer words than its run length, which has no run to quote: `"error"` refuses it
+   * (the default), `"skip"` leaves it out, for a text that is often empty or short, such as a turn note.
+   */
+  short?: "error" | "skip";
+  /**
+   * Phrases the model is told to say word for word: their word runs are taken out of every protected text, ignoring
+   * case, punctuation and spacing, so that saying one is no leak and no run reaches across one.
+   */
+  allowed?: Iterable<string>;
 }
 
 interface Shingles {
@@ -47,16 +74,28 @@ function matchRuns(guard: LeakGuard, found: readonly string[], first: number): s
  * Markdown, and a reply leaks when any n consecutive words of it are one of them. `protected` maps a name to a text,
  * or to `[text, n]` to give that text its own n; the others use `words`. The default of 8 is long enough that an
  * ordinary reply does not repeat 8 words of a system prompt in a row, and short enough that a quoted sentence is
- * caught. A text with fewer than n words has no run to quote and is refused. A guard holds no state about a reply, so
- * one built for a system prompt can serve every request.
+ * caught. A text with fewer than n words has no run to quote: it is refused, or with `short: "skip"` left out, for a
+ * text that is often empty or short (a turn note). A guard holds no state about a reply, so one built for a system
+ * prompt can serve every request.
  */
 export class LeakGuard {
+  /** The names of the texts left out because `short` is `"skip"`, so a prompt that protects nothing can be noticed. */
+  readonly skipped: readonly string[];
+
   constructor(
     protectedTexts: Readonly<Record<string, Protected>> | ReadonlyMap<string, Protected>,
-    { words: defaultWords = 8 }: LeakGuardOptions = {},
+    { words: defaultWords = 8, short = "error", allowed = [] }: LeakGuardOptions = {},
   ) {
+    if (short !== "error" && short !== "skip") {
+      throw new RangeError(`short must be 'error' or 'skip', got ${JSON.stringify(short)}`);
+    }
     const entries = protectedTexts instanceof Map ? [...protectedTexts] : Object.entries(protectedTexts);
     const shingles: Shingles[] = [];
+    const skipped: string[] = [];
+    const said = [...allowed]
+      .map(words)
+      .filter((phrase) => phrase.length > 0)
+      .sort((a, b) => b.length - a.length);
     for (const [name, value] of entries) {
       const [text, n] = typeof value === "string" ? [value, defaultWords] : value;
       if (!(n >= 1)) {
@@ -64,6 +103,10 @@ export class LeakGuard {
       }
       const found = words(text);
       if (found.length < n) {
+        if (short === "skip") {
+          skipped.push(name);
+          continue;
+        }
         // Such a text has no run to quote, and the guard would let a reply repeat all of it.
         throw new RangeError(
           `${JSON.stringify(name)}: the text has ${found.length} word(s), fewer than the run length ${n}; ` +
@@ -71,9 +114,22 @@ export class LeakGuard {
         );
       }
       const runs = new Set<string>();
-      for (let i = 0; i <= found.length - n; i++) runs.add(run(found, i, n));
+      for (const part of withoutRuns(found, said)) {
+        for (let i = 0; i <= part.length - n; i++) runs.add(run(part, i, n));
+      }
+      if (runs.size === 0) {
+        if (short === "skip") {
+          skipped.push(name);
+          continue;
+        }
+        throw new RangeError(
+          `${JSON.stringify(name)}: no run of ${n} words is left once the allowed phrases are taken out of the text; ` +
+            "give it a shorter run, or leave it out",
+        );
+      }
       shingles.push({ name, n, runs });
     }
+    this.skipped = Object.freeze(skipped);
     INTERNALS.set(this, { shingles, longest: Math.max(0, ...shingles.map(({ n }) => n)) });
   }
 
@@ -127,7 +183,7 @@ export class LeakStream implements StreamGuard {
     return delta;
   }
 
-  finish(): string {
+  finish(_options?: FinishOptions): string {
     if (this.#blocked) throw this.#blocked;
     return "";
   }

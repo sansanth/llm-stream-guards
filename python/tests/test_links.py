@@ -132,3 +132,66 @@ def test_a_scheme_started_after_punctuation_is_held_too() -> None:
 
 def test_a_reply_cannot_forge_the_placeholder_of_a_held_code_span() -> None:
     assert strip_untrusted_links("`a` \ue0000\ue001 \ue0005\ue001", ALLOWED) == "`a` 0 5"
+
+
+def test_what_a_stream_took_out_is_listed_once_each_after_it_finishes() -> None:
+    stream = LinkStream({"acme.example"}, emails={"john@acme.example"}, phones={"14155550100"})
+    for piece in (
+        "See [a](https://evil.example/x) and https://EVIL.example/y and www.other.example, ",
+        "write to hello@fabrikam.example or John@acme.example or hello@fabrikam.example, ",
+        "call +44 7700 900123 or +1 415 555 0100 or +44 7700 900123, or [ok](https://acme.example/a).",
+    ):
+        stream.feed(piece)
+    stream.finish()
+    assert stream.removed_hosts == ("evil.example", "other.example")
+    assert stream.removed_emails == ("hello@fabrikam.example",)
+    assert stream.removed_phones == ("447700900123",)
+
+
+def test_a_stream_that_took_nothing_out_lists_nothing_and_one_without_emails_or_phones_never_lists_them() -> None:
+    stream = LinkStream({"acme.example"})
+    stream.feed("Read [it](https://acme.example/a), mail hello@fabrikam.example or call +44 7700 900123.")
+    stream.finish()
+    assert stream.removed_hosts == () and stream.removed_emails == () and stream.removed_phones == ()
+    quiet = LinkStream(set(), emails=set())
+    quiet.feed("[a](mailto:hello@fabrikam.example) and [b](javascript:alert) and `https://x.example`")
+    quiet.finish()
+    assert quiet.removed_emails == ("hello@fabrikam.example",) and quiet.removed_hosts == ("javascript:",)
+
+
+def test_the_removed_lists_follow_the_reply_as_it_grows_and_are_read_from_one_cleaning() -> None:
+    stream = LinkStream(set(), emails=set())
+    stream.feed("See https://one.example now. ")
+    assert stream.removed_hosts == ("one.example",) and stream.removed_emails == ()
+    first = stream._removed_lists
+    assert stream.removed_hosts == ("one.example",) and stream._removed_lists is first
+    stream.feed("Then https://two.example or hello@fabrikam.example. ")
+    stream.finish()
+    assert stream.removed_hosts == ("one.example", "two.example")
+    assert stream.removed_emails == ("hello@fabrikam.example",)
+
+
+def test_a_link_with_no_usable_host_is_listed_by_its_scheme() -> None:
+    stream = LinkStream({"acme.example"})
+    stream.feed("[a](javascript:alert) [b](DATA:text/html,x) [c](http://[bad) and [d](https://evil.example/x)")
+    stream.finish()
+    assert stream.removed_hosts == ("javascript:", "data:", "http:", "evil.example")
+
+
+def test_the_finished_reply_is_cleaned_once_and_its_removals_are_kept(monkeypatch: pytest.MonkeyPatch) -> None:
+    stream = LinkStream(set())
+    stream.feed("See https://one.example now. " * 30)
+    stream.finish()
+    cleanings = []
+    original = stream._clean
+    monkeypatch.setattr(stream, "_clean", lambda *args: cleanings.append(1) or original(*args))
+    assert stream.removed_hosts == ("one.example",)
+    assert stream.removed_emails == () and stream.removed_phones == ()
+    assert cleanings == []
+
+
+def test_a_link_with_neither_host_nor_scheme_is_listed_as_no_host() -> None:
+    stream = LinkStream({"acme.example"})
+    stream.feed("[a](//) now.")
+    stream.finish()
+    assert stream.removed_hosts == ("(no host)",)

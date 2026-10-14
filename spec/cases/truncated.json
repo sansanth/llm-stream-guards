@@ -1,0 +1,493 @@
+[
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "xminds.com"
+        ]
+      }
+    },
+    "deltas": [
+      "See https://xminds.com/serv"
+    ],
+    "truncated": true,
+    "shown": [
+      "See",
+      ""
+    ],
+    "text": "See",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "xminds.com"
+        ]
+      }
+    },
+    "deltas": [
+      "See https://xminds.com/serv"
+    ],
+    "shown": [
+      "See",
+      " https://xminds.com/serv"
+    ],
+    "text": "See https://xminds.com/serv",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": []
+      }
+    },
+    "deltas": [
+      "Go to ht"
+    ],
+    "truncated": true,
+    "shown": [
+      "Go to ",
+      ""
+    ],
+    "text": "Go to ",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "acme.example"
+        ]
+      }
+    },
+    "deltas": [
+      "Read [the case](https://acme.example/a",
+      ") and [more](https://acme.exam"
+    ],
+    "truncated": true,
+    "shown": [
+      "Read ",
+      "[the case](https://acme.example/a) and ",
+      ""
+    ],
+    "text": "Read [the case](https://acme.example/a) and ",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": [
+          "a@acme.example"
+        ]
+      }
+    },
+    "deltas": [
+      "Write to hello@fabrikam",
+      ".example or john@acme"
+    ],
+    "truncated": true,
+    "shown": [
+      "Write to ",
+      "[removed] or ",
+      ""
+    ],
+    "text": "Write to [removed] or ",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [
+        "hello@fabrikam.example"
+      ],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": []
+      }
+    },
+    "deltas": [
+      "Call +44 7700 9"
+    ],
+    "truncated": true,
+    "shown": [
+      "Call ",
+      ""
+    ],
+    "text": "Call ",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": []
+      }
+    },
+    "deltas": [
+      "Call +44 7700 9"
+    ],
+    "shown": [
+      "Call ",
+      "+44 7700 9"
+    ],
+    "text": "Call +44 7700 9",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "They saved $5"
+    ],
+    "truncated": true,
+    "shown": [
+      "They saved ",
+      ""
+    ],
+    "text": "They saved ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "They saved $5"
+    ],
+    "shown": [
+      "They saved "
+    ],
+    "text": "They saved ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$5"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "It serves 60k"
+    ],
+    "truncated": true,
+    "shown": [
+      "It serves ",
+      ""
+    ],
+    "text": "It serves ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "It serves 60k users. Your 401k"
+    ],
+    "truncated": true,
+    "shown": [
+      "It serves ",
+      ""
+    ],
+    "text": "It serves ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Plain text with ``"
+    ],
+    "truncated": true,
+    "shown": [
+      "Plain text with ",
+      ""
+    ],
+    "text": "Plain text with ",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Plain text with ``"
+    ],
+    "shown": [
+      "Plain text with ",
+      "``"
+    ],
+    "text": "Plain text with ``",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Sure:\n~~"
+    ],
+    "truncated": true,
+    "shown": [
+      "Sure:\n",
+      ""
+    ],
+    "text": "Sure:\n",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "Fence ```py",
+      "thon"
+    ],
+    "truncated": true,
+    "shown": [],
+    "text": "",
+    "blocked": {
+      "reason": "code",
+      "found": [
+        "```"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "p": "one two three four five six"
+        },
+        "words": 4
+      }
+    },
+    "deltas": [
+      "one two"
+    ],
+    "truncated": true,
+    "shown": [
+      "one two",
+      ""
+    ],
+    "text": "one two",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "chain": [
+        {
+          "link": {
+            "allowed_hosts": [
+              "xminds.com"
+            ]
+          }
+        },
+        {
+          "amount": {
+            "grounded": []
+          }
+        }
+      ]
+    },
+    "deltas": [
+      "See https://xminds.com/serv"
+    ],
+    "truncated": true,
+    "shown": [
+      "See",
+      ""
+    ],
+    "text": "See",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "chain": [
+        {
+          "citation": {
+            "count": 3
+          }
+        },
+        {
+          "link": {
+            "allowed_hosts": []
+          }
+        }
+      ]
+    },
+    "deltas": [
+      "See [1"
+    ],
+    "truncated": true,
+    "shown": [
+      "See",
+      ""
+    ],
+    "text": "See",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "check": {
+        "found": "BAD"
+      }
+    },
+    "deltas": [
+      "fine so far"
+    ],
+    "truncated": true,
+    "shown": [
+      "fine so far",
+      ""
+    ],
+    "text": "fine so far",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": []
+      }
+    },
+    "deltas": [
+      "hello world"
+    ],
+    "truncated": true,
+    "shown": [
+      "hello ",
+      ""
+    ],
+    "text": "hello ",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": []
+      }
+    },
+    "deltas": [
+      "hello world "
+    ],
+    "truncated": true,
+    "shown": [
+      "hello world ",
+      ""
+    ],
+    "text": "hello world ",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": []
+      }
+    },
+    "deltas": [
+      "Call +44 7700 900123"
+    ],
+    "truncated": true,
+    "shown": [
+      "Call ",
+      ""
+    ],
+    "text": "Call ",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": []
+      }
+    },
+    "deltas": [
+      "Call +44 7700 900123 now"
+    ],
+    "truncated": true,
+    "shown": [
+      "Call [removed] now",
+      ""
+    ],
+    "text": "Call [removed] now",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": [
+        "447700900123"
+      ]
+    }
+  }
+]

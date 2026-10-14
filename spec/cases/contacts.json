@@ -371,7 +371,14 @@
       "now."
     ],
     "text": "Write to our team or john@acme.example now.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [
+        "hello@fabrikam.example"
+      ],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -392,7 +399,14 @@
       "now."
     ],
     "text": "Write to [removed] now.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [
+        "hello@fabrikam.example"
+      ],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -408,7 +422,12 @@
       ""
     ],
     "text": "Write to hel",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -425,7 +444,12 @@
       ""
     ],
     "text": "See xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -444,7 +468,12 @@
       "now."
     ],
     "text": "Write to hello\n@fabrikam.example now.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -469,7 +498,14 @@
       ""
     ],
     "text": "Call [removed] or +1 415 555 0100 now.",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": [
+        "447700900123"
+      ]
+    }
   },
   {
     "stream": {
@@ -485,7 +521,12 @@
       ""
     ],
     "text": "Call +44 7",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
   },
   {
     "stream": {
@@ -506,7 +547,15 @@
       "[removed]."
     ],
     "text": "Call [removed] or [removed].",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": [
+        "447700900123",
+        "4155550130"
+      ]
+    }
   },
   {
     "call": "without_ungrounded_phones",
@@ -554,7 +603,14 @@
       ""
     ],
     "text": "Call [removed]\nthen 1\n2\n3\n4\n5\n6\n7\n8\n9\n",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": [
+        "447700900123"
+      ]
+    }
   },
   {
     "stream": {
@@ -577,7 +633,14 @@
       "ok"
     ],
     "text": "Hello there\nand [removed]\nok",
-    "blocked": null
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [
+        "john@acme.example"
+      ],
+      "phones": []
+    }
   },
   {
     "call": "without_ungrounded_phones",
