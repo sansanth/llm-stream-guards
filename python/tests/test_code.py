@@ -169,3 +169,25 @@ def test_without_deliverable_only_a_fence_blocks() -> None:
     assert blocked is None
     _, _, blocked = run(["x ```"], deliverable=False)
     assert blocked is not None
+
+
+@pytest.mark.parametrize(
+    ("text", "is_code"),
+    [
+        ("**Class schedule:** Mondays and Thursdays.", False),
+        ("Class schedule: Mondays.", False),
+        ("Our class: beginners welcome.", False),
+        ("class schedule: Mondays.", False),
+        ("Class Booking:\n    pass", False),
+        ("class Booking(Base): # note", False),
+        ("class Booking:\n    pass", True),
+        ("class Booking(Base):\n    def save(self): ...", True),
+        ("    class Booking:\n        pass", True),
+        ("class Booking: pass", True),
+        ('class Booking:\n    """Docstring."""', True),
+        ("public class Booking {", True),
+        ("Public Class Booking {", True),
+    ],
+)
+def test_a_class_label_in_prose_is_text_and_a_class_is_code(text: str, is_code: bool) -> None:
+    assert contains_code_deliverable(text) is is_code

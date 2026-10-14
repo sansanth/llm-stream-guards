@@ -721,5 +721,211 @@
         "```"
       ]
     }
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "**Class schedule:** Mondays and Thursdays."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Class schedule: Mondays."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Our class: beginners welcome."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking:\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking(Base):\n    def save(self): ..."
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "public class Booking {"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "In Python, a class Booking: is a type."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule: Mondays."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Class Booking:\n    pass"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking: pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking():\n    ..."
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking:\n    \"\"\"Docstring.\"\"\""
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "    class Booking:\n        pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Public Class Booking {"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking: \"\"\"x\"\"\""
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Take class\nschedule: Mondays"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking(Base): # note"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "Intro.\nclass Booking:\n"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "The class Booking { is Java"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "We offer a class named Yoga: it runs Mondays."
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "- Class: Beginners\n- Class: Advanced"
+    ],
+    "returns": false
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "**Class sched",
+      "ule:** Mondays",
+      " and Thursdays."
+    ],
+    "shown": [
+      "**Class sched",
+      "ule:** Mondays",
+      " and Thursdays.",
+      ""
+    ],
+    "text": "**Class schedule:** Mondays and Thursdays.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "code": {}
+    },
+    "deltas": [
+      "class Booking",
+      ":\n    pa",
+      "ss\n"
+    ],
+    "shown": [
+      "class Booking",
+      ":\n    pa",
+      "ss\n"
+    ],
+    "text": "class Booking:\n    pass\n",
+    "blocked": {
+      "reason": "code",
+      "found": []
+    }
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking:\r\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class\nschedule:\nMondays"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Point(namedtuple(\"Point\", \"x y\")):\n    pass"
+    ],
+    "returns": true
   }
 ]

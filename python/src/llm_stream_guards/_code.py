@@ -12,8 +12,14 @@ _SIGNATURE = re.compile(
     # "import os" and "function go() {" are code.
     r"\bpublic\s+(?:static\s+)?(?:void|class)\b|\bdef\s+\w+\s*\(|\bfunction\s+\w*\s*\([^)\n]*\)\s*(?:\{|:|=>)|"
     r"^[^\S\n]*import\s+[\w.]+(?:\s+as\s+\w+)?\s*(?:;|$)|^[^\S\n]*import\s+[\w{},*\s]+\s+from\s+['\"]|^[^\S\n]*#include\s*[<\"]|"
-    r"^[^\S\n]*from\s+[\w.]+\s+import\b|\bclass\s+\w+\s*[{:]|\bfn\s+\w+\s*\(|\bfunc\s+\w+\s*\(|<\w+\s+on\w+=",
+    r"^[^\S\n]*from\s+[\w.]+\s+import\b|\bclass\s+\w+\s*\{|\bfn\s+\w+\s*\(|\bfunc\s+\w+\s*\(|<\w+\s+on\w+=",
     re.IGNORECASE | re.MULTILINE,
+)
+# A Python class counts only as Python writes one: "class" in lower case opening its line, an optional base list, then a
+# colon with nothing after it but the end of the line, `pass`, `def`, `...` or a docstring. "Class schedule: Mondays."
+# is prose.
+_PYTHON_CLASS = re.compile(
+    r"^[ \t]*class[ \t]+\w+[ \t]*(?:\([^\n]*\))?[ \t]*:[ \t]*\r?(?:$|pass\b|def\b|\.\.\.|[\"']{3})", re.MULTILINE
 )
 # The SQL forms need statement structure after the keyword (a column list, a table name plus SET or VALUES), so
 # advice like "select the vendor from the shortlist" does not match.
@@ -45,7 +51,7 @@ _INDENTED = re.compile(
 
 def contains_code_deliverable(text: str) -> bool:
     """Whether `text` hands over code rather than talking about it. Biased towards false positives."""
-    return bool(_FENCE.search(text) or _SIGNATURE.search(text) or _STATEMENT.search(text) or _INDENTED.search(text))
+    return any(pattern.search(text) for pattern in (_FENCE, _SIGNATURE, _PYTHON_CLASS, _STATEMENT, _INDENTED))
 
 
 def _opens_line(buf: str, i: int, before: str) -> bool:

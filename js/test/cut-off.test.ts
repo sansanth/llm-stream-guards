@@ -4,6 +4,7 @@ import {
   Chain,
   CitationStream,
   CodeStream,
+  containsCodeDeliverable,
   guardTransform,
   isGrounded,
   LeakGuard,
@@ -167,5 +168,22 @@ describe("review fixes, third round", () => {
     const grounded = new Set(["2000", "2k"]);
     expect(isGrounded("2", grounded, { magnitude: "k" })).toBe(true);
     expect(isGrounded("2", grounded)).toBe(false);
+  });
+});
+
+describe("a class label in prose", () => {
+  test.each([
+    ["**Class schedule:** Mondays and Thursdays.", false],
+    ["Class schedule: Mondays.", false],
+    ["Our class: beginners welcome.", false],
+    ["class schedule: Mondays.", false],
+    ["Class Booking:\n    pass", false],
+    ["class Booking:\n    pass", true],
+    ["class Booking(Base):\n    def save(self): ...", true],
+    ["    class Booking:\n        pass", true],
+    ["public class Booking {", true],
+    ["Public Class Booking {", true],
+  ])("%j is code: %s", (text, isCode) => {
+    expect(containsCodeDeliverable(text)).toBe(isCode);
   });
 });
