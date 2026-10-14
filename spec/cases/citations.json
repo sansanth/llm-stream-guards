@@ -1,0 +1,985 @@
+[
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "as shown [1]."
+    ],
+    "shown": [
+      "as shown.",
+      ""
+    ],
+    "text": "as shown.",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "as shown [",
+      "1] and [2, 3",
+      "]. See [4]",
+      " and [1"
+    ],
+    "shown": [
+      "as shown",
+      " and",
+      ". See",
+      " and",
+      " [1"
+    ],
+    "text": "as shown and. See and [1",
+    "blocked": null,
+    "cited": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "as shown [",
+      "1] and [2, 3",
+      "]. See [4]",
+      " and [1"
+    ],
+    "truncated": true,
+    "shown": [
+      "as shown",
+      " and",
+      ". See",
+      " and",
+      ""
+    ],
+    "text": "as shown and. See and",
+    "blocked": null,
+    "cited": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a [1",
+      "], b [x] c  [2",
+      "] d ["
+    ],
+    "shown": [
+      "a",
+      ", b [x] c",
+      " d",
+      " ["
+    ],
+    "text": "a, b [x] c d [",
+    "blocked": null,
+    "cited": [
+      1,
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a [1",
+      "], b [x] c  [2",
+      "] d ["
+    ],
+    "truncated": true,
+    "shown": [
+      "a",
+      ", b [x] c",
+      " d",
+      ""
+    ],
+    "text": "a, b [x] c d",
+    "blocked": null,
+    "cited": [
+      1,
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "Year [2024], list [123], [a], [ 1 ], [1,2,3], [1 , 2], [01], [100]."
+    ],
+    "shown": [
+      "Year [2024], list [123], [a], [ 1 ],,,, [100].",
+      ""
+    ],
+    "text": "Year [2024], list [123], [a], [ 1 ],,,, [100].",
+    "blocked": null,
+    "cited": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "x  \t[1][2]\t [3]. y [1], [3]"
+    ],
+    "shown": [
+      "x. y,",
+      ""
+    ],
+    "text": "x. y,",
+    "blocked": null,
+    "cited": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a ",
+      "[1",
+      ",",
+      " 3",
+      "] b [2, ",
+      "9] c"
+    ],
+    "shown": [
+      "a",
+      "",
+      "",
+      "",
+      " b",
+      " c",
+      ""
+    ],
+    "text": "a b c",
+    "blocked": null,
+    "cited": [
+      1,
+      3,
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 0
+      }
+    },
+    "deltas": [
+      "Nothing to cite [1] here [2, 3]."
+    ],
+    "shown": [
+      "Nothing to cite here.",
+      ""
+    ],
+    "text": "Nothing to cite here.",
+    "blocked": null,
+    "cited": []
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "[1] opens the reply, and [2]"
+    ],
+    "shown": [
+      "opens the reply, and",
+      ""
+    ],
+    "text": "opens the reply, and",
+    "blocked": null,
+    "cited": [
+      1,
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "Spaces  ",
+      "  ",
+      "  [1]  . then  ",
+      "text  "
+    ],
+    "shown": [
+      "Spaces",
+      "",
+      "  . then",
+      "  text",
+      "  "
+    ],
+    "text": "Spaces  . then  text  ",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "chain": [
+        {
+          "citation": {
+            "count": 3
+          }
+        },
+        {
+          "link": {
+            "allowed_hosts": [
+              "acme.example"
+            ]
+          }
+        }
+      ]
+    },
+    "deltas": [
+      "Read [1] and [port",
+      "al](https://evil.example/x), see [2](https://acme.example/a)."
+    ],
+    "shown": [
+      "Read and ",
+      "portal, see [2](https://acme.example/a).",
+      ""
+    ],
+    "text": "Read and portal, see [2](https://acme.example/a).",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "chain": [
+        {
+          "citation": {
+            "count": 3
+          }
+        },
+        {
+          "link": {
+            "allowed_hosts": []
+          }
+        }
+      ]
+    },
+    "deltas": [
+      "See [1] https://evil",
+      ".example [2"
+    ],
+    "truncated": true,
+    "shown": [
+      "See",
+      "",
+      ""
+    ],
+    "text": "See",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "日本語 [1]。続き [2]、終わり"
+    ],
+    "shown": [
+      "日本語。続き、終わり",
+      ""
+    ],
+    "text": "日本語。続き、終わり",
+    "blocked": null,
+    "cited": [
+      1,
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "see [2](https://a.example/x) and [1]."
+    ],
+    "shown": [
+      "see [2](https://a.example/x) and.",
+      ""
+    ],
+    "text": "see [2](https://a.example/x) and.",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "see [2",
+      "](https://a.example/x) and [1",
+      "]"
+    ],
+    "shown": [
+      "see",
+      " [2](https://a.example/x) and",
+      "",
+      ""
+    ],
+    "text": "see [2](https://a.example/x) and",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "see [2] (https://a.example/x) and [1",
+      "] (x)"
+    ],
+    "shown": [
+      "see (https://a.example/x) and",
+      " (x)",
+      ""
+    ],
+    "text": "see (https://a.example/x) and (x)",
+    "blocked": null,
+    "cited": [
+      2,
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "[1] opens, and [2](x)"
+    ],
+    "shown": [
+      "opens, and [2](x)",
+      ""
+    ],
+    "text": "opens, and [2](x)",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "  [1]   [2]  text"
+    ],
+    "shown": [
+      "text",
+      ""
+    ],
+    "text": "text",
+    "blocked": null,
+    "cited": [
+      1,
+      2
+    ]
+  },
+  {
+    "stream": {
+      "chain": [
+        {
+          "citation": {
+            "count": 3
+          }
+        },
+        {
+          "link": {
+            "allowed_hosts": [
+              "acme.example"
+            ]
+          }
+        }
+      ]
+    },
+    "deltas": [
+      "Read [1](https://acme.example/a) and [2](https://evil.example/b)."
+    ],
+    "shown": [
+      "Read [1](https://acme.example/a) and 2.",
+      ""
+    ],
+    "text": "Read [1](https://acme.example/a) and 2.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "See the case study [1]and the pricing."
+    ],
+    "shown": [
+      "See the case study and the pricing.",
+      ""
+    ],
+    "text": "See the case study and the pricing.",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "Done! [1, 3][2]We start Monday."
+    ],
+    "shown": [
+      "Done! We start Monday.",
+      ""
+    ],
+    "text": "Done! We start Monday.",
+    "blocked": null,
+    "cited": [
+      1,
+      3,
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "As shown [1], it works."
+    ],
+    "shown": [
+      "As shown, it works.",
+      ""
+    ],
+    "text": "As shown, it works.",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "Done [1]."
+    ],
+    "shown": [
+      "Done.",
+      ""
+    ],
+    "text": "Done.",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "See [",
+      "1]and",
+      " more"
+    ],
+    "shown": [
+      "See",
+      " and",
+      " more",
+      ""
+    ],
+    "text": "See and more",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "study[1]and"
+    ],
+    "shown": [
+      "study and",
+      ""
+    ],
+    "text": "study and",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "[1]Hello"
+    ],
+    "shown": [
+      "Hello",
+      ""
+    ],
+    "text": "Hello",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a\n[1]b"
+    ],
+    "shown": [
+      "a\nb",
+      ""
+    ],
+    "text": "a\nb",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a [1]\nb"
+    ],
+    "shown": [
+      "a\nb",
+      ""
+    ],
+    "text": "a\nb",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "日本語 [1]続き"
+    ],
+    "shown": [
+      "日本語 続き",
+      ""
+    ],
+    "text": "日本語 続き",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "x [1]2 and [2]_y"
+    ],
+    "shown": [
+      "x 2 and _y",
+      ""
+    ],
+    "text": "x 2 and _y",
+    "blocked": null,
+    "cited": [
+      1,
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "ends [1]"
+    ],
+    "shown": [
+      "ends",
+      ""
+    ],
+    "text": "ends",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a [1][2][3]b"
+    ],
+    "shown": [
+      "a b",
+      ""
+    ],
+    "text": "a b",
+    "blocked": null,
+    "cited": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a [1]",
+      "b and [2] ",
+      "c [3",
+      "]d"
+    ],
+    "shown": [
+      "a",
+      " b and",
+      " c",
+      " d",
+      ""
+    ],
+    "text": "a b and c d",
+    "blocked": null,
+    "cited": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a [1]",
+      "-b and [2] c"
+    ],
+    "shown": [
+      "a",
+      "-b and c",
+      ""
+    ],
+    "text": "a-b and c",
+    "blocked": null,
+    "cited": [
+      1,
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a [9]b and [1](x) c"
+    ],
+    "shown": [
+      "a b and [1](x) c",
+      ""
+    ],
+    "text": "a b and [1](x) c",
+    "blocked": null,
+    "cited": []
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 3
+      }
+    },
+    "deltas": [
+      "a [1]and [2"
+    ],
+    "truncated": true,
+    "shown": [
+      "a and",
+      ""
+    ],
+    "text": "a and",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 5
+      }
+    },
+    "deltas": [
+      "Use `items[0]` and nums[1] here"
+    ],
+    "shown": [
+      "Use `items[0]` and nums here",
+      ""
+    ],
+    "text": "Use `items[0]` and nums here",
+    "blocked": null,
+    "cited": [
+      1
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 5
+      }
+    },
+    "deltas": [
+      "Use `ite",
+      "ms[0]` and [2] here"
+    ],
+    "shown": [
+      "Use `ite",
+      "ms[0]` and here",
+      ""
+    ],
+    "text": "Use `items[0]` and here",
+    "blocked": null,
+    "cited": [
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 5
+      }
+    },
+    "deltas": [
+      "``a[1]`` b [2]"
+    ],
+    "shown": [
+      "``a[1]`` b",
+      ""
+    ],
+    "text": "``a[1]`` b",
+    "blocked": null,
+    "cited": [
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 5
+      }
+    },
+    "deltas": [
+      "`a[1]\nb [2]"
+    ],
+    "shown": [
+      "`a[1]\nb",
+      ""
+    ],
+    "text": "`a[1]\nb",
+    "blocked": null,
+    "cited": [
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 5
+      }
+    },
+    "deltas": [
+      "`x` [1] and ``y[2]`` [3]"
+    ],
+    "shown": [
+      "`x` and ``y[2]``",
+      ""
+    ],
+    "text": "`x` and ``y[2]``",
+    "blocked": null,
+    "cited": [
+      1,
+      3
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 5
+      }
+    },
+    "deltas": [
+      "unclosed ` and [1] stays?"
+    ],
+    "shown": [
+      "unclosed ` and [1] stays?",
+      ""
+    ],
+    "text": "unclosed ` and [1] stays?",
+    "blocked": null,
+    "cited": []
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 5
+      }
+    },
+    "deltas": [
+      "a `b`` [1]"
+    ],
+    "shown": [
+      "a `b`` [1]",
+      ""
+    ],
+    "text": "a `b`` [1]",
+    "blocked": null,
+    "cited": []
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 5
+      }
+    },
+    "deltas": [
+      "a ``",
+      "`b[1]`",
+      "`` [2]"
+    ],
+    "shown": [
+      "a ``",
+      "`b[1]`",
+      "``",
+      ""
+    ],
+    "text": "a ```b[1]```",
+    "blocked": null,
+    "cited": [
+      2
+    ]
+  },
+  {
+    "stream": {
+      "citation": {
+        "count": 5
+      }
+    },
+    "deltas": [
+      "code `a[1",
+      "]` end [2]"
+    ],
+    "shown": [
+      "code `a[1",
+      "]` end",
+      ""
+    ],
+    "text": "code `a[1]` end",
+    "blocked": null,
+    "cited": [
+      2
+    ]
+  }
+]

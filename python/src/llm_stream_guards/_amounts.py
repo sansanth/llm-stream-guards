@@ -2,7 +2,7 @@ import re
 from collections.abc import Collection, Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 
-from ._stream import Blocked, next_anchor
+from ._check import CheckStream
 
 # 1,200 or 1200.50 or 50 000 (a space or a no-break space between thousands). A number does not start after a digit, or
 # after a digit and a comma: that is the middle of one, which would only be matched again, and failed again, from every
@@ -13,6 +13,8 @@ _DIGITS = r"((?<!\d)(?<!\d,)\d+(?:,\d+)*,*(?:\.\d+)?)"
 _COST_WORD_WINDOW = 120
 # What an empty list of words compiles to, so that it matches nothing rather than everything.
 _NEVER = "(?!)"
+# How far before a name to look for the currency it may follow: a symbol, a code and the white space between.
+_LEAD_CHARS = 32
 # What may be the start of a magnitude: letters only, as `_TRAILING_NUMBER` holds them.
 _WORD_ONLY = re.compile(r"[^\W\d_]+")
 
@@ -36,6 +38,9 @@ class Locale:
     - `effort`: a regex fragment after an amount that makes it effort in person-time: `300 engineering hours`.
     - `rate`: a regex fragment after a number that makes it a rate: `120 per hour`, `120 an hour`.
     - `range_words`: words that join the two ends of a range, besides a hyphen or a dash: `$40 to $65`.
+    - `not_figures`: regex fragments for text that is never a figure: a retirement plan's name (`your 401k provider`)
+      is not a price. A match counts only when no currency symbol, code or prefix, digit, comma or point comes right
+      before it: `$401k` and `$1,457` are figures.
 
     Change one with `dataclasses.replace`: `replace(ENGLISH, currency_codes=(*ENGLISH.currency_codes, "nok"))`.
     Numbers are read with `.` as the decimal point and `,` or a space between thousands, whatever the locale.
@@ -65,6 +70,7 @@ class Locale:
     effort: str = r"(?:person|man|developer|dev|engineer|engineering)[-\s](?:hours?|days?|weeks?|months?)\b"
     rate: str = r"\s*(?:per|/)\s*(?:hour|hr|day)\b|\s+an?\s+hour\b"
     range_words: tuple[str, ...] = ("to", "and")
+    not_figures: tuple[str, ...] = (r"\b(?:401\s*\(?k\)?|403\s*\(?b\)?|457(?:\s*\(?b\)?|\s+plan\b))(?!\w)",)
 
     _scale: dict[str, int] = field(init=False, repr=False)
     _number: re.Pattern[str] = field(init=False, repr=False)
@@ -75,6 +81,9 @@ class Locale:
     _rate: re.Pattern[str] = field(init=False, repr=False)
     _cost_word: re.Pattern[str] = field(init=False, repr=False)
     _trailing_symbol: re.Pattern[str] = field(init=False, repr=False)
+    _not_figure: re.Pattern[str] = field(init=False, repr=False)
+    _figure_before: re.Pattern[str] = field(init=False, repr=False)
+    _figure_after: re.Pattern[str] = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         scale = {word.lower(): value for word, value in self.magnitudes.items()}
@@ -109,12 +118,46 @@ class Locale:
             "_rate": re.compile(r"\b" + _DIGITS + f"(?:{rate})", re.IGNORECASE),
             "_cost_word": re.compile(r"\b(?:" + cost_words + r")\b", re.IGNORECASE),
             "_trailing_symbol": re.compile(symbol + r"\s*\Z"),
+            "_not_figure": re.compile(_either(f"(?:{fragment})" for fragment in self.not_figures), re.IGNORECASE),
+            # What leads into a name and makes it part of a figure: a currency, a digit, comma or point, or the
+            # thousands of a priced number before it ("$1 " of "$1 457 plan").
+            "_figure_before": re.compile(
+                f"(?:{symbol}|(?<![A-Za-z])(?:{before}))\\s*\\Z|[\\d,.]\\Z"
+                f"|(?:{symbol}|(?<![A-Za-z])(?:{before}))\\s*\\d{{1,3}}(?:[^\\S\\r\\n]\\d{{3}})*[^\\S\\r\\n]\\Z",
+                re.IGNORECASE,
+            ),
+            # What follows a name and makes it part of a figure: a currency ("401k dollars") or a range with a
+            # magnitude.
+            "_figure_after": re.compile(
+                f"\\s*(?:{symbol}|(?:{after})\\b|(?:{joiner})\\s*(?:{symbol})?\\s*\\d[\\d,.]*\\s*(?:{words})\\b)",
+                re.IGNORECASE,
+            ),
         }
         for name, value in compiled.items():
             object.__setattr__(self, name, value)
 
 
 ENGLISH = Locale()
+
+
+def _is_name_only(match: re.Match[str], text: str, locale: Locale) -> bool:
+    """Whether a name that is never a figure stays one here: no currency, digit or range makes it part of a figure."""
+    lead = text[max(0, match.start() - _LEAD_CHARS) : match.start()]
+    follow = text[match.end() : match.end() + _LEAD_CHARS]
+    return not (locale._figure_before.search(lead) or locale._figure_after.match(follow))
+
+
+def _without_not_figures(text: str, locale: Locale) -> str:
+    """
+    `text` with what is never a figure blanked to spaces of the same length, so offsets into it still hold. Not a name
+    that a currency, a digit or a range makes part of a figure: `$401k` and `401k dollars` are prices, and the "457" of
+    `$1,457` is part of one.
+    """
+
+    def blank(match: re.Match[str]) -> str:
+        return " " * len(match.group(0)) if _is_name_only(match, text, locale) else match.group(0)
+
+    return locale._not_figure.sub(blank, text)
 
 
 def _unit(magnitude: str, scale: Mapping[str, int]) -> str:
@@ -144,6 +187,21 @@ def _amount_keys(number: str, magnitude: str | None, scale: Mapping[str, int]) -
     if value.is_integer():
         keys.add(str(int(value)))
     return keys
+
+
+def is_grounded(
+    number: str, grounded: Collection[str], *, magnitude: str | None = None, locale: Locale = ENGLISH
+) -> bool:
+    """
+    Whether `grounded` (see `numbers_in`) states the figure `number`, as the amount guard compares one. `number` is the
+    digits as written ("2,000", "1200.50", "50 000") and `magnitude` the word after them ("k", "million"), if any, in
+    the locale's own words. A source's "2k", "2,000" and "2000" each ground a reply's "2k", "2,000" and "2000", and
+    "12.50" and "12.5" ground each other, but a bare "2" grounds only a "2". Use it for a figure of your own that has to
+    match the same sources the prices do, so that you do not copy the key format.
+    """
+    if magnitude and _unit(magnitude, locale._scale) not in locale._scale:
+        raise ValueError(f"{magnitude!r} is not a magnitude of this locale")
+    return not _amount_keys(number, magnitude or None, locale._scale).isdisjoint(grounded)
 
 
 def _range_key(ends: tuple[str, str | None, str, str | None], scale: Mapping[str, int]) -> str:
@@ -211,6 +269,11 @@ def unsupported_amounts(
     With `complete=False`, for text still streaming, a figure that ends the text is not judged yet: it may still
     grow ("$5" before "00 a month").
     """
+    return _unsupported(_without_not_figures(text, locale), grounded, complete=complete, locale=locale)
+
+
+def _unsupported(text: str, grounded: Collection[str], *, complete: bool, locale: Locale) -> list[str]:
+    """`unsupported_amounts` on text whose names that are never figures are already blanked."""
     found: list[str] = []
 
     def settled(match: re.Match[str]) -> bool:
@@ -258,7 +321,24 @@ def unsupported_amounts(
 _TRAILING_NUMBER = re.compile(r"(?<!\d)(?<!\d,)\b\d+(?:,\d+)*,*(?:\.\d*)?\s*([^\W\d_]*)\Z")
 
 
-def _hold_start(text: str, grounded: Collection[str], locale: Locale) -> int | None:
+def _hold_start(text: str, grounded: Collection[str], locale: Locale, blanked: str | None = None) -> int | None:
+    """
+    Where a streaming text must stop being shown for now, or None. A name that is never a figure is held too until
+    enough text follows it to say whether a currency or a range makes it one ("401k" before " dollars"). `blanked` is
+    `text` with those names blanked, when it is already at hand.
+    """
+    blanked = _without_not_figures(text, locale) if blanked is None else blanked
+    starts = [
+        match.start()
+        for match in locale._not_figure.finditer(text)
+        if len(text) < match.end() + _LEAD_CHARS and _is_name_only(match, text, locale)
+    ]
+    if (held := _hold_figures(blanked, grounded, locale)) is not None:
+        starts.append(held)
+    return min(starts, default=None)
+
+
+def _hold_figures(text: str, grounded: Collection[str], locale: Locale) -> int | None:
     """
     Where a streaming text must stop being shown for now, or None.
 
@@ -293,7 +373,17 @@ def _hold_start(text: str, grounded: Collection[str], locale: Locale) -> int | N
     return None
 
 
-class AmountStream:
+def amount_hold_start(text: str, grounded: Collection[str], *, locale: Locale = ENGLISH) -> int | None:
+    """
+    Where a streaming `text` must stop being shown for now, or None: the offset of a figure or a currency symbol that
+    ends the text (its digits may still be arriving: "$5" then "00"), of a bare magnitude or a rate no source states
+    whose cost-word window has not streamed yet, or of a number at the end that may still become a magnitude. Pass it as
+    the `hold` of a `CheckStream` that judges figures.
+    """
+    return _hold_start(text, grounded, locale)
+
+
+class AmountStream(CheckStream):
     """
     Blocks a reply as soon as it states a money or person-time figure that `grounded` (see `numbers_in`) does
     not, before the piece completing it is shown. A figure that may still grow is held, sourced or not, until a
@@ -305,40 +395,16 @@ class AmountStream:
     """
 
     def __init__(self, grounded: Collection[str], *, locale: Locale = ENGLISH):
-        self._grounded = grounded
-        self._locale = locale
-        self._text = ""
-        self._anchor = 0
-        self._released = 0
-        self._blocked: Blocked | None = None
+        # A piece is judged and then held with the same text, so it is blanked once, and only the last is remembered.
+        last = ["", ""]
 
-    @property
-    def text(self) -> str:
-        return self._text[: self._released]
+        def blanked(text: str) -> str:
+            if last[0] != text:
+                last[:] = [text, _without_not_figures(text, locale)]
+            return last[1]
 
-    def feed(self, delta: str) -> str:
-        self._check(delta, complete=False)
-        held = _hold_start(self._text[self._anchor :], self._grounded, self._locale)
-        upto = len(self._text) if held is None else max(self._anchor + held, self._released)
-        released = self._release(upto)
-        # Never past what is still held: the hold has to see all of it.
-        self._anchor = next_anchor(self._text, self._anchor, len(self._text), self._released)
-        return released
-
-    def finish(self) -> str:
-        self._check("", complete=True)
-        return self._release(len(self._text))
-
-    def _check(self, delta: str, *, complete: bool) -> None:
-        if self._blocked:
-            raise self._blocked
-        self._text += delta
-        text = self._text if complete else self._text[self._anchor :]
-        if found := unsupported_amounts(text, self._grounded, complete=complete, locale=self._locale):
-            self._blocked = Blocked("amount", tuple(found))
-            raise self._blocked
-
-    def _release(self, upto: int) -> str:
-        released = self._text[self._released : upto]
-        self._released = upto
-        return released
+        super().__init__(
+            lambda text, complete: _unsupported(blanked(text), grounded, complete=complete, locale=locale),
+            reason="amount",
+            hold=lambda text: _hold_start(text, grounded, locale, blanked(text)),
+        )

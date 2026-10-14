@@ -1,5 +1,5 @@
 import { compile, findAll, length, lower, search, strip, sub } from "./_regex.js";
-import { nextAnchor, type StreamGuard } from "./_stream.js";
+import { type FinishOptions, nextAnchor, type StreamGuard } from "./_stream.js";
 import { InvalidUrl, parseUrl, stripLeadingControls } from "./_url.js";
 
 const REMOVED = "[removed]";
@@ -76,6 +76,14 @@ function hostOf(url: string): string | null {
   return null;
 }
 
+const SCHEME = compile(String.raw`\A([A-Za-z][A-Za-z0-9+.\-]*):`);
+
+/** How a removed link with no usable host is listed: by its scheme ("javascript:"), or as "(no host)". */
+function unreadable(url: string): string {
+  const scheme = search(SCHEME, stripLeadingControls(strip(url)));
+  return scheme ? `${lower(scheme[1] as string)}:` : "(no host)";
+}
+
 /** The hosts of `urls`, in the form `stripUntrustedLinks` compares against: lowercase, without `www.`. */
 export function hostsOf(urls: Iterable<string>): Set<string> {
   const hosts = new Set<string>();
@@ -95,14 +103,21 @@ export function hostsOf(urls: Iterable<string>): Set<string> {
  * matches exactly: allowing `example.com` does not allow `docs.example.com`.
  */
 export function stripUntrustedLinks(text: string, allowedHosts: Iterable<string>): string {
-  const allowed = new Set(allowedHosts);
+  return stripLinks(text, new Set(allowedHosts), null);
+}
+
+/** `stripUntrustedLinks`, adding the host of each link it takes out to `removed`. */
+function stripLinks(text: string, allowed: ReadonlySet<string>, removed: string[] | null): string {
   const held: string[] = [];
 
   /** The host to show instead of `url`, "" to show nothing, null when the link may stay. */
   const untrusted = (url: string): string | null => {
     const host = hostOf(url);
+    if (host === null || allowed.has(host)) return null;
     // A held code span inside a URL would come back inside the host's own code span.
-    return host === null || allowed.has(host) ? null : sub(HELD, host, () => "");
+    const shownHost = sub(HELD, host, () => "");
+    if (removed !== null) removed.push(shownHost || unreadable(url));
+    return shownHost;
   };
   const shown = (host: string): string => (host ? `\`${host}\`` : "");
 
@@ -174,15 +189,23 @@ export function withoutUngroundedEmails(
   grounded: Iterable<string>,
   { replacement = REMOVED }: ReplacementOptions = {},
 ): string {
-  const known = new Set(grounded);
+  return scrubEmails(text, new Set(grounded), replacement, null);
+}
+
+/** `withoutUngroundedEmails`, adding each address it takes out to `removed`. */
+function scrubEmails(text: string, known: ReadonlySet<string>, replacement: string, removed: string[] | null): string {
   const linked = sub(MAILTO_LINK, text, (match) => {
     const found = search(EMAIL_FIND, match[2] as string);
     if (found === null || known.has(lower(found[0]))) return match[0];
+    removed?.push(lower(found[0]));
     return strip(match[1] as string) || replacement;
   });
-  return sub(EMAIL_IN_TEXT, linked, (match) =>
-    known.has(lower((match[1] ?? match[2]) as string)) ? match[0] : replacement,
-  );
+  return sub(EMAIL_IN_TEXT, linked, (match) => {
+    const found = lower((match[1] ?? match[2]) as string);
+    if (known.has(found)) return match[0];
+    removed?.push(found);
+    return replacement;
+  });
 }
 
 // A telephone number as it reads in prose: an optional "+", digits grouped by spaces, dots, hyphens or brackets.
@@ -226,7 +249,11 @@ export function withoutUngroundedPhones(
   grounded: Iterable<string>,
   { replacement = REMOVED }: ReplacementOptions = {},
 ): string {
-  const numbers = [...grounded];
+  return scrubPhones(text, [...grounded], replacement, null);
+}
+
+/** `withoutUngroundedPhones`, adding the digits of each number it takes out to `removed`. */
+function scrubPhones(text: string, numbers: readonly string[], replacement: string, removed: string[] | null): string {
   const known = (digits: string): boolean => {
     const national = withoutLeadingZeros(digits);
     return numbers.some((other) => {
@@ -240,7 +267,9 @@ export function withoutUngroundedPhones(
   };
   return sub(PHONE, text, (match) => {
     const digits = phoneDigits(match[0]);
-    return digits === null || known(digits) ? match[0] : replacement;
+    if (digits === null || known(digits)) return match[0];
+    removed?.push(digits);
+    return replacement;
   });
 }
 
@@ -322,6 +351,8 @@ export class LinkStream implements StreamGuard {
   #anchor = 0;
   #prefix = "";
   #window = "";
+  #removedFor = -1;
+  #removedLists: { hosts: string[]; emails: string[]; phones: string[] } = { hosts: [], emails: [], phones: [] };
 
   constructor(
     allowedHosts: Iterable<string>,
@@ -339,7 +370,11 @@ export class LinkStream implements StreamGuard {
 
   feed(delta: string): string {
     this.#raw += delta;
-    const window = this.#raw.slice(this.#anchor);
+    return this.#release(this.#anchor + this.#heldFrom(this.#raw.slice(this.#anchor)), false);
+  }
+
+  /** Where, in `window`, a link, address or number still being written starts: the text before it may go out. */
+  #heldFrom(window: string): number {
     let cut = openLinkStart(window);
     if (this.#emails !== null) {
       cut = Math.min(cut, heldFrom(OPEN_WORD, window, MAX_HELD_WORD_CHARS));
@@ -347,24 +382,63 @@ export class LinkStream implements StreamGuard {
     if (this.#phones !== null) {
       cut = Math.min(cut, heldFrom(OPEN_NUMBER, window, MAX_HELD_NUMBER_CHARS));
     }
-    return this.#release(this.#anchor + cut, false);
+    return cut;
   }
 
-  finish(): string {
+  finish({ truncated = false }: FinishOptions = {}): string {
+    if (truncated) {
+      // A link, address or number still being written was never finished: it is dropped, not let out.
+      this.#raw = this.#raw.slice(0, this.#anchor + this.#heldFrom(this.#raw.slice(this.#anchor)));
+    }
     return this.#release(this.#raw.length, true);
   }
 
-  #clean(raw: string): string {
-    let cleaned = stripUntrustedLinks(raw, this.#allowed);
-    const options = { replacement: this.#replacement };
-    if (this.#emails !== null) cleaned = withoutUngroundedEmails(cleaned, this.#emails, options);
-    if (this.#phones !== null) cleaned = withoutUngroundedPhones(cleaned, this.#phones, options);
+  #clean(raw: string, removed: { hosts: string[]; emails: string[]; phones: string[] } | null = null): string {
+    let cleaned = stripLinks(raw, this.#allowed, removed?.hosts ?? null);
+    if (this.#emails !== null) cleaned = scrubEmails(cleaned, this.#emails, this.#replacement, removed?.emails ?? null);
+    if (this.#phones !== null) cleaned = scrubPhones(cleaned, this.#phones, this.#replacement, removed?.phones ?? null);
     return cleaned;
+  }
+
+  #removed(): { hosts: string[]; emails: string[]; phones: string[] } {
+    // Cleaned once for the reply as it stands, whichever of the three lists is read.
+    if (this.#removedFor !== this.#raw.length) {
+      this.#removedLists = { hosts: [], emails: [], phones: [] };
+      this.#clean(this.#raw, this.#removedLists);
+      this.#removedFor = this.#raw.length;
+    }
+    return this.#removedLists;
+  }
+
+  /**
+   * The hosts of the links taken out of the reply, once each, in order. A link with no usable host is listed by its
+   * scheme (`javascript:`) or as `(no host)`. Read it after `finish`.
+   */
+  get removedHosts(): readonly string[] {
+    return [...new Set(this.#removed().hosts)];
+  }
+
+  /** The email addresses taken out of the reply (lowercase), once each, in order. Read it after `finish`. */
+  get removedEmails(): readonly string[] {
+    return [...new Set(this.#removed().emails)];
+  }
+
+  /** The telephone numbers taken out of the reply (as digits), once each, in order. Read it after `finish`. */
+  get removedPhones(): readonly string[] {
+    return [...new Set(this.#removed().phones)];
   }
 
   #release(upto: number, final: boolean): string {
     // The window is cleaned on its own; the finished reply, once, whole.
-    const cleaned = final ? this.#clean(this.#raw) : this.#clean(this.#raw.slice(this.#anchor, upto));
+    let cleaned: string;
+    if (final) {
+      const removed = { hosts: [], emails: [], phones: [] };
+      cleaned = this.#clean(this.#raw, removed);
+      this.#removedLists = removed;
+      this.#removedFor = this.#raw.length;
+    } else {
+      cleaned = this.#clean(this.#raw.slice(this.#anchor, upto));
+    }
     const shown = final ? this.text : this.#window;
     let shared: number;
     if (cleaned.startsWith(shown)) {

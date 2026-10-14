@@ -83,3 +83,34 @@ def test_a_text_with_fewer_words_than_its_run_length_is_refused_and_says_how_to_
     with pytest.raises(ValueError, match="0 word"):
         LeakGuard({"prompt": ""})
     assert LeakGuard({"codename": ("Project Falcon", 2)}).leaked("It is Project Falcon, they say.")
+
+
+def test_short_skip_leaves_out_a_text_with_too_few_words_and_keeps_the_rest() -> None:
+    guard = LeakGuard({"turn note": "", "pricing": PRICING, "tiny": "two words"}, short="skip")
+    assert guard.leaked(" ".join(PRICING.split()[:8]))
+    assert guard.match("two words") is None
+    assert LeakGuard({"only": ""}, short="skip").match("anything at all here") is None
+    stream = LeakStream(LeakGuard({"note": "a short note"}, short="skip"))
+    assert stream.feed("a short note") == "a short note"
+
+
+def test_short_is_error_or_skip() -> None:
+    with pytest.raises(ValueError, match="short must be"):
+        LeakGuard({"a": PRICING}, short="ignore")
+
+
+def test_a_guard_says_which_texts_it_skipped() -> None:
+    guard = LeakGuard({"note": "a short note", "pricing": PRICING, "empty": ""}, short="skip")
+    assert guard.skipped == ("note", "empty")
+    assert LeakGuard({"pricing": PRICING}).skipped == ()
+    assert LeakGuard({"only": ""}, short="skip").skipped == ("only",)
+
+
+def test_allowed_phrases_that_take_every_run_out_of_a_text_are_refused_or_skipped() -> None:
+    prompt = "one two three four five six seven eight nine ten"
+    allowed = ["four five six seven eight"]
+    with pytest.raises(ValueError, match="no run of 8 words is left"):
+        LeakGuard({"p": prompt}, words=8, allowed=allowed)
+    guard = LeakGuard({"p": prompt}, words=8, allowed=allowed, short="skip")
+    assert guard.skipped == ("p",) and not guard.leaked(prompt)
+    assert LeakGuard({"p": prompt}, words=3, allowed=allowed).leaked("one two three")

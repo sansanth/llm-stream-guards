@@ -1,3 +1,4 @@
+import { CheckStream } from "./_check.js";
 import {
   casefold,
   compile,
@@ -9,9 +10,9 @@ import {
   search,
   step,
   strip,
+  sub,
   toFloat,
 } from "./_regex.js";
-import { Blocked, nextAnchor, type StreamGuard } from "./_stream.js";
 
 // 1,200 or 1200.50 or 50 000 (a space or a no-break space between thousands). A number does not start after a digit, or
 // after a digit and a comma: that is the middle of one, which would only be matched again, and failed again, from every
@@ -24,6 +25,8 @@ const COST_WORD_WINDOW = 120;
 const NEVER = "(?!)";
 const SEPARATORS = compile(String.raw`[,\s]`);
 const DECIMAL_END = /\p{Nd}$/u;
+// How far before a name to look for the currency it may follow: a symbol, a code and the white space between.
+const LEAD_CHARS = 32;
 // What may be the start of a magnitude: letters only, as `TRAILING_NUMBER` holds them.
 const WORD_ONLY = /^[\p{L}\p{Nl}\p{No}]+$/u;
 
@@ -54,6 +57,12 @@ export interface LocaleOptions {
   readonly rate: string;
   /** Words that join the two ends of a range, besides a hyphen or a dash: `$40 to $65`. */
   readonly rangeWords: readonly string[];
+  /**
+   * Regex fragments for text that is never a figure: a retirement plan's name (`your 401k provider`) is not a price. A
+   * match counts only when no currency symbol, code or prefix, digit, comma or point comes right before it: `$401k` and
+   * `$1,457` are figures.
+   */
+  readonly notFigures: readonly string[];
 }
 
 interface Compiled {
@@ -66,6 +75,9 @@ interface Compiled {
   rate: RegExp;
   costWord: RegExp;
   trailingSymbol: RegExp;
+  notFigure: RegExp;
+  figureBefore: RegExp;
+  figureAfter: RegExp;
 }
 
 const COMPILED = new WeakMap<Locale, Compiled>();
@@ -94,6 +106,7 @@ const DEFAULTS: LocaleOptions = {
   effort: String.raw`(?:person|man|developer|dev|engineer|engineering)[-\s](?:hours?|days?|weeks?|months?)\b`,
   rate: String.raw`\s*(?:per|/)\s*(?:hour|hr|day)\b|\s+an?\s+hour\b`,
   rangeWords: ["to", "and"],
+  notFigures: [String.raw`\b(?:401\s*\(?k\)?|403\s*\(?b\)?|457(?:\s*\(?b\)?|\s+plan\b))(?!\w)`],
 };
 
 /**
@@ -114,6 +127,7 @@ export class Locale implements LocaleOptions {
   readonly effort: string;
   readonly rate: string;
   readonly rangeWords: readonly string[];
+  readonly notFigures: readonly string[];
 
   constructor(options: Partial<LocaleOptions> = {}) {
     // A field given as `undefined` keeps its default, as an omitted one does.
@@ -130,6 +144,7 @@ export class Locale implements LocaleOptions {
     this.effort = fields.effort;
     this.rate = fields.rate;
     this.rangeWords = Object.freeze([...fields.rangeWords]);
+    this.notFigures = Object.freeze([...fields.notFigures]);
     COMPILED.set(this, compileLocale(this));
     Object.freeze(this);
   }
@@ -176,6 +191,19 @@ function compileLocale(locale: LocaleOptions): Compiled {
     rate: compile(`\\b${DIGITS}(?:${rate})`, ignoreCase),
     costWord: compile(`\\b(?:${costWords})\\b`, ignoreCase),
     trailingSymbol: compile(`${symbol}\\s*\\Z`),
+    notFigure: compile(either(locale.notFigures.map((fragment) => `(?:${fragment})`)), ignoreCase),
+    // What leads into a name and makes it part of a figure: a currency, a digit, comma or point, or the thousands
+    // before it ("1 " of "1 457 plan").
+    figureBefore: compile(
+      `(?:${symbol}|(?<![A-Za-z])(?:${before}))\\s*\\Z|[\\d,.]\\Z` +
+        `|(?:${symbol}|(?<![A-Za-z])(?:${before}))\\s*\\d{1,3}(?:[^\\S\\r\\n]\\d{3})*[^\\S\\r\\n]\\Z`,
+      ignoreCase,
+    ),
+    // What follows a name and makes it part of a figure: a currency ("401k dollars") or a range with a magnitude.
+    figureAfter: compile(
+      `\\A\\s*(?:${symbol}|(?:${after})\\b|(?:${joiner})\\s*(?:${symbol})?\\s*\\d[\\d,.]*\\s*(?:${words})\\b)`,
+      ignoreCase,
+    ),
   };
 }
 
@@ -184,6 +212,26 @@ function compiled(locale: Locale): Compiled {
 }
 
 export const ENGLISH: Locale = new Locale();
+
+/** Whether a name that is never a figure stays one here: no currency, digit or range makes it part of a figure. */
+function isNameOnly(match: RegExpExecArray, text: string, patterns: Compiled): boolean {
+  // In characters, as in the Python package.
+  const end = match.index + match[0].length;
+  const lead = text.slice(step(text, match.index, -LEAD_CHARS), match.index);
+  const follow = text.slice(end, step(text, end, LEAD_CHARS));
+  return search(patterns.figureBefore, lead) === null && search(patterns.figureAfter, follow) === null;
+}
+
+/**
+ * `text` with what is never a figure blanked to spaces of the same length, so offsets into it still hold. Not a name
+ * that a currency, a digit or a range makes part of a figure: `$401k` and `401k dollars` are prices, and the "457" of
+ * `$1,457` is part of one.
+ */
+function withoutNotFigures(text: string, patterns: Compiled): string {
+  return sub(patterns.notFigure, text, (match) =>
+    isNameOnly(match, text, patterns) ? " ".repeat(match[0].length) : match[0],
+  );
+}
 
 // Folded, not lowered: ignoring case, the "s" of a plural also matches the long s (U+017F), which lowercasing leaves as
 // it is and casefolding turns into "s".
@@ -213,6 +261,26 @@ function amountKeys(number: string, magnitude: string | undefined, scale: Readon
   const value = toFloat(digits) * (scale.get(unit) as number);
   if (Number.isInteger(value)) keys.push(formatNumber(value));
   return keys;
+}
+
+/**
+ * Whether `grounded` (see `numbersIn`) states the figure `number`, as the amount guard compares one. `number` is the
+ * digits as written ("2,000", "1200.50", "50 000") and `magnitude` the word after them ("k", "million"), if any, in the
+ * locale's own words. A source's "2k", "2,000" and "2000" each ground a reply's "2k", "2,000" and "2000", and "12.50"
+ * and "12.5" ground each other, but a bare "2" grounds only a "2". Use it for a figure of your own that has to match the
+ * same sources the prices do, so that you do not copy the key format.
+ */
+export function isGrounded(
+  number: string,
+  grounded: Iterable<string>,
+  { magnitude, locale = ENGLISH }: { magnitude?: string | null } & LocaleOption = {},
+): boolean {
+  const { scale } = compiled(locale);
+  if (magnitude && !scale.has(unitOf(magnitude, scale))) {
+    throw new RangeError(`${JSON.stringify(magnitude)} is not a magnitude of this locale`);
+  }
+  const known = grounded instanceof Set ? (grounded as ReadonlySet<string>) : new Set(grounded);
+  return !disjoint(amountKeys(number, magnitude || undefined, scale), known);
 }
 
 /** A range as its two values, so "$2M to $3M" and "$2,000,000-$3,000,000" compare equal. */
@@ -317,10 +385,16 @@ export interface AmountOptions extends LocaleOption {
  * same figure only, one with a magnitude by the same value, and a range only by a source stating that range.
  */
 export function unsupportedAmounts(
-  text: string,
+  reply: string,
   grounded: Iterable<string>,
   { complete = true, locale = ENGLISH }: AmountOptions = {},
 ): string[] {
+  const patterns = compiled(locale);
+  return judge(withoutNotFigures(reply, patterns), grounded, complete, locale);
+}
+
+/** `unsupportedAmounts` on text whose names that are never figures are already blanked. */
+function judge(text: string, grounded: Iterable<string>, complete: boolean, locale: Locale): string[] {
   const known = grounded instanceof Set ? (grounded as ReadonlySet<string>) : new Set(grounded);
   const patterns = compiled(locale);
   const { scale } = patterns;
@@ -381,8 +455,26 @@ const TRAILING_NUMBER = compile(String.raw`(?<!\d)(?<!\d,)\b\d+(?:,\d+)*,*(?:\.\
  * magnitude or a rate no source states is a price only if a cost word comes within the window after it, so it is held
  * until that window has streamed. A number at the end may still become a magnitude ("60" before " thousand").
  */
-export function holdStart(text: string, grounded: ReadonlySet<string>, locale: Locale): number | null {
+export function holdStart(
+  reply: string,
+  grounded: ReadonlySet<string>,
+  locale: Locale,
+  blanked?: string,
+): number | null {
   const patterns = compiled(locale);
+  // A name that is never a figure is held too, until enough text follows it to say whether a currency or a range makes
+  // it one ("401k" before " dollars").
+  const starts = findAll(patterns.notFigure, reply)
+    .filter(
+      (match) => length(reply.slice(match.index + match[0].length)) < LEAD_CHARS && isNameOnly(match, reply, patterns),
+    )
+    .map((match) => match.index);
+  const held = holdFigures(blanked ?? withoutNotFigures(reply, patterns), grounded, patterns);
+  if (held !== null) starts.push(held);
+  return starts.length > 0 ? Math.min(...starts) : null;
+}
+
+function holdFigures(text: string, grounded: ReadonlySet<string>, patterns: Compiled): number | null {
   const openFigures = findAll(patterns.money, text)
     .filter((match) => match.index + match[0].length === text.length)
     .map((match) => match.index);
@@ -411,6 +503,20 @@ export function holdStart(text: string, grounded: ReadonlySet<string>, locale: L
 }
 
 /**
+ * Where a streaming `text` must stop being shown for now, or null: the offset of a figure or a currency symbol that ends
+ * the text (its digits may still be arriving: "$5" then "00"), of a bare magnitude or a rate no source states whose
+ * cost-word window has not streamed yet, or of a number at the end that may still become a magnitude. Pass it as the
+ * `hold` of a `CheckStream` that judges figures.
+ */
+export function amountHoldStart(
+  text: string,
+  grounded: Iterable<string>,
+  { locale = ENGLISH }: LocaleOption = {},
+): number | null {
+  return holdStart(text, new Set(grounded), locale);
+}
+
+/**
  * Blocks a reply as soon as it states a money or person-time figure that `grounded` (see `numbersIn`) does not,
  * before the piece completing it is shown. A figure that may still grow is held, sourced or not, until a character
  * that cannot continue it arrives; a bare magnitude no source states is held, with the text after it, until the
@@ -419,51 +525,19 @@ export function holdStart(text: string, grounded: ReadonlySet<string>, locale: L
  * Each piece is judged with the last 320 to 640 characters of the reply, not the whole of it, so that the time a reply
  * takes grows with its length and not with its square; `finish` judges the whole reply once.
  */
-export class AmountStream implements StreamGuard {
-  readonly #grounded: ReadonlySet<string>;
-  readonly #locale: Locale;
-  #text = "";
-  #anchor = 0;
-  #released = 0;
-  #blocked: Blocked | null = null;
-
+export class AmountStream extends CheckStream {
   constructor(grounded: Iterable<string>, { locale = ENGLISH }: LocaleOption = {}) {
-    this.#grounded = new Set(grounded);
-    this.#locale = locale;
-  }
-
-  get text(): string {
-    return this.#text.slice(0, this.#released);
-  }
-
-  feed(delta: string): string {
-    this.#check(delta, false);
-    const held = holdStart(this.#text.slice(this.#anchor), this.#grounded, this.#locale);
-    const released = this.#release(held === null ? this.#text.length : Math.max(this.#anchor + held, this.#released));
-    // Never past what is still held: the hold has to see all of it.
-    this.#anchor = nextAnchor(this.#text, this.#anchor, this.#text.length, this.#released);
-    return released;
-  }
-
-  finish(): string {
-    this.#check("", true);
-    return this.#release(this.#text.length);
-  }
-
-  #check(delta: string, complete: boolean): void {
-    if (this.#blocked) throw this.#blocked;
-    this.#text += delta;
-    const text = complete ? this.#text : this.#text.slice(this.#anchor);
-    const found = unsupportedAmounts(text, this.#grounded, { complete, locale: this.#locale });
-    if (found.length > 0) {
-      this.#blocked = new Blocked("amount", found);
-      throw this.#blocked;
-    }
-  }
-
-  #release(upto: number): string {
-    const released = this.#text.slice(this.#released, upto);
-    this.#released = upto;
-    return released;
+    const known = new Set(grounded);
+    const patterns = compiled(locale);
+    // A piece is judged and then held with the same text, so it is blanked once, and only the last is remembered.
+    let last = { text: "", blanked: "" };
+    const blanked = (text: string): string => {
+      if (last.text !== text) last = { text, blanked: withoutNotFigures(text, patterns) };
+      return last.blanked;
+    };
+    super((text, complete) => judge(blanked(text), known, complete, locale), {
+      reason: "amount",
+      hold: (text) => holdStart(text, known, locale, blanked(text)),
+    });
   }
 }

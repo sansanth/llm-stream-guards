@@ -24,6 +24,10 @@ The two packages have the same guards, the same behaviour and the same version n
 - **Prices and effort estimates** that none of your sources states: `$120`, `40 euros`, `300 engineering hours`, `60k` near a cost word.
 - **A quoted system prompt**: a reply that repeats a protected text eight words in a row.
 - **Code** a reply was not meant to hand over: stopped at the first fence.
+- **Citation markers** (`[1]`, `[1, 3]`) taken out of what is shown, with a list of the sources the reply cited.
+- **Hidden blocks**, such as the `<think>...</think>` of a reasoning model, dropped from what is shown.
+- **A reply cut off** at the token limit: nothing half written is let out, and `tidy_cut_off` ends it at its last full sentence.
+- **Your own check**, run with the same windowing and holding back as the built-in ones.
 
 ```python
 guards = Chain(CodeStream(), LeakStream(leaks), AmountStream(numbers_in(*texts)), LinkStream(hosts_of(urls)))

@@ -26,6 +26,7 @@ _TRAILING_PUNCTUATION = ".,;:!?。、，"  # noqa: RUF001
 # backslash before punctuation (`https\://`). Before the first `/`, `?` or `#` (not the `#` of a reference) they can
 # hide the scheme or a leading `//`, so the URL reads as a relative one here and as a web link to the reader.
 # A browser drops these from the start of a URL, so "\x01//evil.example" is a link to evil.example.
+_SCHEME = re.compile(r"([A-Za-z][A-Za-z0-9+.\-]*):")
 _C0_OR_SPACE = "".join(map(chr, range(0x21)))
 _DESTINATION_HEAD = re.compile(r"[/?]|(?<!&)#")
 _CHARACTER_REFERENCE = re.compile(r"&(?:#[0-9]{1,7}|#[xX][0-9a-fA-F]{1,6}|[A-Za-z][A-Za-z0-9]{1,31});")
@@ -63,6 +64,12 @@ def _host_of(url: str) -> str | None:
     return None
 
 
+def _unreadable(url: str) -> str:
+    """How a removed link with no usable host is listed: by its scheme ("javascript:"), or as "(no host)"."""
+    scheme = _SCHEME.match(url.strip().lstrip(_C0_OR_SPACE))
+    return f"{scheme.group(1).lower()}:" if scheme else "(no host)"
+
+
 def hosts_of(urls: Iterable[str]) -> set[str]:
     """The hosts of `urls`, in the form `strip_untrusted_links` compares against: lowercase, without `www.`."""
     return {host for url in urls if (host := _host_of(url))}
@@ -77,6 +84,11 @@ def strip_untrusted_links(text: str, allowed_hosts: Collection[str]) -> str:
     `javascript:` one, is dropped. Relative links, fragments, mailto links and URLs inside inline code stay. A host
     matches exactly: allowing `example.com` does not allow `docs.example.com`.
     """
+    return _strip_links(text, allowed_hosts, None)
+
+
+def _strip_links(text: str, allowed_hosts: Collection[str], removed: list[str] | None) -> str:
+    """`strip_untrusted_links`, adding the host of each link it takes out to `removed`."""
     held: list[str] = []
 
     def hold(match: re.Match[str]) -> str:
@@ -88,8 +100,13 @@ def strip_untrusted_links(text: str, allowed_hosts: Collection[str]) -> str:
     def untrusted(url: str) -> str | None:
         """The host to show instead of `url`, "" to show nothing, None when the link may stay."""
         host = _host_of(url)
+        if host is None or host in allowed_hosts:
+            return None
         # A held code span inside a URL would come back inside the host's own code span.
-        return None if host is None or host in allowed_hosts else _HELD.sub("", host)
+        host = _HELD.sub("", host)
+        if removed is not None:
+            removed.append(host or _unreadable(url))
+        return host
 
     def shown(host: str) -> str:
         return f"`{host}`" if host else ""
@@ -157,16 +174,27 @@ def without_ungrounded_emails(text: str, grounded: Collection[str], *, replaceme
     a `mailto:` link to one replaced by its text. A model with no address to give writes a plausible one from a
     company's name, and someone then writes to it.
     """
+    return _scrub_emails(text, grounded, replacement, None)
+
+
+def _scrub_emails(text: str, grounded: Collection[str], replacement: str, removed: list[str] | None) -> str:
+    """`without_ungrounded_emails`, adding each address it takes out to `removed`."""
 
     def mailto(match: re.Match[str]) -> str:
         found = _EMAIL_FIND.search(match.group(2))
         if found is None or found.group(0).lower() in grounded:
             return match.group(0)
+        if removed is not None:
+            removed.append(found.group(0).lower())
         return match.group(1).strip() or replacement
 
     def address(match: re.Match[str]) -> str:
         found = match.group(1) or match.group(2)
-        return match.group(0) if found.lower() in grounded else replacement
+        if found.lower() in grounded:
+            return match.group(0)
+        if removed is not None:
+            removed.append(found.lower())
+        return replacement
 
     return _EMAIL_IN_TEXT.sub(address, _MAILTO_LINK.sub(mailto, text))
 
@@ -201,6 +229,11 @@ def without_ungrounded_phones(text: str, grounded: Collection[str], *, replaceme
     Numbers compare by their digits, and one that is the other without its country code, or with a trunk zero, is
     the same number: `020 7946 0001` is grounded by `+44 20 7946 0001`.
     """
+    return _scrub_phones(text, grounded, replacement, None)
+
+
+def _scrub_phones(text: str, grounded: Collection[str], replacement: str, removed: list[str] | None) -> str:
+    """`without_ungrounded_phones`, adding the digits of each number it takes out to `removed`."""
 
     def known(digits: str) -> bool:
         national = digits.lstrip("0")
@@ -215,7 +248,11 @@ def without_ungrounded_phones(text: str, grounded: Collection[str], *, replaceme
 
     def phone(match: re.Match[str]) -> str:
         digits = _phone_digits(match.group(0))
-        return match.group(0) if digits is None or known(digits) else replacement
+        if digits is None or known(digits):
+            return match.group(0)
+        if removed is not None:
+            removed.append(digits)
+        return replacement
 
     return _PHONE.sub(phone, text)
 
@@ -296,6 +333,8 @@ class LinkStream:
         self._anchor = 0
         self._prefix = ""
         self._window = ""
+        self._removed_for = -1
+        self._removed_lists: tuple[list[str], list[str], list[str]] = ([], [], [])
 
     @property
     def text(self) -> str:
@@ -303,32 +342,66 @@ class LinkStream:
 
     def feed(self, delta: str) -> str:
         self._raw += delta
-        window = self._raw[self._anchor :]
+        return self._release(self._anchor + self._held_from(self._raw[self._anchor :]), final=False)
+
+    def _held_from(self, window: str) -> int:
+        """Where, in `window`, a link, address or number still being written starts: the text before it may go out."""
         cut = _open_link_start(window)
         if self._emails is not None:
             cut = min(cut, _held_from(_OPEN_WORD, window, _MAX_HELD_WORD_CHARS))
         if self._phones is not None:
             cut = min(cut, _held_from(_OPEN_NUMBER, window, _MAX_HELD_NUMBER_CHARS))
-        return self._release(self._anchor + cut, final=False)
+        return cut
 
-    def finish(self) -> str:
+    def finish(self, *, truncated: bool = False) -> str:
+        if truncated:
+            # A link, address or number still being written was never finished: it is dropped, not let out.
+            self._raw = self._raw[: self._anchor + self._held_from(self._raw[self._anchor :])]
         return self._release(len(self._raw), final=True)
 
-    def _clean(self, raw: str) -> str:
-        cleaned = strip_untrusted_links(raw, self._allowed)
+    def _clean(self, raw: str, removed: tuple[list[str], list[str], list[str]] | None = None) -> str:
+        hosts, emails, phones = removed if removed is not None else (None, None, None)
+        cleaned = _strip_links(raw, self._allowed, hosts)
         if self._emails is not None:
-            cleaned = without_ungrounded_emails(cleaned, self._emails, replacement=self._replacement)
+            cleaned = _scrub_emails(cleaned, self._emails, self._replacement, emails)
         if self._phones is not None:
-            cleaned = without_ungrounded_phones(cleaned, self._phones, replacement=self._replacement)
+            cleaned = _scrub_phones(cleaned, self._phones, self._replacement, phones)
         return cleaned
+
+    def _removed(self) -> tuple[list[str], list[str], list[str]]:
+        # Cleaned once for the reply as it stands, whichever of the three lists is read.
+        if self._removed_for != len(self._raw):
+            self._removed_lists = ([], [], [])
+            self._clean(self._raw, self._removed_lists)
+            self._removed_for = len(self._raw)
+        return self._removed_lists
+
+    @property
+    def removed_hosts(self) -> tuple[str, ...]:
+        """
+        The hosts of the links taken out of the reply, once each, in order. A link with no usable host is listed by its
+        scheme (`javascript:`) or as `(no host)`. Read it after `finish`.
+        """
+        return tuple(dict.fromkeys(self._removed()[0]))
+
+    @property
+    def removed_emails(self) -> tuple[str, ...]:
+        """The email addresses taken out of the reply (lowercase), once each, in order. Read it after `finish`."""
+        return tuple(dict.fromkeys(self._removed()[1]))
+
+    @property
+    def removed_phones(self) -> tuple[str, ...]:
+        """The telephone numbers taken out of the reply (as digits), once each, in order. Read it after `finish`."""
+        return tuple(dict.fromkeys(self._removed()[2]))
 
     def _release(self, upto: int, *, final: bool) -> str:
         # The window is cleaned on its own; the finished reply, once, whole.
-        cleaned, shown = (
-            (self._clean(self._raw), self.text)
-            if final
-            else (self._clean(self._raw[self._anchor : upto]), self._window)
-        )
+        if final:
+            removed: tuple[list[str], list[str], list[str]] = ([], [], [])
+            cleaned, shown = self._clean(self._raw, removed), self.text
+            self._removed_lists, self._removed_for = removed, len(self._raw)
+        else:
+            cleaned, shown = self._clean(self._raw[self._anchor : upto]), self._window
         if cleaned.startswith(shown):
             shared = len(shown)
         elif shown.startswith(cleaned):

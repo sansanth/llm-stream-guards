@@ -68,7 +68,24 @@ def guard(spec: dict[str, Any]) -> StreamGuard:
     if kind == "amount":
         return guards.AmountStream(options["grounded"], locale=_locale(options.get("locale")))
     if kind == "leak":
-        return guards.LeakStream(guards.LeakGuard(_protected(options["protected"]), words=options.get("words", 8)))
+        leak = guards.LeakGuard(
+            _protected(options["protected"]),
+            words=options.get("words", 8),
+            short=options.get("short", "error"),
+            allowed=options.get("allowed", ()),
+        )
+        return guards.LeakStream(leak)
+    if kind == "citation":
+        return guards.CitationStream(options["count"])
+    if kind == "tag":
+        return guards.TagStream(
+            options["drop"], max_chars=options.get("max_chars"), trim_start=options.get("trim_start", False)
+        )
+    if kind == "check":
+        return guards.CheckStream(
+            lambda text, complete: [options["found"]] if options["found"] in text else [],
+            reason=options.get("reason", "check"),
+        )
     if kind == "code":
         return guards.CodeStream(deliverable=options.get("deliverable", True))
     raise ValueError(f"unknown guard {kind!r}")
@@ -81,12 +98,21 @@ def stream(case: dict[str, Any]) -> dict[str, Any]:
     try:
         for delta in case["deltas"]:
             shown.append(streaming.feed(delta))
-        shown.append(streaming.finish())
+        shown.append(streaming.finish(truncated=case.get("truncated", False)))
     except Blocked as caught:
         blocked = {"reason": caught.reason, "found": list(caught.found)}
         with pytest.raises(Blocked):
             streaming.feed("more")
-    return {"shown": shown, "text": streaming.text, "blocked": blocked}
+    result: dict[str, Any] = {"shown": shown, "text": streaming.text, "blocked": blocked}
+    if isinstance(streaming, guards.CitationStream):
+        result["cited"] = list(streaming.cited)
+    if isinstance(streaming, guards.LinkStream) and blocked is None:
+        result["removed"] = {
+            "hosts": list(streaming.removed_hosts),
+            "emails": list(streaming.removed_emails),
+            "phones": list(streaming.removed_phones),
+        }
+    return result
 
 
 @pytest.mark.parametrize("case", _cases())
@@ -94,4 +120,6 @@ def test_the_shared_cases(case: dict[str, Any]) -> None:
     if "call" in case:
         assert call(case) == case["returns"]
     else:
-        assert stream(case) == {key: case[key] for key in ("shown", "text", "blocked")}
+        assert stream(case) == {
+            key: case[key] for key in ("shown", "text", "blocked", "removed", "cited") if key in case
+        }
