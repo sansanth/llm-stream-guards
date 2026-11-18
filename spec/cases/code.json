@@ -839,7 +839,7 @@
     "args": [
       "class Booking(Base): # note"
     ],
-    "returns": false
+    "returns": true
   },
   {
     "call": "contains_code_deliverable",
@@ -925,6 +925,965 @@
     "call": "contains_code_deliverable",
     "args": [
       "class Point(namedtuple(\"Point\", \"x y\")):\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\n- Mon 9am\n- Tue 10am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class rules: pass the test first"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking: pass  # stub"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\n\n- Mon 9am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "> class schedule:\n> - Mon 9am\n> - Tue 10am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class number: #5 on the list"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "> class Booking:\n>     pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo[T]:\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking: x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo[T](Base):\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo(Base): x: int = 0"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x: list[int] = []"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nMon 9am\nTue 10am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "> class schedule:\n> Mon 9am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Invoice:\n\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n# helper\n    x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: raise NotImplementedError"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: @dataclass"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class times:\n# Heading\n- Mon 9am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "> class Booking:\n>   - Mon"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking(Base): # TODO(sam): fix"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking(Base): pass  # see (a): b"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo(Generic[T]): x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\npass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nx = 1\ny = 2"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n@property\ndef x(self): ..."
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n>     pass"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class rules: raise your hand"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class contact: @alice"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: raise ValueError"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n\"\"\"Doc.\"\"\"\nx = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nid: int = 0"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nname: str\nage: int"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nprint(1)"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nx, y = 1, 2"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x: int"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x += 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: print(1)"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nMon: 9am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nMon (9am)"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nif TYPE_CHECKING:\n    x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\ntry:\n    x = 1\nexcept E: pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nfor beginners:\n- Mon"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: #note"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x: \"int\" = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class details: price = $5"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nimport os"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nNote: set aside time"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nTip: list your goals first"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nself-study only"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nreturn policy applies"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class traffic: yield to pedestrians"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class tags: #python #rust"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nitems: List[int]"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nname: str"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nx[0] = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\ndel x"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nreturn f(x)"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x: int  # n"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class rules:\npass the test first"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class contact:\n@alice on Slack"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class tips:\ndel Rio is closed"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nimport new students"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n@dataclass(frozen=True)\nclass B: ..."
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nimport os, sys"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\ndel x, y"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class tags:\n#python #rust\nMon"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n# TODO\n    x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n#TODO\n    x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nwhile True:\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nexcept ValueError:"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nbreak"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: #note\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "- class Foo:\n      pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "1. class schedule:\n   - Mon"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\n# Next steps"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n    # note\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nif needed (see below):"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nif x == 1:\n    pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x => 2"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x: str = $5"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "    one = 1;\n    two = 2;"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "     - a = 1;\n     - b = 2;"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "- class schedule:\n  Mondays at 9"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class traffic:\nreturn policy (see below)"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nassert nothing [yet]"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nreturn a == b"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\n... and so on"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class schedule:\nelse: Saturdays are optional"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nelse:"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "> class Foo:\n>\treturn 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: ..."
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "    total = a\n        + b;"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "    /*\n     * x = 1;\n     * y = 2;\n     */"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "    - a = 1;\n    - b = 2;"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class glossary: def means define"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class rules: time = 5pm"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class times: Mondays(9am)"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class foo: x = 1"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class size: max=30 students"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: time = 5pm"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: max=30 students"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class foo_bar: x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: def f(self): ..."
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x = a + b"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x = \"hi\""
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x = [1, 2]"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: raise ValueError('x')"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: raise Your hand"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class times:\nMonday(s) 9am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo: x = Foo(1)"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class error(Exception): pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class mydict(dict): pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class foo(Base):  # note"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class foo[T]: pass"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking(Base):  #1 legacy"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:  #noqa #type"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n#2 fix\n    x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class tags:\n#python #rust"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class foo:\n#TODO\n    x = 1"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class foo:\n# todo\n    x = 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nowner: User\nid: int"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nglobal x"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nlambda: 1"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nif x:\n  pass"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nwith a as b:"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nreturn x"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\nx = 1 if y else 2"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo:\n'doc'"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking:\nMondays at 9am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking:\nNote: set aside time"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking:\n- Mon 9am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Booking:\n# Next steps\nMondays at 9am"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class foo:\nowner: User"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "class Foo(Base):\nx"
+    ],
+    "returns": true
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "- class Foo:\n  Mondays at 9"
+    ],
+    "returns": false
+  },
+  {
+    "call": "contains_code_deliverable",
+    "args": [
+      "- class Foo:\n  global x"
     ],
     "returns": true
   }

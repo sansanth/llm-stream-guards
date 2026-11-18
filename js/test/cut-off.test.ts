@@ -93,7 +93,7 @@ describe("tidyCutOff", () => {
   });
 });
 
-describe("review fixes, third round", () => {
+describe("edge cases across the guards", () => {
   test("a reply cut off inside a block drops it, whatever the limit, unless the block was already past it", () => {
     expect(run(new TagStream(["think"], { maxChars: 500 }), ["ok <think>abc"], true)).toBe("ok ");
     expect(() => run(new TagStream(["think"], { maxChars: 500 }), ["ok <think>abc"])).toThrow("unclosed: think");
@@ -171,6 +171,21 @@ describe("review fixes, third round", () => {
   });
 });
 
+describe("a long run of spaces", () => {
+  test.each([
+    "while " + " ".repeat(20000),
+    "if " + " ".repeat(20000) + "(",
+    "for x in " + " ".repeat(20000),
+    "class A" + " ".repeat(20000) + "(",
+    "    a\n" + " ".repeat(20000),
+    "import a" + " ".repeat(20000) + "x",
+    "import a b\n".repeat(10000),
+    "    " + "=".repeat(20000) + "\nx",
+  ])("does not stall the check: %#", (text) => {
+    expect(containsCodeDeliverable(text)).toBe(false);
+  });
+});
+
 describe("a class label in prose", () => {
   test.each([
     ["**Class schedule:** Mondays and Thursdays.", false],
@@ -178,6 +193,29 @@ describe("a class label in prose", () => {
     ["Our class: beginners welcome.", false],
     ["class schedule: Mondays.", false],
     ["Class Booking:\n    pass", false],
+    ["class schedule:\n- Mon 9am\n- Tue 10am", false],
+    ["class rules: pass the test first", false],
+    ["class schedule:\n\n- Mon 9am", false],
+    ["> class schedule:\n> - Mon 9am\n> - Tue 10am", false],
+    ["class number: #5 on the list", false],
+    ["class Foo[T](Base):\n    pass", true],
+    ["class Booking(Base): # note", true],
+    ["class Booking(Base): # TODO(sam): fix", true],
+    ["class Foo:  # c", true],
+    ["class Foo[T]:\n    pass", true],
+    ["class Booking: x = 1", true],
+    ["class Foo: raise NotImplementedError", true],
+    ["class Foo: @dataclass", false],
+    ["class Foo: pass; x = 1", true],
+    ["class schedule:\n    # note\n- Mon", false],
+    ["class schedule:\nMon 9am\nTue 10am", false],
+    ["class Invoice:\n\n    pass", true],
+    ["class Foo(Base): x: int = 0", true],
+    ["> class Booking:\n>     pass", true],
+    ["class Booking: pass", true],
+    ['class Booking:\n    """Docstring."""', true],
+    ['class Foo:\n"""Doc."""\nx = 1', true],
+    ["class Foo:\nid: int = 0", true],
     ["class Booking:\n    pass", true],
     ["class Booking(Base):\n    def save(self): ...", true],
     ["    class Booking:\n        pass", true],

@@ -172,6 +172,23 @@ def test_without_deliverable_only_a_fence_blocks() -> None:
 
 
 @pytest.mark.parametrize(
+    "text",
+    [
+        "while " + " " * 20000,
+        "if " + " " * 20000 + "(",
+        "for x in " + " " * 20000,
+        "class A" + " " * 20000 + "(",
+        "    a\n" + " " * 20000,
+        "import a" + " " * 20000 + "x",
+        "import a b\n" * 10000,
+        "    " + "=" * 20000 + "\nx",
+    ],
+)
+def test_a_long_run_of_spaces_does_not_stall_the_check(text: str) -> None:
+    assert contains_code_deliverable(text) is False
+
+
+@pytest.mark.parametrize(
     ("text", "is_code"),
     [
         ("**Class schedule:** Mondays and Thursdays.", False),
@@ -179,7 +196,27 @@ def test_without_deliverable_only_a_fence_blocks() -> None:
         ("Our class: beginners welcome.", False),
         ("class schedule: Mondays.", False),
         ("Class Booking:\n    pass", False),
-        ("class Booking(Base): # note", False),
+        ("class schedule:\n- Mon 9am\n- Tue 10am", False),
+        ("class rules: pass the test first", False),
+        ("class schedule:\n\n- Mon 9am", False),
+        ("> class schedule:\n> - Mon 9am\n> - Tue 10am", False),
+        ("class number: #5 on the list", False),
+        ("class Foo[T](Base):\n    pass", True),
+        ("class Booking(Base): # note", True),
+        ("class Booking(Base): # TODO(sam): fix", True),
+        ("class Foo:  # c", True),
+        ("class Foo[T]:\n    pass", True),
+        ("class Booking: x = 1", True),
+        ("class Foo: raise NotImplementedError", True),
+        ("class Foo: @dataclass", False),
+        ("class Foo: pass; x = 1", True),
+        ("class schedule:\n    # note\n- Mon", False),
+        ("class schedule:\nMon 9am\nTue 10am", False),
+        ("class Invoice:\n\n    pass", True),
+        ("class Foo(Base): x: int = 0", True),
+        ("> class Booking:\n>     pass", True),
+        ('class Foo:\n"""Doc."""\nx = 1', True),
+        ("class Foo:\nid: int = 0", True),
         ("class Booking:\n    pass", True),
         ("class Booking(Base):\n    def save(self): ...", True),
         ("    class Booking:\n        pass", True),

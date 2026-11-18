@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-18
+
+### Changes to what is flagged or blocked
+
+- A Python class is judged by what follows `class Name:`. Now flagged as well: a comment, an assignment, a call,
+  `raise` or `pass;` after the colon (`class Foo(Base):  # note`), a type parameter list (`class Foo[T]:`), a `>` or
+  list marker before `class`, and a body pasted without its indentation.
+- A class label in prose is let through more often: `class schedule:` over a list or a line of prose, and
+  `class rules: pass the test first`. After a lowercase name, a body on the same line (`class foo: pass`) counts only
+  with a base list (`class error(Exception): pass`).
+- A very long run of spaces or punctuation no longer slows the code check down. An `import ... from '...'` line whose
+  names run past 2000 characters is no longer flagged.
+
 ## [0.2.1] - 2026-10-14
 
 ### Changes to what is flagged or blocked
@@ -65,7 +78,8 @@ the same version number.
   `finish`.
 - Python 3.11+ and Node 22+, no dependencies.
 
-[Unreleased]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/sansanth/llm-stream-guards/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sansanth/llm-stream-guards/releases/tag/v0.1.0
