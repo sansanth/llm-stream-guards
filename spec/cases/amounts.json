@@ -2389,7 +2389,9 @@
         "dot_thousands": true
       }
     },
-    "returns": []
+    "returns": [
+      "$ 5.000,50"
+    ]
   },
   {
     "call": "unsupported_amounts",
@@ -2404,7 +2406,9 @@
         "dot_thousands": true
       }
     },
-    "returns": []
+    "returns": [
+      "$ 5.000,50"
+    ]
   },
   {
     "call": "unsupported_amounts",
@@ -2421,6 +2425,7 @@
       }
     },
     "returns": [
+      "1.499 €",
       "12.500 EUR"
     ]
   },
@@ -2478,10 +2483,6 @@
     },
     "returns": [
       "0.002",
-      "5",
-      "5.000",
-      "5.000,50",
-      "5000",
       "5000.5",
       "5000.50"
     ]
@@ -3188,5 +3189,1414 @@
       }
     },
     "returns": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "料金は5000円です。",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "5000円"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "料金は5000円です。",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "价格是5000元左右。",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "5000元"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "价格是5000元左右。",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "3,000원입니다.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "3,000원"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "3,000원입니다.",
+      [
+        "3000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "价格是5000美元左右。",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "5000美元"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "价格是5000美元左右。",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "5000ドルです。",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "5000ドル"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "5000ドルです。",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "价格是5.000元左右。",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "5.000元"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "价格是5.000元左右。",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "dot_thousands": true
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "价格是5.000元左右。",
+      [
+        "5",
+        "5.000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "5.000元"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "价格5.000元"
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "5000"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "价格是5000元左右，3,000원입니다"
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "3000",
+      "5000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "今天很有元气，第2天也是。",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "版本v2元气满满。",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "价格是5000",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": 3
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "价格是5.000",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": 3
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "价格是5.000",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "dot_thousands": true
+      }
+    },
+    "returns": 3
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "价格是5000美",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": 3
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "料金は5000 ",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": 3
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "料金は5000",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": 3
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "版本v2",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": null
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "今天很有元",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": null
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "价格是5000",
+      []
+    ],
+    "returns": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "currency_names": [
+            "元",
+            "円",
+            "원",
+            "美元",
+            "ドル"
+          ]
+        }
+      }
+    },
+    "deltas": [
+      "价格是5000",
+      "元左右。"
+    ],
+    "shown": [
+      "价格是"
+    ],
+    "text": "价格是",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "5000元"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "5000"
+        ],
+        "locale": {
+          "currency_names": [
+            "元",
+            "円",
+            "원",
+            "美元",
+            "ドル"
+          ]
+        }
+      }
+    },
+    "deltas": [
+      "价格是5000",
+      "元左右。"
+    ],
+    "shown": [
+      "价格是",
+      "5000元左右。",
+      ""
+    ],
+    "text": "价格是5000元左右。",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "currency_names": [
+            "元",
+            "円",
+            "원",
+            "美元",
+            "ドル"
+          ]
+        }
+      }
+    },
+    "deltas": [
+      "价格是5000美",
+      "元左右。"
+    ],
+    "shown": [
+      "价格是"
+    ],
+    "text": "价格是",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "5000美元"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "currency_names": [
+            "元",
+            "円",
+            "원",
+            "美元",
+            "ドル"
+          ]
+        }
+      }
+    },
+    "deltas": [
+      "料金は5000 ",
+      "円。"
+    ],
+    "shown": [
+      "料金は"
+    ],
+    "text": "料金は",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "5000 円"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "currency_names": [
+            "元",
+            "円",
+            "원",
+            "美元",
+            "ドル"
+          ]
+        }
+      }
+    },
+    "deltas": [
+      "版本v2",
+      " 已经发布。"
+    ],
+    "shown": [
+      "版本v2",
+      " 已经发布。",
+      ""
+    ],
+    "text": "版本v2 已经发布。",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "5000"
+        ],
+        "locale": {
+          "currency_names": [
+            "元",
+            "円",
+            "원",
+            "美元",
+            "ドル"
+          ],
+          "dot_thousands": true
+        }
+      }
+    },
+    "deltas": [
+      "价格是5.0",
+      "00元左右。"
+    ],
+    "shown": [
+      "价格是",
+      "5.000元左右。",
+      ""
+    ],
+    "text": "价格是5.000元左右。",
+    "blocked": null
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "Version 1.500 of the app"
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "1.5",
+      "1.500"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Custa R$ 1.500 por mês.",
+      [
+        "1.500",
+        "1.5"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "$ 1.500"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "Plano Pro: 5.000 por mês"
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "5",
+      "5.000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5.000 por mês.",
+      [
+        "5.000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "$ 5.000"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "R$ 5.000,00 por mês"
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "5000",
+      "5000.00"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5.000, R$5,000 ou 5.000 €.",
+      [
+        "5000",
+        "5000.00"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "A versão 1.500 saiu, e o plano custa 2.000 por mês.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The rate is 1.500 per hour.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "1.500 per hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The rate is 1.500 per hour.",
+      []
+    ],
+    "returns": [
+      "1.500 per hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Billed at 40/hr, or 40 an hour, or 40 / hour.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": [
+      "40/hr",
+      "40 an hour",
+      "40 / hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Billed at 40/hr, or 40 an hour, or 40 / hour.",
+      [
+        "40"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We allow 120 requests per hour, or 120 per hour.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We allow 120 per hour.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": true
+      }
+    },
+    "returns": [
+      "120 per hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The rate is 120 per hour.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": [
+      "120 per hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Für 90 die Stunde, oder 90 pro Stunde.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate": "\\s*(?:pro|je)\\s*stunde\\b",
+        "rate_is_price": "adjacent",
+        "adjacent_rates": [
+          "/std",
+          "die stunde"
+        ]
+      }
+    },
+    "returns": [
+      "90 die Stunde"
+    ]
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "Billed at 40 a",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": 10
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "Billed at 40 / h",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": 10
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "We allow 120 per",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": null
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "We allow 120 per",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": true
+      }
+    },
+    "returns": 9
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "We have 40 ap",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "rate_is_price": "adjacent"
+        }
+      }
+    },
+    "deltas": [
+      "Billed at 40 an",
+      " hour",
+      " after that."
+    ],
+    "shown": [
+      "Billed at ",
+      ""
+    ],
+    "text": "Billed at ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "40 an hour"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "rate_is_price": "adjacent"
+        }
+      }
+    },
+    "deltas": [
+      "Billed at 40 /",
+      " hr after that."
+    ],
+    "shown": [
+      "Billed at "
+    ],
+    "text": "Billed at ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "40 / hr"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "rate_is_price": "adjacent"
+        }
+      }
+    },
+    "deltas": [
+      "We allow 120 per",
+      " hour."
+    ],
+    "shown": [
+      "We allow 120 per",
+      "",
+      " hour."
+    ],
+    "text": "We allow 120 per hour.",
+    "blocked": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5 por mês.",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "$ 5"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "Custa R$ 1.𝟓𝟎𝟎, ou 2 €"
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "1500",
+      "2"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It is 1.500 million dollars, about 1.500 engineering hours, or 1.500  €.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "1.500 million dollars",
+      "1.500 engineering hours",
+      "1.500  €"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "料金は5000 円です。",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "5000 円"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "料金は5000-8000円です。",
+      [
+        "8000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "5000-8000円"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "料金は5000-8000円です。",
+      [
+        "range:5000-8000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "8000円"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "料金は5000-8000円です。"
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "5000",
+      "8000",
+      "range:5000-8000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "이 3원칙을 지키세요.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ]
+      }
+    },
+    "returns": [
+      "3원"
+    ]
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "We charge 40\nan",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": 10
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "We charge 40\n/ h",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": "adjacent"
+      }
+    },
+    "returns": 10
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "価格は5万円です。",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "magnitudes": {
+          "k": 1000,
+          "万": 10000
+        }
+      }
+    },
+    "returns": [
+      "5万円"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "価格は5万円です。",
+      [
+        "5"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "magnitudes": {
+          "k": 1000,
+          "万": 10000
+        }
+      }
+    },
+    "returns": [
+      "5万円"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "価格は5万円です。",
+      [
+        "50000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "magnitudes": {
+          "k": 1000,
+          "万": 10000
+        }
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "価格は5万円、または3-4万円です。"
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "magnitudes": {
+          "k": 1000,
+          "万": 10000
+        }
+      }
+    },
+    "returns": [
+      "3",
+      "40000",
+      "4万",
+      "50000",
+      "5万",
+      "range:3-40000"
+    ]
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "価格は5万",
+      []
+    ],
+    "options": {
+      "locale": {
+        "currency_names": [
+          "元",
+          "円",
+          "원",
+          "美元",
+          "ドル"
+        ],
+        "magnitudes": {
+          "k": 1000,
+          "万": 10000
+        }
+      }
+    },
+    "returns": 3
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5.000,99.",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "$ 5.000,99"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5.000,99.",
+      [
+        "5000.99"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": []
   }
 ]

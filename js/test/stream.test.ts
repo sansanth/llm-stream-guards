@@ -12,6 +12,7 @@ import {
   LinkStream,
   Locale,
   numbersIn,
+  unsupportedAmounts,
 } from "../src/index.js";
 
 async function collect(stream: ReadableStream<string>): Promise<string[]> {
@@ -102,6 +103,18 @@ describe("Locale", () => {
     const german = new Locale({ magnitudes: { mio: 1_000_000 } });
     expect([...numbersIn("2 Mio", { locale: german })].sort()).toEqual(["2000000", "2mio"]);
     expect([...numbersIn("2 Mio")]).toEqual(["2"]);
+  });
+
+  test.each(["Adjacent", "yes"])("rateIsPrice refuses a mode it does not know: %j", (mode) => {
+    expect(() => ENGLISH.with({ rateIsPrice: mode as never })).toThrow(/rateIsPrice/);
+  });
+
+  test("rateIsPrice reads any other value as on or off", () => {
+    const text = "We allow 120 requests per hour.";
+    expect(unsupportedAmounts(text, [], { locale: ENGLISH.with({ rateIsPrice: null as never }) })).toEqual([]);
+    expect(unsupportedAmounts(text, [], { locale: ENGLISH.with({ rateIsPrice: 1 as never }) })).toEqual([
+      "120 requests per hour",
+    ]);
   });
 });
 

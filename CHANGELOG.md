@@ -5,6 +5,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-21
+
+### Changes to what is flagged or blocked
+
+- A currency name written in Han, Hiragana, Katakana or Hangul (`元`, `円`, `원`, `美元`, `ドル` in `currency_names`)
+  counts right after the number, with the sentence running on: `5000円です`, `价格是5000元左右`, `3,000원입니다`, and
+  `5万円` with `万` in `magnitudes`. `numbers_in` lists it. While streaming, a number at the end is held until such a
+  name can no longer follow it.
+- With `dot_thousands` on, a dotted number grounds a price only as its value, beside a currency: a source's
+  `Version 1.500` or `5.000 por mês` no longer grounds `R$ 1.500` or `R$ 5.000`, `R$ 5.000` no longer grounds `R$ 5`,
+  and `R$ 5.000,50` needs `5000.50`, as `$5,000.50` does. `R$ 5.000,00` still grounds `R$ 5.000`, `R$5,000` and
+  `5.000 €`.
+
+### Added
+
+- `rate_is_price="adjacent"` (`rateIsPrice: "adjacent"`) makes only a rate written straight after the number a price
+  (`40/hr`, `40 an hour`, `40 / hour`), not `120 requests per hour` or `120 per hour`; the forms are in
+  `Locale.adjacent_rates` (`adjacentRates`). `True` keeps its meaning.
+
 ## [0.3.0] - 2026-11-20
 
 ### Changes to what is flagged or blocked
@@ -114,7 +133,8 @@ the same version number.
   `finish`.
 - Python 3.11+ and Node 22+, no dependencies.
 
-[Unreleased]: https://github.com/sansanth/llm-stream-guards/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/sansanth/llm-stream-guards/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/sansanth/llm-stream-guards/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.0...v0.2.1
