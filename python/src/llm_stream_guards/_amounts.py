@@ -1,8 +1,9 @@
 import re
-from collections.abc import Collection, Iterable, Iterator, Mapping
+from collections.abc import Callable, Collection, Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 
-from ._check import CheckStream
+from ._check import CheckStream, _held_in
+from ._reveal import changed_near, foreign_digits, reveal_with_offsets
 
 # 1,200 or 1200.50 or 50 000 (a space or a no-break space between thousands). A number does not start after a digit, or
 # after a digit and a comma: that is the middle of one, which would only be matched again, and failed again, from every
@@ -17,6 +18,25 @@ _NEVER = "(?!)"
 _LEAD_CHARS = 32
 # What may be the start of a magnitude: letters only, as `_TRAILING_NUMBER` holds them.
 _WORD_ONLY = re.compile(r"[^\W\d_]+")
+# A price with dots between thousands and a comma before the cents: "5.000", "12.500,50". A first group of 0 is a
+# decimal ("0.002"), and one that goes on ("5.000,505", "1.234.5") is not this shape.
+_DOT_NUMBER = r"(?<![\d.,])([1-9]\d{0,2}(?:\.\d{3})+(?:,\d{1,2})?)(?![\d]|[.,]\d)"
+# A number at the end of a streaming text that may still become one: "5.", "5.000", "5.000,", "5.000,5".
+_DOT_OPEN = re.compile(r"(?<![\d.,])[1-9]\d{0,2}(?:\.\d{3})*(?:\.\d{0,3}|,\d{0,2})?\Z")
+# What ends the clause a price of the work closes: "We'll do it for 5,000." but not "for 5 days" or "for 5.50 each".
+_CLAUSE_END = r"(?=[.;:!?](?!\d)|[)\r\n]|,\s)"
+# A number at the end of a streaming text and the words after it, which may still become a rate: "40 an", "40/".
+_OPEN_RATE = re.compile(r"\b\d[\d,.]*(?:(?:[^\S\n]|/)+[^\W\d_]+){0,3}(?:[^\S\n]|/)*\Z")
+# fmt: off
+_UNITS = (
+    "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen",
+    "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
+)
+_TENS = ("twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
+# fmt: on
+_NUMBER_WORDS = {word: value for value, word in enumerate(_UNITS, 1)} | {
+    word: value * 10 for value, word in enumerate(_TENS, 2)
+}
 
 
 def _either(parts: Iterable[str]) -> str:
@@ -41,9 +61,20 @@ class Locale:
     - `not_figures`: regex fragments for text that is never a figure: a retirement plan's name (`your 401k provider`)
       is not a price. A match counts only when no currency symbol, code or prefix, digit, comma or point comes right
       before it: `$401k` and `$1,457` are figures.
+    - `number_words` and `scale_words`: an amount written in words, joined by spaces, hyphens or `word_joiners`, and
+      after one of `word_articles` before a scale word: `a hundred and fifty pounds` is 150. Words are an amount when a
+      currency name or code follows them, or one of `names_after_words` (`five bucks`).
+    - `money_magnitudes`: a word after a number, in digits or words, that multiplies it into an amount of money:
+      `five grand` is 5000. Like a bare magnitude, it is a price with a cost word or a currency near it.
+    - `price_of_work`: a regex fragment that, followed by a number that ends its clause, makes it a price: `We'll do it
+      for 5,000.` Not `do it for 5 days`.
+    - `rate_is_price`: a number followed by `rate`, with at most one word between (`40/hr`, `120 requests per hour`),
+      is a price with no cost word near it. Off, since `120 requests per hour` is a throughput.
+    - `dot_thousands`: a number shaped `5.000` or `12.500,50`, right beside a currency (`R$ 5.000,50`, `1.499 €`), is
+      read with `.` between thousands and `,` before the cents. Off, for English.
 
     Change one with `dataclasses.replace`: `replace(ENGLISH, currency_codes=(*ENGLISH.currency_codes, "nok"))`.
-    Numbers are read with `.` as the decimal point and `,` or a space between thousands, whatever the locale.
+    Numbers are read with `.` as the decimal point and `,` or a space between thousands, unless `dot_thousands` is on.
     """
 
     currency_symbols: str = "$€£₹¥"
@@ -71,6 +102,20 @@ class Locale:
     rate: str = r"\s*(?:per|/)\s*(?:hour|hr|day)\b|\s+an?\s+hour\b"
     range_words: tuple[str, ...] = ("to", "and")
     not_figures: tuple[str, ...] = (r"\b(?:401\s*\(?k\)?|403\s*\(?b\)?|457(?:\s*\(?b\)?|\s+plan\b))(?!\w)",)
+    number_words: Mapping[str, int] = field(default_factory=lambda: dict(_NUMBER_WORDS))
+    scale_words: Mapping[str, int] = field(
+        default_factory=lambda: {"hundred": 100, "thousand": 1_000, "million": 1_000_000}
+    )
+    word_joiners: tuple[str, ...] = ("and",)
+    word_articles: tuple[str, ...] = ("a",)
+    names_after_words: tuple[str, ...] = (r"bucks?", "quid")
+    money_magnitudes: Mapping[str, int] = field(default_factory=lambda: {"grand": 1_000})
+    price_of_work: str = (
+        r"\b(?:do|build|deliver|get|have)\s+(?:it|this|that|the\s+\w+)\s+for\s+"
+        r"(?:(?:just|only|about|around|roughly)\s+)?"
+    )
+    rate_is_price: bool = False
+    dot_thousands: bool = False
 
     _scale: dict[str, int] = field(init=False, repr=False)
     _number: re.Pattern[str] = field(init=False, repr=False)
@@ -84,6 +129,19 @@ class Locale:
     _not_figure: re.Pattern[str] = field(init=False, repr=False)
     _figure_before: re.Pattern[str] = field(init=False, repr=False)
     _figure_after: re.Pattern[str] = field(init=False, repr=False)
+    _numbers: dict[str, int] = field(init=False, repr=False)
+    _scales: dict[str, int] = field(init=False, repr=False)
+    _word: re.Pattern[str] = field(init=False, repr=False)
+    _spelled: re.Pattern[str] = field(init=False, repr=False)
+    _spelled_magnitude: re.Pattern[str] = field(init=False, repr=False)
+    _magnitude: re.Pattern[str] = field(init=False, repr=False)
+    _work: re.Pattern[str] = field(init=False, repr=False)
+    _open_work: re.Pattern[str] = field(init=False, repr=False)
+    _rate_price: re.Pattern[str] = field(init=False, repr=False)
+    _dot: re.Pattern[str] = field(init=False, repr=False)
+    _currency_before: re.Pattern[str] = field(init=False, repr=False)
+    _money_magnitude: re.Pattern[str] = field(init=False, repr=False)
+    _codes: frozenset[str] = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         scale = {word.lower(): value for word, value in self.magnitudes.items()}
@@ -96,6 +154,23 @@ class Locale:
         joiner = _either([r"-|\u2013|\u2014", *map(re.escape, self.range_words)])
         effort, rate = _either([self.effort]), _either([self.rate])
         cost_words = _either(map(re.escape, self.cost_words))
+        number_words = {word.lower(): value for word, value in self.number_words.items()}
+        scale_words = {word.lower(): value for word, value in self.scale_words.items()}
+        spelled_words = {**number_words, **scale_words}
+        word = _either(re.escape(word) for word in sorted(spelled_words, key=len, reverse=True))
+        scale_word = _either(map(re.escape, scale_words))
+        joiner_word = _either(map(re.escape, self.word_joiners))
+        number_word = _either(re.escape(word) for word in sorted(number_words, key=len, reverse=True))
+        # It starts at a number, or at an article before a scale: "2 million euros" is no amount in words.
+        # "and" joins only after a scale ("a hundred and fifty"): "twenty and thirty dollars" is two amounts.
+        scale_and = f"(?:{scale_word})\\b(?:\\s+(?:{joiner_word})(?=\\s))?"
+        spelled = (
+            f"\\b(?:(?:{_either(map(re.escape, self.word_articles))})\\s+{scale_and}|(?:{number_word})\\b)"
+            f"(?:(?:\\s*-\\s*|\\s+)(?:{scale_and}|(?:{word})\\b))*"
+        )
+        money_magnitudes = {word.lower(): value for word, value in self.money_magnitudes.items()}
+        money_magnitude = _either(map(re.escape, money_magnitudes))
+        after_words = _either([*self.currency_names, *self.names_after_words, *codes])
         compiled = {
             "_scale": scale,
             "_number": re.compile(amount, re.IGNORECASE),
@@ -130,6 +205,28 @@ class Locale:
             # magnitude.
             "_figure_after": re.compile(
                 f"\\s*(?:{symbol}|(?:{after})\\b|(?:{joiner})\\s*(?:{symbol})?\\s*\\d[\\d,.]*\\s*(?:{words})\\b)",
+                re.IGNORECASE,
+            ),
+            "_numbers": number_words,
+            "_scales": {**scale_words, **money_magnitudes},
+            "_word": re.compile(f"\\b(?:{word}|{money_magnitude})\\b", re.IGNORECASE),
+            "_spelled": re.compile(f"{spelled}(?:\\s*-\\s*|\\s+)(?:{after_words})\\b", re.IGNORECASE),
+            "_spelled_magnitude": re.compile(f"{spelled}\\s*(?:-\\s*)?(?:{money_magnitude})\\b", re.IGNORECASE),
+            "_magnitude": re.compile(f"{_NUMBER_TEXT}\\s*(?:-\\s*)?({money_magnitude})\\b", re.IGNORECASE),
+            "_codes": frozenset(code.lower() for code in self.currency_codes),
+            "_work": re.compile(f"(?:{_either([self.price_of_work])}){amount}{_CLAUSE_END}", re.IGNORECASE),
+            "_open_work": re.compile(f"(?:{_either([self.price_of_work])})\\d[\\d,.]*\\s*\\Z", re.IGNORECASE),
+            "_rate_price": re.compile(
+                r"\b" + _DIGITS + f"(?:\\s+[^\\W\\d_]+)?(?:{rate})" if self.rate_is_price else _NEVER, re.IGNORECASE
+            ),
+            # The money magnitude that ends a figure, which "99grand" runs into its number.
+            "_money_magnitude": re.compile(f"(?:{money_magnitude})\\Z", re.IGNORECASE),
+            "_currency_before": re.compile(f"(?:{symbol}|(?<![A-Za-z])(?:{before}))[^\\S\\r\\n]?\\Z", re.IGNORECASE),
+            "_dot": re.compile(
+                f"(?:{symbol}|(?<![A-Za-z])(?:{before}))[^\\S\\r\\n]?{_DOT_NUMBER}"
+                f"|{_DOT_NUMBER}[^\\S\\r\\n]?(?:{symbol}|(?:{after})\\b)"
+                if self.dot_thousands
+                else _NEVER,
                 re.IGNORECASE,
             ),
         }
@@ -169,6 +266,15 @@ def _unit(magnitude: str, scale: Mapping[str, int]) -> str:
     return unit if unit in scale else unit.removesuffix("s")
 
 
+def _scaled(value: float) -> float:
+    """A number times a magnitude, to 15 digits: "2.01 grand" is 2010, not 2010.0000000000002."""
+    return float(f"{value:.15g}")
+
+
+def _key(value: float) -> str:
+    return str(int(value)) if value.is_integer() else str(value)
+
+
 def _amount_keys(number: str, magnitude: str | None, scale: Mapping[str, int]) -> set[str]:
     """
     How one written amount is compared. A bare figure is its digits and nothing else, so a "5" anywhere in a source
@@ -183,7 +289,7 @@ def _amount_keys(number: str, magnitude: str | None, scale: Mapping[str, int]) -
         return written
     unit = _unit(magnitude, scale)
     keys = {f"{form}{unit}" for form in written}
-    value = float(digits) * scale[unit]
+    value = _scaled(float(digits) * scale[unit])
     if value.is_integer():
         keys.add(str(int(value)))
     return keys
@@ -210,8 +316,7 @@ def _range_key(ends: tuple[str, str | None, str, str | None], scale: Mapping[str
     values = []
     for number, magnitude in ((low, low_unit), (high, high_unit)):
         unit = _unit(magnitude or "", scale)
-        value = float(re.sub(r"[,\s]", "", number).rstrip(".")) * scale.get(unit, 1)
-        values.append(str(int(value)) if value.is_integer() else str(value))
+        values.append(_key(_scaled(float(re.sub(r"[,\s]", "", number).rstrip(".")) * scale.get(unit, 1))))
     return f"range:{values[0]}-{values[1]}"
 
 
@@ -235,16 +340,77 @@ def _ranges(text: str, locale: Locale) -> Iterator[tuple[re.Match[str], str, boo
         yield match, _range_key((low, low_unit, high, high_unit), locale._scale), True
 
 
+def _spelled_value(text: str, locale: Locale) -> int:
+    """The value of an amount in words: "a hundred and fifty" is 150, "twenty-five thousand" 25000."""
+    total = current = 0
+    for word in locale._word.findall(text):
+        if (value := locale._numbers.get(word.lower())) is not None:
+            current += value
+        elif (scale := locale._scales[word.lower()]) < 1_000:
+            current = (current or 1) * scale
+        else:
+            total += (current or 1) * scale
+            current = 0
+    return total + current
+
+
+def _magnitude_value(match: re.Match[str], locale: Locale) -> str:
+    """The value of a number, in digits or words, before a money magnitude: "five grand" and "5 grand" are 5000."""
+    magnitude = locale._money_magnitude.search(match.group(0)).group(0)  # type: ignore[union-attr]
+    scale = locale._scales[magnitude.lower()]
+    digits = locale._number.findall(match.group(0))
+    if digits:
+        return _key(_scaled(float(re.sub(r"[,\s]", "", digits[0][0]).rstrip(".")) * scale))
+    return str(_spelled_value(match.group(0)[: match.group(0).lower().rfind(magnitude.lower())], locale) * scale)
+
+
+def _dot_keys(written: str) -> set[str]:
+    """
+    How a price with dots between thousands is compared: its thousands ("5000"), its value with the cents ("5000.50")
+    and its digits as written ("5.000,50"). Not the decimal "5" the same digits would otherwise read as: a source's
+    "5" does not ground it (a source's "5.000" still lists "5" too, since `numbers_in` keeps both readings).
+    """
+    whole, _, cents = written.partition(",")
+    thousands = whole.replace(".", "")
+    keys = {thousands, written, whole}
+    if cents:
+        keys |= _amount_keys(f"{thousands}.{cents}", None, {})
+    return keys
+
+
+def _dot_number(text: str) -> str:
+    found = re.search(_DOT_NUMBER, text)
+    assert found is not None  # noqa: S101 - a match of `_dot` holds one
+    return found.group(1)
+
+
+def _keys(text: str, locale: Locale) -> set[str]:
+    keys: set[str] = set()
+    for number, magnitude in locale._number.findall(text):
+        keys |= _amount_keys(number, magnitude or None, locale._scale)
+    keys |= {key for _, key, _ in _ranges(text, locale)}
+    keys |= {str(_spelled_value(match.group(0), locale)) for match in locale._spelled.finditer(text)}
+    for pattern in (locale._spelled_magnitude, locale._magnitude):
+        keys |= {_magnitude_value(match, locale) for match in pattern.finditer(text)}
+    for match in locale._dot.finditer(text):
+        keys |= _dot_keys(_dot_number(match.group(0)))
+    return keys
+
+
 def numbers_in(*texts: str | None, locale: Locale = ENGLISH) -> set[str]:
     """
     Every number `texts` state, in the form `unsupported_amounts` compares against, and every range as one more
-    key (`range:low-high`): the grounded set for the amount guard.
+    key (`range:low-high`): the grounded set for the amount guard. A text is read as written and as `reveal` reads it,
+    and a number written in another script's digits is listed in 0-9 only, so `$500` in Arabic-Indic digits grounds
+    `$500`. An amount in words is listed by its value ("five hundred dollars" as "500"), and a price with dots between
+    thousands, when the locale reads those, both ways.
     """
     keys: set[str] = set()
     for text in texts:
-        for number, magnitude in locale._number.findall(text or ""):
-            keys |= _amount_keys(number, magnitude or None, locale._scale)
-        keys |= {key for _, key, _ in _ranges(text or "", locale)}
+        written = text or ""
+        keys |= {key for key in _keys(written, locale) if not foreign_digits(key)}
+        if not written.isascii():
+            keys |= _keys(reveal_with_offsets(written)[0], locale)
     return keys
 
 
@@ -261,20 +427,75 @@ def unsupported_amounts(
     """
     The money and person-time figures in `text` that `grounded` (see `numbers_in`) does not state, as written.
 
-    A figure is a currency symbol, code or name beside a number (`$120`, `INR 50,000`, `40 euros`), effort in
-    person-time (`300 engineering hours`), a range with a currency (`$40 to $65`), or a bare magnitude or a rate with
-    a cost word within 120 characters (`a budget of 60k`, `the rate is 120 per hour`). A bare figure is grounded by
-    the same figure only, one with a magnitude by the same value, and a range only by a source stating that range.
+    A figure is a currency symbol, code or name beside a number (`$120`, `INR 50,000`, `40 euros`), an amount in words
+    before a currency (`five hundred dollars`), effort in person-time (`300 engineering hours`), a range with a
+    currency (`$40 to $65`), a bare magnitude or a rate with a cost word within 120 characters (`a budget of 60k`, `the
+    rate is 120 per hour`, `it costs five grand`), or the price of the work (`We'll do it for 5,000.`). A bare figure is
+    grounded by the same figure only, one with a magnitude by the same value, and a range only by a source stating that
+    range.
+
+    The text is read as written and as `reveal` reads it, so `$\\u200b500`, and `$500` in fullwidth
+    characters, are figures too. A figure
+    written in another script's digits is judged, and reported, as `reveal` reads it.
 
     With `complete=False`, for text still streaming, a figure that ends the text is not judged yet: it may still
-    grow ("$5" before "00 a month").
+    grow ("$5" before "00 a month"). An amount in words is judged as soon as its currency word is written.
     """
-    return _unsupported(_without_not_figures(text, locale), grounded, complete=complete, locale=locale)
+    return _find(text, grounded, complete=complete, locale=locale)
 
 
-def _unsupported(text: str, grounded: Collection[str], *, complete: bool, locale: Locale) -> list[str]:
-    """`unsupported_amounts` on text whose names that are never figures are already blanked."""
-    found: list[str] = []
+def _find(
+    text: str,
+    grounded: Collection[str],
+    *,
+    complete: bool,
+    locale: Locale,
+    blanked: Callable[[str], str] | None = None,
+) -> list[str]:
+    """`unsupported_amounts`, with `blanked(text)` giving `text` with its names that are never figures blanked."""
+    blank = blanked or (lambda text: _without_not_figures(text, locale))
+    written = _figures(blank(text), grounded, complete=complete, locale=locale)
+    if text.isascii():
+        return [found for _, _, found, unsupported in written if unsupported is True]
+    revealed, offsets = reveal_with_offsets(text)
+    read = [
+        (offsets[start], offsets[end - 1] + 1, found, unsupported)
+        for start, end, found, unsupported in _figures(blank(revealed), grounded, complete=complete, locale=locale)
+    ]
+    reported: list[tuple[int, int, str]] = []
+    for start, end, found, unsupported in written:
+        if unsupported is not True or foreign_digits(found):
+            continue
+        # A figure in another script's digits, or one that a character which reads otherwise cuts short ("$5\u200b00"),
+        # is judged as it reads, when it reads as a figure: a grounded "$500", or a "$5" still growing, is not reported
+        # as "$5".
+        read_as = [flag for other_start, other_end, _, flag in read if start < other_end and other_start < end]
+        if not (read_as and True not in read_as and changed_near(text, start, end)):
+            reported.append((start, end, found))
+    # A figure found in both readings is reported once, as written.
+    added = [
+        found
+        for start, end, found, unsupported in read
+        if unsupported is True
+        and not any(start < other_end and other_start < end for other_start, other_end, _ in reported)
+    ]
+    return [found for _, _, found in reported] + added
+
+
+def _figures(
+    text: str, grounded: Collection[str], *, complete: bool, locale: Locale
+) -> list[tuple[int, int, str, bool | None]]:
+    """
+    (start, end, figure, unsupported) for each figure in text whose names that are never figures are already blanked:
+    `unsupported` is that `grounded` does not state it, so `unsupported_amounts` reports it, or None while it may still
+    grow.
+    """
+    found: list[tuple[int, int, str, bool | None]] = []
+
+    def report(match: re.Match[str], unsupported: bool | None, skip: int = 0) -> None:
+        figure = match.group(0)[skip:]
+        start = match.start() + skip + len(figure) - len(figure.lstrip())
+        found.append((start, start + len(figure.strip()), figure.strip(), unsupported))
 
     def settled(match: re.Match[str]) -> bool:
         if complete:
@@ -290,43 +511,92 @@ def _unsupported(text: str, grounded: Collection[str], *, complete: bool, locale
                 return False
         return not (_WORD_ONLY.fullmatch(rest) and any(word.startswith(rest.lower()) for word in locale._scale))
 
-    for match in locale._money.finditer(text):
-        if not settled(match):
-            continue
-        number, magnitude = locale._number.findall(match.group(0))[0]
-        if _amount_keys(number, magnitude, locale._scale).isdisjoint(grounded):
-            found.append(match.group(0).strip())
+    # A price with dots between thousands, or with a money magnitude ("$5 grand"), is judged as one, not as the number
+    # its first digits would read as.
+    whole: list[tuple[int, int]] = []
+    for match in locale._dot.finditer(text):
+        whole.append(match.span())
+        unsupported = _dot_keys(_dot_number(match.group(0))).isdisjoint(grounded)
+        report(match, unsupported if complete or text[match.end() :] not in ("", ".", ",") else None)
+    money = list(locale._money.finditer(text))
+
+    def overlaps(match: re.Match[str], spans: Iterable[tuple[int, int]]) -> bool:
+        return any(match.start() < end and start < match.end() for start, end in spans)
+
+    # "five grand" is a price as "60k" is: with a cost word near it, or a currency ("$5 grand"). "two Grand Slam
+    # titles" is not.
+    for pattern in (locale._spelled_magnitude, locale._magnitude):
+        for match in pattern.finditer(text):
+            if overlaps(match, (other.span() for other in money)) or _near_cost_word(
+                text, match, locale, complete=complete
+            ):
+                whole.append(match.span())
+                report(match, _magnitude_value(match, locale) not in grounded if settled(match) else None)
+
+    def in_whole(match: re.Match[str]) -> bool:
+        return overlaps(match, whole)
+
+    for match in money:
+        if not in_whole(match):
+            number, magnitude = locale._number.findall(match.group(0))[0]
+            unsupported = _amount_keys(number, magnitude, locale._scale).isdisjoint(grounded)
+            report(match, unsupported if settled(match) else None)
+    # The currency word ends an amount in words, and it is judged once written, but for a code: "five Aud" may still
+    # become "five Auditors".
+    for match in locale._spelled.finditer(text):
+        unsupported = str(_spelled_value(match.group(0), locale)) not in grounded
+        code = _LAST_WORD.search(match.group(0)).group(0).lower() in locale._codes  # type: ignore[union-attr]
+        report(match, unsupported if complete or text[match.end() :] or not code else None)
     # Each end of "$65 to $120" may be a figure a source states in different places: the range is grounded only where
     # a source states it as one.
     for match, key, priced in _ranges(text, locale):
-        if priced and key not in grounded and settled(match):
-            found.append(match.group(0).strip())
+        if priced and not in_whole(match):
+            report(match, key not in grounded if settled(match) else None)
     for match in locale._bare_magnitude.finditer(text):
-        if (
-            settled(match)
-            and _near_cost_word(text, match, locale, complete=complete)
-            and _amount_keys(match.group(1), match.group(2), locale._scale).isdisjoint(grounded)
-        ):
-            found.append(match.group(0).strip())
+        if settled(match) and _near_cost_word(text, match, locale, complete=complete):
+            report(match, _amount_keys(match.group(1), match.group(2), locale._scale).isdisjoint(grounded))
+    rates = set()
+    for match in locale._rate_price.finditer(text):
+        rates.add(match.start())
+        # "$40/hr" is one figure, and the money reading has judged it.
+        if overlaps(match, (other.span() for other in money)):
+            continue
+        unsupported = _amount_keys(match.group(1), None, locale._scale).isdisjoint(grounded)
+        report(match, unsupported if settled(match) else None)
     for match in locale._rate.finditer(text):
-        if (
-            settled(match)
-            and _near_cost_word(text, match, locale, complete=complete)
-            and _amount_keys(match.group(1), None, locale._scale).isdisjoint(grounded)
-        ):
-            found.append(match.group(0).strip())
+        if match.start() not in rates and settled(match) and _near_cost_word(text, match, locale, complete=complete):
+            report(match, _amount_keys(match.group(1), None, locale._scale).isdisjoint(grounded))
+    for match in locale._work.finditer(text):
+        *_, last = locale._number.finditer(match.group(0))
+        number, magnitude = last.groups()
+        unsupported = _amount_keys(number, magnitude, locale._scale).isdisjoint(grounded)
+        # The figure, not the words that make it a price; and the full stop that may end its clause may yet be a
+        # decimal point ("for 5." before "50 each").
+        unsettled = not complete and len(text) - match.end() <= 1
+        report(match, None if unsettled else unsupported, last.start())
     return found
 
 
+_LEAD = re.compile(r"\D*")
+_LAST_WORD = re.compile(r"\w+\Z")
 _TRAILING_NUMBER = re.compile(r"(?<!\d)(?<!\d,)\b\d+(?:,\d+)*,*(?:\.\d*)?\s*([^\W\d_]*)\Z")
 
 
 def _hold_start(text: str, grounded: Collection[str], locale: Locale, blanked: str | None = None) -> int | None:
     """
-    Where a streaming text must stop being shown for now, or None. A name that is never a figure is held too until
-    enough text follows it to say whether a currency or a range makes it one ("401k" before " dollars"). `blanked` is
-    `text` with those names blanked, when it is already at hand.
+    Where a streaming text must stop being shown for now, or None, read as written and as revealed. A name that is
+    never a figure is held too until enough text follows it to say whether a currency or a range makes it one ("401k"
+    before " dollars"). `blanked` is `text` with those names blanked, when it is already at hand.
     """
+    held = _hold_written(text, grounded, locale, blanked)
+    if text.isascii():
+        return held
+    revealed, offsets = reveal_with_offsets(text)
+    found = _held_in(text, revealed, offsets, _hold_written(revealed, grounded, locale, None))
+    return found if held is None else held if found is None else min(held, found)
+
+
+def _hold_written(text: str, grounded: Collection[str], locale: Locale, blanked: str | None) -> int | None:
     blanked = _without_not_figures(text, locale) if blanked is None else blanked
     starts = [
         match.start()
@@ -344,11 +614,27 @@ def _hold_figures(text: str, grounded: Collection[str], locale: Locale) -> int |
 
     A money figure or a currency symbol that ends the text may still grow, grounded or not ("$5" then "00"). A bare
     magnitude no source states is a price only if a cost word comes within the window after it, so it is held until
-    that window has streamed. A number at the end may still become a magnitude ("60" before " thousand").
+    that window has streamed. A number at the end may still become a magnitude ("60" before " thousand"), the price of
+    the work ("for 5" before "."), a rate ("40 an" before "hour") or a price with dots between thousands ("5.000,").
     """
-    open_figures = [match.start() for match in locale._money.finditer(text) if match.end() == len(text)]
+    open_figures = [
+        match.start()
+        for pattern in (locale._money, locale._spelled, locale._spelled_magnitude, locale._magnitude, locale._dot)
+        for match in pattern.finditer(text)
+        if match.end() == len(text)
+    ]
     if symbol := locale._trailing_symbol.search(text):
         open_figures.append(symbol.start())
+    for pattern in (
+        locale._open_work,
+        *((_DOT_OPEN,) if locale.dot_thousands else ()),
+        *((_OPEN_RATE,) if locale.rate_is_price else ()),
+    ):
+        if open_figure := pattern.search(text):
+            # From the number, and a currency right before it; the words that lead into it ("do it for ") are shown.
+            start = open_figure.start() + len(_LEAD.match(open_figure.group(0)).group(0))  # type: ignore[union-attr]
+            currency = locale._currency_before.search(text, 0, start)
+            open_figures.append(currency.start() if currency else start)
     if open_figures:
         return min(open_figures)
     starts: set[int] = set()
@@ -357,6 +643,10 @@ def _hold_figures(text: str, grounded: Collection[str], locale: Locale) -> int |
         if unsettled and _amount_keys(match.group(1), match.group(2), locale._scale).isdisjoint(grounded):
             return match.start()
         starts.add(match.start())
+    for pattern in (locale._spelled_magnitude, locale._magnitude):
+        for match in pattern.finditer(text):
+            if len(text) < match.end() + _COST_WORD_WINDOW and _magnitude_value(match, locale) not in grounded:
+                return match.start()
     for match in locale._rate.finditer(text):
         if len(text) < match.end() + _COST_WORD_WINDOW and _amount_keys(match.group(1), None, locale._scale).isdisjoint(
             grounded
@@ -378,7 +668,8 @@ def amount_hold_start(text: str, grounded: Collection[str], *, locale: Locale = 
     Where a streaming `text` must stop being shown for now, or None: the offset of a figure or a currency symbol that
     ends the text (its digits may still be arriving: "$5" then "00"), of a bare magnitude or a rate no source states
     whose cost-word window has not streamed yet, or of a number at the end that may still become a magnitude. Pass it as
-    the `hold` of a `CheckStream` that judges figures.
+    the `hold` of a `CheckStream` that judges figures. The text is read as written and as revealed, and the offset is
+    into `text`.
     """
     return _hold_start(text, grounded, locale)
 
@@ -395,16 +686,19 @@ class AmountStream(CheckStream):
     """
 
     def __init__(self, grounded: Collection[str], *, locale: Locale = ENGLISH):
+        super().__init__(lambda text, complete: (), reason="amount")
+        self._grounded = grounded
+        self._locale = locale
         # A piece is judged and then held with the same text, so it is blanked once, and only the last is remembered.
-        last = ["", ""]
+        self._last = ("", "")
 
-        def blanked(text: str) -> str:
-            if last[0] != text:
-                last[:] = [text, _without_not_figures(text, locale)]
-            return last[1]
+    def _blanked(self, text: str) -> str:
+        if self._last[0] != text:
+            self._last = (text, _without_not_figures(text, self._locale))
+        return self._last[1]
 
-        super().__init__(
-            lambda text, complete: _unsupported(blanked(text), grounded, complete=complete, locale=locale),
-            reason="amount",
-            hold=lambda text: _hold_start(text, grounded, locale, blanked(text)),
-        )
+    def _judge(self, text: str, complete: bool) -> tuple[str, ...]:
+        return tuple(_find(text, self._grounded, complete=complete, locale=self._locale, blanked=self._blanked))
+
+    def _held(self, window: str) -> int | None:
+        return _hold_start(window, self._grounded, self._locale, self._blanked(window))

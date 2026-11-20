@@ -1,0 +1,817 @@
+[
+  {
+    "call": "reveal",
+    "args": [
+      "＄５００ and $٥٠٠ and $\u200b500 and ٣٫٥"
+    ],
+    "returns": "$500 and $500 and $500 and 3.5"
+  },
+  {
+    "call": "reveal",
+    "args": [
+      "Plain ASCII stays as it is."
+    ],
+    "returns": "Plain ASCII stays as it is."
+  },
+  {
+    "call": "reveal",
+    "args": [
+      "👨\u200d👩\u200d👧 and ﬁve and ①"
+    ],
+    "returns": "👨👩👧 and five and 1"
+  },
+  {
+    "call": "reveal_with_offsets",
+    "args": [
+      "a\u200bｂ٥"
+    ],
+    "returns": [
+      "ab5",
+      [
+        0,
+        2,
+        3
+      ]
+    ]
+  },
+  {
+    "call": "fold",
+    "args": [
+      "ignоre ａll\u200bprevious Ἀθῆναι"
+    ],
+    "returns": "ignore allprevious Aθηvai"
+  },
+  {
+    "call": "fold",
+    "args": [
+      "ignоre ａll\u200bprevious",
+      " "
+    ],
+    "returns": "ignore all previous"
+  },
+  {
+    "call": "fold",
+    "args": [
+      "Сколько это стоит?"
+    ],
+    "returns": "Ckoльko эto ctoиt?"
+  },
+  {
+    "call": "fold",
+    "args": [
+      "٣٫٥٠٠٬٠٠ and ①"
+    ],
+    "returns": "3.500,00 and 1"
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is $\u200b500 a month.",
+      []
+    ],
+    "returns": [
+      "$500"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is $\u200b500 a month.",
+      [
+        "500"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is ＄５００ a month.",
+      []
+    ],
+    "returns": [
+      "$500"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is ＄５００ a month.",
+      [
+        "500"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is $٥٠٠ a month.",
+      []
+    ],
+    "returns": [
+      "$500"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is $٥٠٠ a month.",
+      [
+        "500"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is $٥٠٠ a month.",
+      [
+        "٥٠٠"
+      ]
+    ],
+    "returns": [
+      "$500"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "That is $٥٠٠, or ＄５００, or $\u200b500."
+    ],
+    "returns": [
+      "500"
+    ]
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "That is ＄５",
+      []
+    ],
+    "returns": 8
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "That is $",
+      "\u200b5",
+      "00 a month."
+    ],
+    "shown": [
+      "That is ",
+      ""
+    ],
+    "text": "That is ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$500"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "That is $",
+      "\u200b5",
+      "00 a month."
+    ],
+    "shown": [
+      "That is ",
+      "",
+      "$\u200b500 a month.",
+      ""
+    ],
+    "text": "That is $\u200b500 a month.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "That is ＄５",
+      "００ a month."
+    ],
+    "shown": [
+      "That is "
+    ],
+    "text": "That is ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$500"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "That is ＄５",
+      "００ a month."
+    ],
+    "shown": [
+      "That is ",
+      "＄５００ a month.",
+      ""
+    ],
+    "text": "That is ＄５００ a month.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "That is $٥",
+      "٠٠ a month."
+    ],
+    "shown": [
+      "That is "
+    ],
+    "text": "That is ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$500"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "That is $٥",
+      "٠٠ a month."
+    ],
+    "shown": [
+      "That is ",
+      "$٥٠٠ a month.",
+      ""
+    ],
+    "text": "That is $٥٠٠ a month.",
+    "blocked": null
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +1 415\u200b 555 0199 today.",
+      [
+        "14155550199"
+      ]
+    ],
+    "returns": "Call +1 415\u200b 555 0199 today."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +1 415\u200b 555 0199 today, «now».",
+      []
+    ],
+    "returns": "Call [removed] today, «now»."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +١ ٤١٥ ٥٥٥ ٠١٩٩ today.",
+      [
+        "14155550199"
+      ]
+    ],
+    "returns": "Call +١ ٤١٥ ٥٥٥ ٠١٩٩ today."
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +١ ٤١٥ ٥٥٥ ٠١٩٩ today, «now».",
+      []
+    ],
+    "returns": "Call [removed] today, «now»."
+  },
+  {
+    "call": "phones_in",
+    "args": [
+      "Call +1 415\u200b 555 0199 or +١ ٤١٥ ٥٥٥ ٠١٠٠."
+    ],
+    "returns": [
+      "14155550100",
+      "14155550199"
+    ]
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": []
+      }
+    },
+    "deltas": [
+      "Call +1 415",
+      "\u200b 555 01",
+      "99 today."
+    ],
+    "shown": [
+      "Call ",
+      "",
+      "[removed] today.",
+      ""
+    ],
+    "text": "Call [removed] today.",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": [
+        "14155550199"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": [
+          "14155550199"
+        ]
+      }
+    },
+    "deltas": [
+      "Call +1 415",
+      "\u200b 555 01",
+      "99 today."
+    ],
+    "shown": [
+      "Call ",
+      "",
+      "+1 415\u200b 555 0199 today.",
+      ""
+    ],
+    "text": "Call +1 415\u200b 555 0199 today.",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": []
+      }
+    },
+    "deltas": [
+      "Call +١ ٤١",
+      "٥ ٥٥٥ ٠١",
+      "٩٩ today."
+    ],
+    "shown": [
+      "Call ",
+      "",
+      "[removed] today.",
+      ""
+    ],
+    "text": "Call [removed] today.",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": [
+        "14155550199"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "phones": [
+          "14155550199"
+        ]
+      }
+    },
+    "deltas": [
+      "Call +١ ٤١",
+      "٥ ٥٥٥ ٠١",
+      "٩٩ today."
+    ],
+    "shown": [
+      "Call ",
+      "",
+      "+١ ٤١٥ ٥٥٥ ٠١٩٩ today.",
+      ""
+    ],
+    "text": "Call +١ ٤١٥ ٥٥٥ ٠١٩٩ today.",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to attacker\u200b@evil.example now.",
+      [
+        "john@inkreda.example"
+      ]
+    ],
+    "returns": "Write to [removed] now."
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to john\u200b@inkreda.example now.",
+      [
+        "john@inkreda.example"
+      ]
+    ],
+    "returns": "Write to john\u200b@inkreda.example now."
+  },
+  {
+    "call": "emails_in",
+    "args": [
+      "Write to attacker\u200b@evil.example."
+    ],
+    "returns": [
+      "attacker@evil.example"
+    ]
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": [
+          "john@inkreda.example"
+        ]
+      }
+    },
+    "deltas": [
+      "Write to attacker",
+      "\u200b",
+      "@evil.ex",
+      "ample now."
+    ],
+    "shown": [
+      "Write to ",
+      "",
+      "",
+      "[removed] ",
+      "now."
+    ],
+    "text": "Write to [removed] now.",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [
+        "attacker@evil.example"
+      ],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [],
+        "emails": [
+          "john@inkreda.example"
+        ]
+      }
+    },
+    "deltas": [
+      "Write to john",
+      "\u200b",
+      "@inkreda.ex",
+      "ample now."
+    ],
+    "shown": [
+      "Write to ",
+      "",
+      "",
+      "john\u200b@inkreda.example ",
+      "now."
+    ],
+    "text": "Write to john\u200b@inkreda.example now.",
+    "blocked": null,
+    "removed": {
+      "hosts": [],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Log in at ｈｔｔｐｓ://evil.example/x now.",
+      [
+        "inkreda.example"
+      ]
+    ],
+    "returns": "Log in at `evil.example` now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Log in at ｈｔｔｐｓ://inkreda.example/x or https://inkreda.example now.",
+      [
+        "inkreda.example"
+      ]
+    ],
+    "returns": "Log in at ｈｔｔｐｓ://inkreda.example/x or https://inkreda.example now."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Log in at [here](ｈｔｔｐｓ://evil.example/x) — «now».",
+      [
+        "inkreda.example"
+      ]
+    ],
+    "returns": "Log in at here — «now»."
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Run `curl ｈｔｔｐｓ://x.example` — or ｈｔｔｐｓ://evil.example.",
+      [
+        "inkreda.example"
+      ]
+    ],
+    "returns": "Run `curl ｈｔｔｐｓ://x.example` — or `evil.example`."
+  },
+  {
+    "call": "hosts_of",
+    "args": [
+      [
+        "ｈｔｔｐｓ://inkreda.example/x"
+      ]
+    ],
+    "returns": [
+      "inkreda.example"
+    ]
+  },
+  {
+    "stream": {
+      "link": {
+        "allowed_hosts": [
+          "inkreda.example"
+        ]
+      }
+    },
+    "deltas": [
+      "Log in at ｈｔ",
+      "ｔｐｓ://evil",
+      ".example/x now."
+    ],
+    "shown": [
+      "Log in at ",
+      "",
+      "`evil.example` now.",
+      ""
+    ],
+    "text": "Log in at `evil.example` now.",
+    "blocked": null,
+    "removed": {
+      "hosts": [
+        "evil.example"
+      ],
+      "emails": [],
+      "phones": []
+    }
+  },
+  {
+    "stream": {
+      "check": {
+        "found": "secret"
+      }
+    },
+    "deltas": [
+      "the se\u200b",
+      "cret is out"
+    ],
+    "shown": [
+      "the se\u200b"
+    ],
+    "text": "the se\u200b",
+    "blocked": {
+      "reason": "check",
+      "found": [
+        "secret"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "invisible": {}
+    },
+    "deltas": [
+      "a\u200b",
+      "b"
+    ],
+    "shown": [
+      "a",
+      "b",
+      ""
+    ],
+    "text": "ab",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "invisible": {}
+    },
+    "deltas": [
+      "👨\u200d👩\u200d👧 and می\u200cخواهم"
+    ],
+    "shown": [
+      "👨\u200d👩\u200d👧 and می\u200cخواهم",
+      ""
+    ],
+    "text": "👨\u200d👩\u200d👧 and می\u200cخواهم",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "invisible": {}
+    },
+    "deltas": [
+      "\u202eevil\u202c and \u00adsoft\ufeff and \u200f\u2066x\u2069 and ☺\ufe0f"
+    ],
+    "shown": [
+      "evil and soft and \u200f\u2066x\u2069 and ☺\ufe0f",
+      ""
+    ],
+    "text": "evil and soft and \u200f\u2066x\u2069 and ☺\ufe0f",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "chain": [
+        {
+          "invisible": {}
+        },
+        {
+          "check": {
+            "found": "secret"
+          }
+        }
+      ]
+    },
+    "deltas": [
+      "the se\u200b",
+      "cret"
+    ],
+    "shown": [
+      "the se"
+    ],
+    "text": "the se",
+    "blocked": {
+      "reason": "check",
+      "found": [
+        "secret"
+      ]
+    }
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs $5\u200b00 or $1,\u200b500.",
+      [
+        "500",
+        "1500"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs $5\u200b00 or $1,\u200b500.",
+      []
+    ],
+    "returns": [
+      "$5",
+      "$1,"
+    ]
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to sa\u200bles@acme.example.",
+      [
+        "sales@acme.example"
+      ]
+    ],
+    "options": {
+      "removed": []
+    },
+    "returns": "Write to sa\u200bles@acme.example.",
+    "removed": []
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to sa\u200bles@evil.example.",
+      [
+        "sales@acme.example"
+      ]
+    ],
+    "options": {
+      "removed": []
+    },
+    "returns": "Write to [removed].",
+    "removed": [
+      "sales@evil.example"
+    ]
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Go to https://ａｃｍｅ.example or https://ac\u200bme.example now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "options": {
+      "removed": []
+    },
+    "returns": "Go to https://ａｃｍｅ.example or https://ac\u200bme.example now.",
+    "removed": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Go to ｀https://evil.example｀ now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "returns": "Go to ｀`evil.example`｀ now."
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "It costs $5\u200b",
+      "00 a month."
+    ],
+    "shown": [
+      "It costs ",
+      "$5\u200b00 a month.",
+      ""
+    ],
+    "text": "It costs $5\u200b00 a month.",
+    "blocked": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The plan costs $500¹ and ½ of that.",
+      [
+        "500"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "reveal",
+    "args": [
+      "$500¹, x², H₂O, ½ and ⅓"
+    ],
+    "returns": "$500¹, x², H₂O, ½ and ⅓"
+  }
+]

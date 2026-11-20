@@ -666,5 +666,70 @@
     "returns": [
       "4155550100"
     ]
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to Hello@Fabrikam.example or [us](mailto:sales@fabrikam.example) or john@acme.example.",
+      [
+        "john@acme.example"
+      ]
+    ],
+    "options": {
+      "removed": []
+    },
+    "returns": "Write to [removed] or us or john@acme.example.",
+    "removed": [
+      "sales@fabrikam.example",
+      "hello@fabrikam.example"
+    ]
+  },
+  {
+    "call": "without_ungrounded_emails",
+    "args": [
+      "Write to attacker\u200b@evil.example.",
+      []
+    ],
+    "options": {
+      "removed": [
+        "earlier@x.example"
+      ]
+    },
+    "returns": "Write to [removed].",
+    "removed": [
+      "earlier@x.example",
+      "attacker@evil.example"
+    ]
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +1 415 555 0100 or +1 415 555 0101 or +1 415 555 0102.",
+      [
+        "14155550101"
+      ]
+    ],
+    "options": {
+      "removed": []
+    },
+    "returns": "Call [removed] or +1 415 555 0101 or [removed].",
+    "removed": [
+      "14155550100",
+      "14155550102"
+    ]
+  },
+  {
+    "call": "without_ungrounded_phones",
+    "args": [
+      "Call +١ ٤١٥ ٥٥٥ ٠١٩٩.",
+      []
+    ],
+    "options": {
+      "removed": []
+    },
+    "returns": "Call [removed].",
+    "removed": [
+      "14155550199"
+    ]
   }
 ]

@@ -5,6 +5,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-20
+
+### Changes to what is flagged or blocked
+
+- Text is read as a person sees it as well as it is written: a zero-width space, fullwidth characters or another
+  script's digits no longer hide a link, an email address, a phone number or a price (`$\u200b500`, `＄５００` and
+  `$٥٠٠` are `$500`). What is shown keeps the reply's own characters, and a removed link shows the host it reads as. A
+  figure in another script's digits is reported and grounded in 0-9 (`₹500`, not `₹५००`), and `hosts_of` also lists
+  the host a URL reads as.
+- `LeakGuard` compares the reply folded too (a Cyrillic `о`, fullwidth letters, a zero-width space inside a word), its
+  letters and digits alone in runs of 40 (`ignore_all_previous`, `ign ore`, list numbers between words), and the
+  reply reversed, under rot13 and as decoded base64. A reply that quotes 7 words with 40 or more letters is now a
+  leak; pass `chars` to change that length, `encodings=()` and `fold_confusables=False` to turn the rest off.
+- A `CheckStream`'s check, and its `hold`, are given the reply as `reveal` reads it. A check that looks for an
+  invisible or compatibility character itself (`\u202e`, `™`) no longer sees it; put a guard of your own for that
+  ahead of it in the chain.
+- An amount in words before a currency is a figure (`five hundred dollars`, `a hundred and fifty pounds`, `ten bucks`),
+  and so is `five grand` near a cost word. `numbers_in` lists such an amount by its value, so `$500` and `five hundred
+  dollars` ground each other.
+- The price of the work is a figure: `We'll do it for 5,000.`, but not `do it for 5 days`.
+
+### Added
+
+- `reveal`, `reveal_with_offsets` and `fold` (`reveal`, `revealWithOffsets`, `fold`): the readings the guards use.
+- `InvisibleStream` takes zero-width spaces, soft hyphens, byte order marks and bidirectional overrides out of what is
+  shown. Opt-in; put it first in a `Chain`.
+- `Locale.dot_thousands` (`dotThousands`, off in `ENGLISH`) reads `R$ 5.000,50`, `1.499 €` and `EUR 12.500` with `.`
+  between thousands, so a grounded `5` no longer lets `R$ 5.000` through.
+- `Locale.rate_is_price` (`rateIsPrice`, off) makes `40/hr` or `120 requests per hour` a price with no cost word near
+  it. `Locale.number_words`, `scale_words`, `word_joiners`, `word_articles`, `names_after_words`, `money_magnitudes`
+  and `price_of_work` hold the new English shapes.
+- `LeakGuard(gap=...)` lets that many filler words sit between the words of a run, and `chars`, `encodings` and
+  `fold_confusables` set the comparisons above.
+- `strip_untrusted_links`, `without_ungrounded_emails` and `without_ungrounded_phones` take `removed=[...]`
+  (`{ removed }`) and append what they took out to it.
+
 ## [0.2.2] - 2026-11-18
 
 ### Changes to what is flagged or blocked
@@ -78,7 +114,8 @@ the same version number.
   `finish`.
 - Python 3.11+ and Node 22+, no dependencies.
 
-[Unreleased]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/sansanth/llm-stream-guards/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/sansanth/llm-stream-guards/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/sansanth/llm-stream-guards/compare/v0.1.0...v0.2.0

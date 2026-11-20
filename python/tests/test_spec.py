@@ -1,7 +1,8 @@
 """
 The cases in `spec/cases/`, which the npm package runs too: the two implementations must agree on every one.
 
-A case calls a function (`"call"`) and compares what it `"returns"`, or feeds a guard (`"stream"`) its `"deltas"`
+A case calls a function (`"call"`) and compares what it `"returns"` (and, given `options.removed`, the list as it is
+afterwards, as `"removed"`), or feeds a guard (`"stream"`) its `"deltas"`
 and compares what each call `"shown"`, the final `"text"`, and whether it was `"blocked"`. Sets compare as sorted
 lists. A locale is the changes to `ENGLISH`.
 """
@@ -43,15 +44,30 @@ def _protected(protected: dict[str, Any]) -> dict[str, str | tuple[str, int]]:
     return {name: tuple(value) if isinstance(value, list) else value for name, value in protected.items()}
 
 
-def call(case: dict[str, Any]) -> Any:
+def _json(result: Any) -> Any:
+    if isinstance(result, set):
+        return sorted(result)
+    if isinstance(result, tuple | range):
+        return [_json(item) for item in result]
+    return result
+
+
+def call(case: dict[str, Any]) -> dict[str, Any]:
+    """What the call returns, and with `options.removed`, the list it was given as it is afterwards."""
     name, args, options = case["call"], case.get("args", []), dict(case.get("options", {}))
     if "locale" in options:
         options["locale"] = _locale(options["locale"])
+    if "removed" in options:
+        options["removed"] = list(options["removed"])
     if name == "LeakGuard.match":
         protected, text = args
-        return guards.LeakGuard(_protected(protected), **options).match(text)
-    result = getattr(guards, name)(*args, **options)
-    return sorted(result) if isinstance(result, set) else result
+        returned = guards.LeakGuard(_protected(protected), **options).match(text)
+    else:
+        returned = getattr(guards, name)(*args, **options)
+    result = {"returns": _json(returned)}
+    if "removed" in options:
+        result["removed"] = options["removed"]
+    return result
 
 
 def guard(spec: dict[str, Any]) -> StreamGuard:
@@ -69,12 +85,11 @@ def guard(spec: dict[str, Any]) -> StreamGuard:
         return guards.AmountStream(options["grounded"], locale=_locale(options.get("locale")))
     if kind == "leak":
         leak = guards.LeakGuard(
-            _protected(options["protected"]),
-            words=options.get("words", 8),
-            short=options.get("short", "error"),
-            allowed=options.get("allowed", ()),
+            _protected(options["protected"]), **{k: v for k, v in options.items() if k != "protected"}
         )
         return guards.LeakStream(leak)
+    if kind == "invisible":
+        return guards.InvisibleStream()
     if kind == "citation":
         return guards.CitationStream(options["count"])
     if kind == "tag":
@@ -118,7 +133,7 @@ def stream(case: dict[str, Any]) -> dict[str, Any]:
 @pytest.mark.parametrize("case", _cases())
 def test_the_shared_cases(case: dict[str, Any]) -> None:
     if "call" in case:
-        assert call(case) == case["returns"]
+        assert call(case) == {key: case[key] for key in ("returns", "removed") if key in case}
     else:
         assert stream(case) == {
             key: case[key] for key in ("shown", "text", "blocked", "removed", "cited") if key in case

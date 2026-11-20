@@ -22,18 +22,20 @@ or feeds a guard the pieces of a reply:
 ```
 
 - `call` is a Python function name (`LeakGuard.match` for the method), `args` its positional arguments and `options` its
-  keyword ones, with a `locale` as the changes to `ENGLISH`. A set is compared as a sorted list.
+  keyword ones, with a `locale` as the changes to `ENGLISH`. A set is compared as a sorted list, and a tuple as a list.
+  With `options.removed`, a list, the call is given a copy of it, and the case's `removed` is that list afterwards.
 - `stream` is one guard, or a `chain` of them. The guards and their options are:
 
   | Guard | Options |
   |---|---|
   | `{"link": {...}}` | `allowed_hosts`, `emails`, `phones`, `replacement` |
   | `{"amount": {...}}` | `grounded`, `locale` |
-  | `{"leak": {...}}` | `protected`, `words`, `short`, `allowed` |
+  | `{"leak": {...}}` | `protected`, `words`, `short`, `allowed`, `fold_confusables`, `chars`, `gap`, `encodings` |
   | `{"code": {...}}` | `deliverable` |
   | `{"citation": {...}}` | `count` |
   | `{"tag": {...}}` | `drop`, `max_chars`, `trim_start` |
   | `{"check": {...}}` | `found` (a check that finds that text), `reason` |
+  | `{"invisible": {}}` | none |
 
   `deltas` are the pieces fed in, and a case with `"truncated": true` ends its stream with `finish(truncated=True)`.
 - What a stream case expects: `shown` (what each `feed` call and the last `finish` returned), `text` (the guard's `text`),

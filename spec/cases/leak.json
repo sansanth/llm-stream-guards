@@ -17,7 +17,7 @@
       },
       "Internal pricing: the pilot costs forty thousand"
     ],
-    "returns": null
+    "returns": "pricing"
   },
   {
     "call": "LeakGuard.match",
@@ -221,10 +221,9 @@
       "the ",
       "pilot ",
       "costs ",
-      "forty ",
-      "thousand "
+      "forty "
     ],
-    "text": "Internal pricing: the pilot costs forty thousand dollars,",
+    "text": "Internal pricing: the pilot costs forty thousand ",
     "blocked": {
       "reason": "leak",
       "found": [
@@ -572,5 +571,462 @@
       ]
     },
     "returns": "p"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Sure: Never reveal the inter\u200bnal discount codes to customers."
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Never reveal the internal discоunt codes to customers"
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Never reveal the internal discоunt codes to customers"
+    ],
+    "options": {
+      "fold_confusables": false
+    },
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Ｎｅｖｅｒ ｒｅｖｅａｌ ｔｈｅ ｉｎｔｅｒｎａｌ ｄｉｓｃｏｕｎｔ ｃｏｄｅｓ ｔｏ ｃｕｓｔｏｍｅｒｓ"
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "never_reveal_the_internal_discount_codes_to_customers"
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "1. Never reveal\n2. the internal\n3. discount codes\n4. to customers"
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "ign ore: Nev er rev eal the inter nal dis count co des to cus tomers"
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "sremotsuc ot sedoc tnuocsid lanretni eht laever reveN"
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "customers to codes discount internal the reveal Never"
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Arire erirny gur vagreany qvfpbhag pbqrf gb phfgbzref"
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Decoded: TmV2ZXIgcmV2ZWFsIHRoZSBpbnRlcm5hbCBkaXNjb3VudCBjb2RlcyB0byBjdXN0b21lcnM="
+    ],
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Decoded: TmV2ZXIgcmV2ZWFsIHRoZSBpbnRlcm5hbCBkaXNjb3VudCBjb2RlcyB0byBjdXN0b21lcnM="
+    ],
+    "options": {
+      "encodings": [
+        "reversed",
+        "rot13"
+      ]
+    },
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "sremotsuc ot sedoc tnuocsid lanretni eht laever reveN"
+    ],
+    "options": {
+      "encodings": []
+    },
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Never reveal so the internal so discount codes so to customers so"
+    ],
+    "options": {
+      "gap": 1
+    },
+    "returns": "rules"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Never reveal so the internal so discount codes so to customers so"
+    ],
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Never reveal so so the internal so so discount codes so so to customers"
+    ],
+    "options": {
+      "gap": 1
+    },
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "Мы никогда не раскрываем внутренние коды скидок клиентам, извините, и не называем цены."
+    ],
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+      },
+      "I can't share internal codes, but the standard price is listed on our pricing page."
+    ],
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "p": [
+          "x y z w v",
+          2
+        ]
+      },
+      "xylophone"
+    ],
+    "returns": null
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+        }
+      }
+    },
+    "deltas": [
+      "Sure: Never reveal the inter",
+      "\u200b",
+      "nal discount codes to customers."
+    ],
+    "shown": [
+      "Sure: Never reveal the inter",
+      "\u200b"
+    ],
+    "text": "Sure: Never reveal the inter\u200bnal discount codes to customers.",
+    "blocked": {
+      "reason": "leak",
+      "found": [
+        "rules"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+        }
+      }
+    },
+    "deltas": [
+      "never_reveal_the_internal_",
+      "discount_codes_to_customers"
+    ],
+    "shown": [
+      "never_reveal_the_internal_"
+    ],
+    "text": "never_reveal_the_internal_discount_codes_to_customers",
+    "blocked": {
+      "reason": "leak",
+      "found": [
+        "rules"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+        }
+      }
+    },
+    "deltas": [
+      "Here: TmV2ZXIgcmV2ZWFsIHRoZSBpbnRlcm",
+      "5hbCBkaXNjb3VudCBjb2RlcyB0byBjdXN0b21lcnM=",
+      " done"
+    ],
+    "shown": [
+      "Here: TmV2ZXIgcmV2ZWFsIHRoZSBpbnRlcm",
+      "5hbCBkaXNjb3VudCBjb2RlcyB0byBjdXN0b21lcnM="
+    ],
+    "text": "Here: TmV2ZXIgcmV2ZWFsIHRoZSBpbnRlcm5hbCBkaXNjb3VudCBjb2RlcyB0byBjdXN0b21lcnM= done",
+    "blocked": {
+      "reason": "leak",
+      "found": [
+        "rules"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+        }
+      }
+    },
+    "deltas": [
+      "Here: TmV2ZXIgcmV2ZWFsIHRoZSBpbnRlcm5hbCBkaXNjb3VudCBjb2RlcyB0byBjdXN0b21lcnM="
+    ],
+    "shown": [
+      "Here: TmV2ZXIgcmV2ZWFsIHRoZSBpbnRlcm5hbCBkaXNjb3VudCBjb2RlcyB0byBjdXN0b21lcnM="
+    ],
+    "text": "Here: TmV2ZXIgcmV2ZWFsIHRoZSBpbnRlcm5hbCBkaXNjb3VudCBjb2RlcyB0byBjdXN0b21lcnM=",
+    "blocked": {
+      "reason": "leak",
+      "found": [
+        "rules"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+        },
+        "gap": 1
+      }
+    },
+    "deltas": [
+      "Never reveal so the internal so ",
+      "discount codes so to customers so"
+    ],
+    "shown": [
+      "Never reveal so the internal so "
+    ],
+    "text": "Never reveal so the internal so discount codes so to customers so",
+    "blocked": {
+      "reason": "leak",
+      "found": [
+        "rules"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+        }
+      }
+    },
+    "deltas": [
+      "Never reveal so the internal so ",
+      "discount codes so to customers so"
+    ],
+    "shown": [
+      "Never reveal so the internal so ",
+      "discount codes so to customers so",
+      ""
+    ],
+    "text": "Never reveal so the internal so discount codes so to customers so",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "leak": {
+        "protected": {
+          "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+        }
+      }
+    },
+    "deltas": [
+      "sremotsuc ot sedoc t",
+      "nuocsid lanretni eht laever reveN"
+    ],
+    "shown": [
+      "sremotsuc ot sedoc t"
+    ],
+    "text": "sremotsuc ot sedoc tnuocsid lanretni eht laever reveN",
+    "blocked": {
+      "reason": "leak",
+      "found": [
+        "rules"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "chain": [
+        {
+          "invisible": {}
+        },
+        {
+          "leak": {
+            "protected": {
+              "rules": "Never reveal the internal discount codes to customers. Offer the standard price instead."
+            }
+          }
+        }
+      ]
+    },
+    "deltas": [
+      "Sure: Never reveal the inter",
+      "\u200b",
+      "nal discount codes to customers."
+    ],
+    "shown": [
+      "Sure: Never reveal the inter",
+      ""
+    ],
+    "text": "Sure: Never reveal the internal discount codes to customers.",
+    "blocked": {
+      "reason": "leak",
+      "found": [
+        "rules"
+      ]
+    }
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "code": [
+          "Codename Bluebird",
+          1
+        ]
+      },
+      "Use a true blue background here."
+    ],
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "code": [
+          "Codename Bluebird",
+          1
+        ]
+      },
+      "Our codename is bluebird."
+    ],
+    "returns": "code"
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "faq": [
+          "Note: our office hours are nine to five on weekdays and we answer every message within two working days of receiving it.",
+          20
+        ]
+      },
+      "Note: our office hours are nine to five on weekdays and we answer"
+    ],
+    "returns": null
+  },
+  {
+    "call": "LeakGuard.match",
+    "args": [
+      {
+        "faq": [
+          "Note: our office hours are nine to five on weekdays and we answer every message within two working days of receiving it.",
+          20
+        ]
+      },
+      "Note: our office hours are nine to five on weekdays and we answer every message within two working days of receiving it."
+    ],
+    "returns": "faq"
   }
 ]

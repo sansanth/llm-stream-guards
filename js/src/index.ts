@@ -15,18 +15,21 @@ export {
 export { type CheckFunction, CheckStream, type CheckStreamOptions } from "./_check.js";
 export { CitationStream } from "./_citations.js";
 export { CodeStream, type CodeStreamOptions, containsCodeDeliverable } from "./_code.js";
-export { LeakGuard, type LeakGuardOptions, LeakStream, type Protected } from "./_leak.js";
+export { InvisibleStream } from "./_invisible.js";
+export { type Encoding, LeakGuard, type LeakGuardOptions, LeakStream, type Protected } from "./_leak.js";
 export {
   emailsIn,
   hostsOf,
   LinkStream,
   type LinkStreamOptions,
   phonesIn,
+  type RemovedOptions,
   type ReplacementOptions,
   stripUntrustedLinks,
   withoutUngroundedEmails,
   withoutUngroundedPhones,
 } from "./_links.js";
+export { fold, reveal, revealWithOffsets } from "./_reveal.js";
 export {
   Blocked,
   type BlockReason,

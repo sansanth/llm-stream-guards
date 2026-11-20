@@ -1,8 +1,34 @@
 import { compile, findAll, length, lower, search, strip, sub } from "./_regex.js";
+import { changedNear, foreignDigits, isAscii, reveal, revealWithOffsets, subRevealed, toSource } from "./_reveal.js";
 import { type FinishOptions, nextAnchor, type StreamGuard } from "./_stream.js";
 import { InvalidUrl, parseUrl, stripLeadingControls } from "./_url.js";
 
 const REMOVED = "[removed]";
+
+/** `sub` with the characters a match came from: those of the text itself, or, revealed, those that read as the match. */
+type Sub = (pattern: RegExp, text: string, replace: (match: RegExpExecArray, written: string) => string) => string;
+
+const subAll: Sub = (pattern, text, replace) => sub(pattern, text, (match) => replace(match, match[0]));
+
+/**
+ * `sub` over `text` as written, but for a match that a character which reads otherwise touches
+ * ("sa\u200bles@acme.example", a host in fullwidth letters): that one is judged as it reads, on the revealed pass.
+ */
+const subWritten: Sub = (pattern, text, replace) =>
+  sub(pattern, text, (match) =>
+    changedNear(text, match.index, match.index + match[0].length) ? match[0] : replace(match, match[0]),
+  );
+
+/**
+ * `clean(text, sub, hold)` run on `text` as written, then on what is left as `reveal` reads it: what a reader would see
+ * as a link, address or number is taken out too, and every other character is kept as it is. `hold` is the `sub` for
+ * what is set aside rather than judged.
+ */
+function rewrite(text: string, clean: (text: string, sub: Sub, hold: Sub) => string): string {
+  if (isAscii(text)) return clean(text, subAll, subAll);
+  const cleaned = clean(text, subWritten, subAll);
+  return isAscii(cleaned) ? cleaned : clean(cleaned, subRevealed, subRevealed);
+}
 
 // A URL inside inline code is a placeholder ("set the callback to `https://yourapp.example/hook`"), not a link anyone
 // follows, and cutting it out would leave a hole mid-sentence. It is held aside while links are stripped. A span ends
@@ -84,14 +110,24 @@ function unreadable(url: string): string {
   return scheme ? `${lower(scheme[1] as string)}:` : "(no host)";
 }
 
-/** The hosts of `urls`, in the form `stripUntrustedLinks` compares against: lowercase, without `www.`. */
+/**
+ * The hosts of `urls`, in the form `stripUntrustedLinks` compares against: lowercase, without `www.`. A URL is read as
+ * written and as `reveal` reads it, so a host written in fullwidth letters is listed as written and in ASCII.
+ */
 export function hostsOf(urls: Iterable<string>): Set<string> {
   const hosts = new Set<string>();
   for (const url of urls) {
-    const host = hostOf(url);
-    if (host) hosts.add(host);
+    for (const reading of new Set([url, reveal(url)])) {
+      const host = hostOf(reading);
+      if (host) hosts.add(host);
+    }
   }
   return hosts;
+}
+
+export interface RemovedOptions {
+  /** A list to which what is taken out is appended, in order. */
+  removed?: string[] | null;
 }
 
 /**
@@ -101,13 +137,32 @@ export function hostsOf(urls: Iterable<string>): Set<string> {
  * becomes its host in inline code, so the sentence around it still reads. A link with no usable host, or a
  * `javascript:` one, is dropped. Relative links, fragments, mailto links and URLs inside inline code stay. A host
  * matches exactly: allowing `example.com` does not allow `docs.example.com`.
+ *
+ * A link a reader sees is taken out even when it is written in fullwidth letters or with an invisible character in it
+ * (see `reveal`); the rest of the text keeps its characters. With `removed`, the host of each link taken out is
+ * appended to it as it is taken out, a link with no usable host as its scheme (`javascript:`) or `(no host)`. A link
+ * seen only once the text is revealed is taken out, and listed, after the others.
  */
-export function stripUntrustedLinks(text: string, allowedHosts: Iterable<string>): string {
-  return stripLinks(text, new Set(allowedHosts), null);
+export function stripUntrustedLinks(
+  text: string,
+  allowedHosts: Iterable<string>,
+  { removed = null }: RemovedOptions = {},
+): string {
+  return stripLinks(text, new Set(allowedHosts), removed);
 }
 
-/** `stripUntrustedLinks`, adding the host of each link it takes out to `removed`. */
 function stripLinks(text: string, allowed: ReadonlySet<string>, removed: string[] | null): string {
+  return rewrite(text, (text, sub, hold) => stripPass(text, allowed, removed, sub, hold));
+}
+
+/** `stripUntrustedLinks` over one reading of `text`, adding the host of each link it takes out to `removed`. */
+function stripPass(
+  text: string,
+  allowed: ReadonlySet<string>,
+  removed: string[] | null,
+  sub: Sub,
+  holdSub: Sub,
+): string {
   const held: string[] = [];
 
   /** The host to show instead of `url`, "" to show nothing, null when the link may stay. */
@@ -122,26 +177,28 @@ function stripLinks(text: string, allowed: ReadonlySet<string>, removed: string[
   const shown = (host: string): string => (host ? `\`${host}\`` : "");
 
   // The placeholder characters are private-use ones; a reply that holds them would be handed other text's spans.
-  let cleaned = sub(CODE_SPAN, text.replaceAll(HOLD_OPEN, "").replaceAll(HOLD_CLOSE, ""), (match) => {
-    if (match[1] === undefined) return match[0];
-    held.push(match[0]);
+  let cleaned = holdSub(CODE_SPAN, text.replaceAll(HOLD_OPEN, "").replaceAll(HOLD_CLOSE, ""), (match, written) => {
+    // A span that reads as code only once revealed (fullwidth backticks) is no code span to a Markdown reader.
+    const ticks = match[1];
+    if (ticks === undefined || !(written.startsWith(ticks) && written.endsWith(ticks))) return written;
+    held.push(written);
     return `${HOLD_OPEN}${held.length - 1}${HOLD_CLOSE}`;
   });
-  cleaned = sub(LINK_DEFINITION, cleaned, (match) => {
+  cleaned = sub(LINK_DEFINITION, cleaned, (match, written) => {
     const host = untrusted((match[2] ?? match[3]) as string);
-    return host === null ? match[0] : (match[1] as string) + shown(host);
+    return host === null ? written : (match[1] as string) + shown(host);
   });
-  cleaned = sub(AUTOLINK, cleaned, (match) => {
+  cleaned = sub(AUTOLINK, cleaned, (match, written) => {
     const host = untrusted(match[1] as string);
-    return host === null ? match[0] : shown(host);
+    return host === null ? written : shown(host);
   });
-  cleaned = sub(MARKDOWN_LINK, cleaned, (match) => {
+  cleaned = sub(MARKDOWN_LINK, cleaned, (match, written) => {
     const label = match[2] as string;
     const host = untrusted(match[3] as string);
-    if (host === null) return match[0];
+    if (host === null) return written;
     return strip(label) ? label : shown(host);
   });
-  cleaned = sub(BARE_URL, cleaned, (match) => {
+  cleaned = sub(BARE_URL, cleaned, (match, written) => {
     const found = match[0];
     const lead = found.slice(0, found.length - found.replace(/^[ \t]+/, "").length);
     let url = strip(found);
@@ -151,10 +208,10 @@ function stripLinks(text: string, allowed: ReadonlySet<string>, removed: string[
       url = url.slice(0, -1);
     }
     const host = untrusted(url);
-    if (host === null) return found;
+    if (host === null) return written;
     return (host ? lead + shown(host) : "") + trailing;
   });
-  return sub(HELD, cleaned, (match) => {
+  return subAll(HELD, cleaned, (match) => {
     // A host shown in inline code next to a span would join their backtick runs, and a longer run closes nothing: the
     // span's text would then be read as Markdown, links included.
     const span = held[Number(match[1])] as string;
@@ -169,9 +226,18 @@ const EMAIL_FIND = compile(EMAIL);
 const MAILTO_LINK = compile(String.raw`\[([^\]]*)\]\(\s*mailto:([^)]*)\)`, { ignoreCase: true });
 const EMAIL_IN_TEXT = compile(String.raw`<(?:mailto:)?(${EMAIL})>|(?:mailto:)?(${EMAIL})`, { ignoreCase: true });
 
-/** The email addresses written in `texts`, lowercased: the grounded set for `withoutUngroundedEmails`. */
+/**
+ * The email addresses written in `texts`, lowercased, read as written and as `reveal` reads them: the grounded set for
+ * `withoutUngroundedEmails`.
+ */
 export function emailsIn(...texts: Array<string | null | undefined>): Set<string> {
-  return new Set(texts.flatMap((text) => findAll(EMAIL_FIND, text ?? "").map((match) => lower(match[0]))));
+  return new Set(
+    texts.flatMap((text) =>
+      [...new Set([text ?? "", reveal(text ?? "")])].flatMap((reading) =>
+        findAll(EMAIL_FIND, reading).map((match) => lower(match[0])),
+      ),
+    ),
+  );
 }
 
 export interface ReplacementOptions {
@@ -182,27 +248,38 @@ export interface ReplacementOptions {
 /**
  * `text` with every email address not in `grounded` (lowercase, see `emailsIn`) replaced by `replacement`, and a
  * `mailto:` link to one replaced by its text. A model with no address to give writes a plausible one from a
- * company's name, and someone then writes to it.
+ * company's name, and someone then writes to it. An address a reader sees is replaced even with an invisible character
+ * in it (see `reveal`). With `removed`, each address replaced is appended to it, lowercased.
  */
 export function withoutUngroundedEmails(
   text: string,
   grounded: Iterable<string>,
-  { replacement = REMOVED }: ReplacementOptions = {},
+  { replacement = REMOVED, removed = null }: ReplacementOptions & RemovedOptions = {},
 ): string {
-  return scrubEmails(text, new Set(grounded), replacement, null);
+  return scrubEmails(text, new Set(grounded), replacement, removed);
 }
 
-/** `withoutUngroundedEmails`, adding each address it takes out to `removed`. */
 function scrubEmails(text: string, known: ReadonlySet<string>, replacement: string, removed: string[] | null): string {
-  const linked = sub(MAILTO_LINK, text, (match) => {
+  return rewrite(text, (text, sub) => scrubEmailsPass(text, known, replacement, removed, sub));
+}
+
+/** `withoutUngroundedEmails` over one reading of `text`, adding each address it takes out to `removed`. */
+function scrubEmailsPass(
+  text: string,
+  known: ReadonlySet<string>,
+  replacement: string,
+  removed: string[] | null,
+  sub: Sub,
+): string {
+  const linked = sub(MAILTO_LINK, text, (match, written) => {
     const found = search(EMAIL_FIND, match[2] as string);
-    if (found === null || known.has(lower(found[0]))) return match[0];
+    if (found === null || known.has(lower(found[0]))) return written;
     removed?.push(lower(found[0]));
     return strip(match[1] as string) || replacement;
   });
-  return sub(EMAIL_IN_TEXT, linked, (match) => {
+  return sub(EMAIL_IN_TEXT, linked, (match, written) => {
     const found = lower((match[1] ?? match[2]) as string);
-    if (known.has(found)) return match[0];
+    if (known.has(found)) return written;
     removed?.push(found);
     return replacement;
   });
@@ -225,13 +302,18 @@ function phoneDigits(found: string): string | null {
   return length(digits) >= MIN_PHONE_DIGITS - (found.startsWith("+") ? 1 : 0) ? digits : null;
 }
 
-/** The telephone numbers written in `texts`, as digits only: the grounded set for `withoutUngroundedPhones`. */
+/**
+ * The telephone numbers written in `texts`, as digits 0-9 only, read as written and as `reveal` reads them: the
+ * grounded set for `withoutUngroundedPhones`. A number in another script's digits is listed by its revealed reading.
+ */
 export function phonesIn(...texts: Array<string | null | undefined>): Set<string> {
   const numbers = new Set<string>();
   for (const text of texts) {
-    for (const match of findAll(PHONE, text ?? "")) {
-      const digits = phoneDigits(match[0]);
-      if (digits) numbers.add(digits);
+    for (const reading of new Set([text ?? "", reveal(text ?? "")])) {
+      for (const match of findAll(PHONE, reading)) {
+        const digits = foreignDigits(match[0]) ? null : phoneDigits(match[0]);
+        if (digits) numbers.add(digits);
+      }
     }
   }
   return numbers;
@@ -242,18 +324,30 @@ const withoutLeadingZeros = (digits: string): string => digits.replace(/^0+/, ""
 /**
  * `text` with every telephone number not in `grounded` (digits, see `phonesIn`) replaced by `replacement`. Numbers
  * compare by their digits, and one that is the other without its country code, or with a trunk zero, is the same
- * number: `020 7946 0001` is grounded by `+44 20 7946 0001`.
+ * number: `020 7946 0001` is grounded by `+44 20 7946 0001`. A number a reader sees is judged as `reveal` reads it, so
+ * one with an invisible character in it, or in another script's digits, is replaced too. With `removed`, the digits of
+ * each number replaced are appended to it.
  */
 export function withoutUngroundedPhones(
   text: string,
   grounded: Iterable<string>,
-  { replacement = REMOVED }: ReplacementOptions = {},
+  { replacement = REMOVED, removed = null }: ReplacementOptions & RemovedOptions = {},
 ): string {
-  return scrubPhones(text, [...grounded], replacement, null);
+  return scrubPhones(text, [...grounded], replacement, removed);
 }
 
-/** `withoutUngroundedPhones`, adding the digits of each number it takes out to `removed`. */
 function scrubPhones(text: string, numbers: readonly string[], replacement: string, removed: string[] | null): string {
+  return rewrite(text, (text, sub) => scrubPhonesPass(text, numbers, replacement, removed, sub));
+}
+
+/** `withoutUngroundedPhones` over one reading of `text`, adding the digits it takes out to `removed`. */
+function scrubPhonesPass(
+  text: string,
+  numbers: readonly string[],
+  replacement: string,
+  removed: string[] | null,
+  sub: Sub,
+): string {
   const known = (digits: string): boolean => {
     const national = withoutLeadingZeros(digits);
     return numbers.some((other) => {
@@ -265,9 +359,11 @@ function scrubPhones(text: string, numbers: readonly string[], replacement: stri
       );
     });
   };
-  return sub(PHONE, text, (match) => {
+  return sub(PHONE, text, (match, written) => {
+    // A number in another script's digits is judged as it reads: in 0-9, on the revealed pass.
+    if (foreignDigits(match[0])) return written;
     const digits = phoneDigits(match[0]);
-    if (digits === null || known(digits)) return match[0];
+    if (digits === null || known(digits)) return written;
     removed?.push(digits);
     return replacement;
   });
@@ -373,8 +469,18 @@ export class LinkStream implements StreamGuard {
     return this.#release(this.#anchor + this.#heldFrom(this.#raw.slice(this.#anchor)), false);
   }
 
-  /** Where, in `window`, a link, address or number still being written starts: the text before it may go out. */
+  /**
+   * Where, in `window`, a link, address or number still being written starts, as written or as revealed: the text
+   * before it may go out.
+   */
   #heldFrom(window: string): number {
+    const cut = this.#openStart(window);
+    if (isAscii(window)) return cut;
+    const [revealed, offsets] = revealWithOffsets(window);
+    return Math.min(cut, toSource(offsets, revealed.length, window.length, this.#openStart(revealed)));
+  }
+
+  #openStart(window: string): number {
     let cut = openLinkStart(window);
     if (this.#emails !== null) {
       cut = Math.min(cut, heldFrom(OPEN_WORD, window, MAX_HELD_WORD_CHARS));

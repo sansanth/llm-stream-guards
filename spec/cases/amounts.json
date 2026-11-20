@@ -292,7 +292,7 @@
       []
     ],
     "returns": [
-      "₹५००"
+      "₹500"
     ]
   },
   {
@@ -990,8 +990,7 @@
     ],
     "returns": [
       "500000",
-      "५lakh",
-      "५०००००"
+      "5lakh"
     ]
   },
   {
@@ -2334,5 +2333,860 @@
       "magnitude": null
     },
     "returns": false
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5.000 por mês.",
+      [
+        "5"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "$ 5.000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5.000 por mês.",
+      [
+        "5"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5.000,00, ou 5.000 € ou EUR 5.000.",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5.000,50 por mês.",
+      [
+        "5000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Fica em R$ 5.000,50 por mês.",
+      [
+        "5.000"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Kostet 1.499 € oder 12.500 EUR.",
+      [
+        "1.499",
+        "12.5"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "12.500 EUR"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Kostet 1.499 € oder 12.500 EUR.",
+      [
+        "1.499",
+        "12.5"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Custa 0.002 € por chamada.",
+      [
+        "0.002"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Custa 5.000,505 € ou 1.234.5 €.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "000,505 €",
+      "234.5 €"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "Custa R$ 5.000,50 ou 0.002 €."
+    ],
+    "options": {
+      "locale": {
+        "dot_thousands": true
+      }
+    },
+    "returns": [
+      "0.002",
+      "5",
+      "5.000",
+      "5.000,50",
+      "5000",
+      "5000.5",
+      "5000.50"
+    ]
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "Custa R$ 5.000,50 ou 0.002 €."
+    ],
+    "returns": [
+      "0.002",
+      "5",
+      "5.000"
+    ]
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "5"
+        ],
+        "locale": {
+          "dot_thousands": true
+        }
+      }
+    },
+    "deltas": [
+      "Fica em R$ 5.0",
+      "00",
+      " por mês."
+    ],
+    "shown": [
+      "Fica em R",
+      ""
+    ],
+    "text": "Fica em R",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$ 5.000"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "5000"
+        ],
+        "locale": {
+          "dot_thousands": true
+        }
+      }
+    },
+    "deltas": [
+      "Fica em R$ 5.0",
+      "00",
+      ",",
+      " e mais nada."
+    ],
+    "shown": [
+      "Fica em R",
+      "",
+      "",
+      "$ 5.000, e mais nada.",
+      ""
+    ],
+    "text": "Fica em R$ 5.000, e mais nada.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "5000"
+        ],
+        "locale": {
+          "dot_thousands": true
+        }
+      }
+    },
+    "deltas": [
+      "Fica em R$ 5.000",
+      ".",
+      "000 por mês."
+    ],
+    "shown": [
+      "Fica em R",
+      ""
+    ],
+    "text": "Fica em R",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "$ 5.000.000"
+      ]
+    }
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That comes to five hundred dollars.",
+      []
+    ],
+    "returns": [
+      "five hundred dollars"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That comes to five hundred dollars.",
+      [
+        "500"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Around twenty-five thousand euros, or a hundred and fifty pounds.",
+      []
+    ],
+    "returns": [
+      "twenty-five thousand euros",
+      "a hundred and fifty pounds"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Around twenty-five thousand euros, or a hundred and fifty pounds.",
+      [
+        "25000",
+        "150"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "One thousand five hundred dollars, five grand, or ten bucks.",
+      []
+    ],
+    "returns": [
+      "One thousand five hundred dollars",
+      "ten bucks"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "One thousand five hundred dollars, five grand, or ten bucks.",
+      [
+        "1500",
+        "5000",
+        "10"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Five people met for an hour, and a hundred of them stayed.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "The pilot is five hundred dollars, or five grand for the year."
+    ],
+    "returns": [
+      "500",
+      "5000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "The pilot is $500, or $5,000 for the year.",
+      [
+        "500",
+        "5000"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "It is five hundred",
+      " dollars",
+      " a month."
+    ],
+    "shown": [
+      "It is five hundred"
+    ],
+    "text": "It is five hundred",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "five hundred dollars"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "500"
+        ]
+      }
+    },
+    "deltas": [
+      "It is five hundred",
+      " dollars",
+      " a month."
+    ],
+    "shown": [
+      "It is five hundred",
+      "",
+      " dollars a month.",
+      ""
+    ],
+    "text": "It is five hundred dollars a month.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "I have five grand",
+      "children."
+    ],
+    "shown": [
+      "I have ",
+      "five grandchildren.",
+      ""
+    ],
+    "text": "I have five grandchildren.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "I have five grand",
+      " saved."
+    ],
+    "shown": [
+      "I have ",
+      "",
+      "five grand saved."
+    ],
+    "text": "I have five grand saved.",
+    "blocked": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We allow 120 requests per hour.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We allow 120 requests per hour.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": true
+      }
+    },
+    "returns": [
+      "120 requests per hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Billed at 40/hr, or 40 an hour, or 40 per hour.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": true
+      }
+    },
+    "returns": [
+      "40/hr",
+      "40 an hour",
+      "40 per hour"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Billed at 40/hr, or 40 an hour, or 40 per hour.",
+      [
+        "40"
+      ]
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": true
+      }
+    },
+    "returns": []
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "rate_is_price": true
+        }
+      }
+    },
+    "deltas": [
+      "Billed at 40 an",
+      " hour",
+      " after that."
+    ],
+    "shown": [
+      "Billed at ",
+      ""
+    ],
+    "text": "Billed at ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "40 an hour"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "rate_is_price": true
+        }
+      }
+    },
+    "deltas": [
+      "Billed at 40/",
+      "hr after that."
+    ],
+    "shown": [
+      "Billed at "
+    ],
+    "text": "Billed at ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "40/hr"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [],
+        "locale": {
+          "rate_is_price": true
+        }
+      }
+    },
+    "deltas": [
+      "We have 40 apples",
+      " and pears in the shop."
+    ],
+    "shown": [
+      "We have ",
+      "40 apples and pears in the shop.",
+      ""
+    ],
+    "text": "We have 40 apples and pears in the shop.",
+    "blocked": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We'll do it for 5,000.",
+      []
+    ],
+    "returns": [
+      "5,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We'll do it for 5,000.",
+      [
+        "5000"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We can build the app for just 12k; then we test.",
+      []
+    ],
+    "returns": [
+      "12k"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We'll do it for 5 days, and build it for 3 engineers.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "We'll do it for 5",
+      ",000.",
+      " Deal?"
+    ],
+    "shown": [
+      "We'll do it for ",
+      ""
+    ],
+    "text": "We'll do it for ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "5,000"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "We'll do it for 5",
+      " days."
+    ],
+    "shown": [
+      "We'll do it for ",
+      "5 days.",
+      ""
+    ],
+    "text": "We'll do it for 5 days.",
+    "blocked": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "About 99grand, or 2.5 grand, or 1.0005 grand.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "About 99grand, or 2.5 grand, or 1.0005 grand."
+    ],
+    "returns": [
+      "1.0005",
+      "1000.5",
+      "2.5",
+      "2500",
+      "99",
+      "99000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "That is $5 grand.",
+      [
+        "5000"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It costs between twenty and thirty dollars.",
+      [
+        "20",
+        "30"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "numbers_in",
+    "args": [
+      "It costs between twenty and thirty dollars, or a hundred and five euros."
+    ],
+    "returns": [
+      "105",
+      "30"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We'll do it for 5.50 each.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": [
+          "5.50"
+        ]
+      }
+    },
+    "deltas": [
+      "We can do it for 5.",
+      "50 each."
+    ],
+    "shown": [
+      "We can do it for ",
+      "5.50 each.",
+      ""
+    ],
+    "text": "We can do it for 5.50 each.",
+    "blocked": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It will cost you five grand, or $5 grand, or 2.01 grand all in.",
+      []
+    ],
+    "returns": [
+      "five grand",
+      "5 grand",
+      "2.01 grand"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "It will cost you five grand, or $5 grand, or 2.01 grand all in.",
+      [
+        "5000",
+        "2010"
+      ]
+    ],
+    "returns": []
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "She won two Grand Slam titles, and the venue has 3 grand ballrooms.",
+      []
+    ],
+    "returns": []
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "The price is five grand",
+      " a year."
+    ],
+    "shown": [
+      "The price is "
+    ],
+    "text": "The price is ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "five grand"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "We hired five ",
+      "Aud",
+      "itors to check."
+    ],
+    "shown": [
+      "We hired five ",
+      "",
+      "Auditors to check.",
+      ""
+    ],
+    "text": "We hired five Auditors to check.",
+    "blocked": null
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "It costs twenty AUD",
+      " a month."
+    ],
+    "shown": [
+      "It costs "
+    ],
+    "text": "It costs ",
+    "blocked": {
+      "reason": "amount",
+      "found": [
+        "twenty AUD"
+      ]
+    }
+  },
+  {
+    "stream": {
+      "amount": {
+        "grounded": []
+      }
+    },
+    "deltas": [
+      "We can do it for 5.",
+      "50 each, plus shipping."
+    ],
+    "shown": [
+      "We can do it for ",
+      "5.50 each, plus shipping.",
+      ""
+    ],
+    "text": "We can do it for 5.50 each, plus shipping.",
+    "blocked": null
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "We can build the v2 for 5,000.",
+      []
+    ],
+    "returns": [
+      "5,000"
+    ]
+  },
+  {
+    "call": "unsupported_amounts",
+    "args": [
+      "Pay $40/hr.",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": true
+      }
+    },
+    "returns": [
+      "$40"
+    ]
+  },
+  {
+    "call": "amount_hold_start",
+    "args": [
+      "We are at 1 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!",
+      []
+    ],
+    "options": {
+      "locale": {
+        "rate_is_price": true
+      }
+    },
+    "returns": null
   }
 ]

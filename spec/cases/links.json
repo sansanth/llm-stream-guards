@@ -317,7 +317,7 @@
         "acme.example"
       ]
     ],
-    "returns": "Visit today."
+    "returns": "Visit `evil.example` today."
   },
   {
     "call": "strip_untrusted_links",
@@ -327,7 +327,7 @@
         "acme.example"
       ]
     ],
-    "returns": "Visit `ｅｖｉｌ.example` today."
+    "returns": "Visit `evil.example` today."
   },
   {
     "call": "strip_untrusted_links",
@@ -785,7 +785,9 @@
         "http://exa℀mple.example/"
       ]
     ],
-    "returns": []
+    "returns": [
+      "exaa"
+    ]
   },
   {
     "call": "hosts_of",
@@ -794,7 +796,9 @@
         "http://a＠b.example/"
       ]
     ],
-    "returns": []
+    "returns": [
+      "b.example"
+    ]
   },
   {
     "call": "hosts_of",
@@ -803,7 +807,9 @@
         "http://a＃b.example/"
       ]
     ],
-    "returns": []
+    "returns": [
+      "a"
+    ]
   },
   {
     "call": "hosts_of",
@@ -1196,7 +1202,7 @@
   {
     "call": "strip_untrusted_links",
     "args": [
-      "A `code` span and 0 a stray placeholder.",
+      "A `code` span and \ue0000\ue001 a stray placeholder.",
       [
         "acme.example"
       ]
@@ -1767,5 +1773,73 @@
       "emails": [],
       "phones": []
     }
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See [a](https://evil.example/1), <https://evil.example/2>, [b](javascript:x) and https://acme.example.",
+      [
+        "acme.example"
+      ]
+    ],
+    "options": {
+      "removed": []
+    },
+    "returns": "See a, `evil.example`, b and https://acme.example.",
+    "removed": [
+      "evil.example",
+      "evil.example",
+      "javascript:"
+    ]
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "See https://evil.example now.",
+      [
+        "acme.example"
+      ]
+    ],
+    "options": {
+      "removed": [
+        "earlier.example"
+      ]
+    },
+    "returns": "See `evil.example` now.",
+    "removed": [
+      "earlier.example",
+      "evil.example"
+    ]
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Nothing to take out at https://acme.example.",
+      [
+        "acme.example"
+      ]
+    ],
+    "options": {
+      "removed": []
+    },
+    "returns": "Nothing to take out at https://acme.example.",
+    "removed": []
+  },
+  {
+    "call": "strip_untrusted_links",
+    "args": [
+      "Log in at ｈｔｔｐｓ://evil.example/x and https://evil2.example.",
+      [
+        "acme.example"
+      ]
+    ],
+    "options": {
+      "removed": []
+    },
+    "returns": "Log in at `evil.example` and `evil2.example`.",
+    "removed": [
+      "evil2.example",
+      "evil.example"
+    ]
   }
 ]

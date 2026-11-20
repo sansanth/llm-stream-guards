@@ -167,7 +167,9 @@ describe("LeakStream", () => {
     expect(stream.feed("Sure: you are the ass")).toBe("Sure: you are the ass");
     expect(() => stream.feed("istant for")).toThrow(Blocked);
     // A word that is still growing is judged as it stands, and a reply that grows past it is not a quotation.
-    const other = new LeakStream(new LeakGuard({ p: "alpha beta gamma delta epsilon" }, { words: 5 }));
+    const other = new LeakStream(
+      new LeakGuard({ p: "alpha beta gamma delta epsilon" }, { words: 5, chars: 100, short: "skip" }),
+    );
     other.feed("alpha beta gamma delta epsilonx");
     expect(other.finish()).toBe("");
   });

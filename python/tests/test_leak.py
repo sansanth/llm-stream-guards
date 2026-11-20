@@ -12,7 +12,8 @@ def guard(n: int = 8) -> LeakGuard:
 def test_a_run_of_n_words_is_a_leak_and_n_minus_one_is_not() -> None:
     words = PRICING.split()
     assert guard().leaked(" ".join(words[:8]))
-    assert not guard().leaked(" ".join(words[:7]))
+    # Seven words with fewer than 40 letters: no run of words, and too few letters to compare.
+    assert not guard().leaked(" ".join(words[2:9]))
     assert guard(3).leaked(" ".join(words[4:7]))
 
 
@@ -58,7 +59,8 @@ def test_a_run_length_below_one_is_refused() -> None:
 
 def test_a_quotation_growing_across_deltas_blocks_once_complete() -> None:
     stream = LeakStream(guard())
-    words = PRICING.split()
+    # Seven words with fewer than 40 letters, so the eighth is the one that completes a quotation.
+    words = PRICING.split()[2:]
     shown = [stream.feed(word + " ") for word in words[:7]]
     assert "".join(shown) == stream.text == " ".join(words[:7]) + " "
     with pytest.raises(Blocked) as blocked:
@@ -114,3 +116,29 @@ def test_allowed_phrases_that_take_every_run_out_of_a_text_are_refused_or_skippe
     guard = LeakGuard({"p": prompt}, words=8, allowed=allowed, short="skip")
     assert guard.skipped == ("p",) and not guard.leaked(prompt)
     assert LeakGuard({"p": prompt}, words=3, allowed=allowed).leaked("one two three")
+
+
+def test_gap_chars_and_encodings_are_checked() -> None:
+    with pytest.raises(ValueError, match="gap"):
+        LeakGuard({"p": PRICING}, gap=-1)
+    with pytest.raises(ValueError, match="chars"):
+        LeakGuard({"p": PRICING}, chars=0)
+    with pytest.raises(ValueError, match="rot47"):
+        LeakGuard({"p": PRICING}, encodings=("rot13", "rot47"))
+
+
+def test_a_text_with_fewer_letters_than_chars_given_follows_short() -> None:
+    with pytest.raises(ValueError, match="fewer letters"):
+        LeakGuard({"p": "a b c d e f g h"}, chars=40)
+    guard = LeakGuard({"p": "a b c d e f g h"}, chars=40, short="skip")
+    assert guard.skipped == ()
+    # Still compared by its words, only not by its letters.
+    assert guard.match("a b c d e f g h") == "p"
+    assert guard.match("abcdefgh") is None
+
+
+def test_a_run_of_base64_that_encodes_no_text_is_left_alone() -> None:
+    guard = LeakGuard({"p": PRICING})
+    # Too short to be whole, a length no base64 has, and bytes that are not UTF-8.
+    for reply in ("QUJD", "Q" * 25, "////" * 8):
+        assert guard.match(reply) is None
