@@ -1,6 +1,7 @@
 import re
 from collections.abc import Callable, Collection, Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
+from typing import Literal
 
 from ._check import CheckStream, _held_in
 from ._reveal import changed_near, foreign_digits, reveal_with_offsets
@@ -27,6 +28,19 @@ _DOT_OPEN = re.compile(r"(?<![\d.,])[1-9]\d{0,2}(?:\.\d{3})*(?:\.\d{0,3}|,\d{0,2
 _CLAUSE_END = r"(?=[.;:!?](?!\d)|[)\r\n]|,\s)"
 # A number at the end of a streaming text and the words after it, which may still become a rate: "40 an", "40/".
 _OPEN_RATE = re.compile(r"\b\d[\d,.]*(?:(?:[^\S\n]|/)+[^\W\d_]+){0,3}(?:[^\S\n]|/)*\Z")
+# The same, for a rate written straight after the number: what follows it is checked against `adjacent_rates`.
+_OPEN_ADJACENT = re.compile(r"\b\d[\d,.]*((?:\s|/|[^\W\d_])*)\Z")
+# Han, Hiragana, Katakana and Hangul, whose words are written without a space before a particle or the next word: a
+# currency name in them comes right after the digits and runs on into the sentence ("5000円です").
+_UNSPACED = (
+    "\u1100-\u11ff\u3040-\u30ff\u3130-\u318f\u31f0-\u31ff\u3400-\u4dbf\u4e00-\u9fff\ua960-\ua97f\uac00-\ud7ff"
+    "\uf900-\ufaff\uff66-\uff9f\U00020000-\U0003134f"
+)
+_UNSPACED_NAME = re.compile(f"[{_UNSPACED}]+")
+# Not right after a letter of another script: a number there is part of a word ("v2").
+_NOT_IN_WORD = rf"(?<!(?![{_UNSPACED}])[^\W\d_])"
+# A number at the end that a name in those scripts may still follow.
+_OPEN_UNSPACED = rf"{_NOT_IN_WORD}(?<!\d)(?<!\d[,.])\d[\d,.]*(?:[^\S\r\n]\d[\d,.]*)*\s*"
 # fmt: off
 _UNITS = (
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen",
@@ -51,7 +65,9 @@ class Locale:
     - `currency_symbols`: written before or after an amount: `$120`, `50 000 €`.
     - `currency_codes`: written before or after an amount: `INR 50,000`, `120 usd`.
     - `currency_prefixes`: regex fragments written before an amount, besides the codes: `Rs. 50,000`.
-    - `currency_names`: regex fragments written after an amount: `40 euros`, `40 US dollars`.
+    - `currency_names`: regex fragments written after an amount: `40 euros`, `40 US dollars`. A name written in Han,
+      Hiragana, Katakana or Hangul characters only (`元`, `円`, `원`) also counts right after the digits with the
+      sentence running on: `5000円です`, `价格是5000元左右`.
     - `magnitudes`: a word after a number that multiplies it, so `$2M` and `$2,000,000` compare equal. A word longer
       than two letters may take a plural `s`.
     - `cost_words`: words that make a bare magnitude (`60k`) or a rate a price when they are near it.
@@ -68,10 +84,15 @@ class Locale:
       `five grand` is 5000. Like a bare magnitude, it is a price with a cost word or a currency near it.
     - `price_of_work`: a regex fragment that, followed by a number that ends its clause, makes it a price: `We'll do it
       for 5,000.` Not `do it for 5 days`.
-    - `rate_is_price`: a number followed by `rate`, with at most one word between (`40/hr`, `120 requests per hour`),
-      is a price with no cost word near it. Off, since `120 requests per hour` is a throughput.
+    - `rate_is_price`: `True` makes a number followed by `rate`, with at most one word between (`40/hr`, `120 requests
+      per hour`), a price with no cost word near it. `"adjacent"` makes only a number followed by one of
+      `adjacent_rates` one (`40/hr`, `40 an hour`, `40 / hour`): `120 per hour` is still a price only near a cost
+      word. Off, since `120 requests per hour` is a throughput.
     - `dot_thousands`: a number shaped `5.000` or `12.500,50`, right beside a currency (`R$ 5.000,50`, `1.499 €`), is
-      read with `.` between thousands and `,` before the cents. Off, for English.
+      read with `.` between thousands and `,` before the cents, and only as that: it grounds no `5` or `5.000`, and a
+      source's `5.000` with no currency beside it does not ground `R$ 5.000`. Off, for English.
+    - `adjacent_rates`: what `rate_is_price="adjacent"` reads straight after a number, ignoring case. White space may
+      be written around a `/` and is written before a word.
 
     Change one with `dataclasses.replace`: `replace(ENGLISH, currency_codes=(*ENGLISH.currency_codes, "nok"))`.
     Numbers are read with `.` as the decimal point and `,` or a space between thousands, unless `dot_thousands` is on.
@@ -114,8 +135,9 @@ class Locale:
         r"\b(?:do|build|deliver|get|have)\s+(?:it|this|that|the\s+\w+)\s+for\s+"
         r"(?:(?:just|only|about|around|roughly)\s+)?"
     )
-    rate_is_price: bool = False
+    rate_is_price: bool | Literal["adjacent"] = False
     dot_thousands: bool = False
+    adjacent_rates: tuple[str, ...] = ("/hr", "/hour", "/day", "an hour", "a hour")
 
     _scale: dict[str, int] = field(init=False, repr=False)
     _number: re.Pattern[str] = field(init=False, repr=False)
@@ -142,11 +164,21 @@ class Locale:
     _currency_before: re.Pattern[str] = field(init=False, repr=False)
     _money_magnitude: re.Pattern[str] = field(init=False, repr=False)
     _codes: frozenset[str] = field(init=False, repr=False)
+    _open_unspaced: re.Pattern[str] = field(init=False, repr=False)
+    _adjacent: tuple[str, ...] = field(init=False, repr=False)
+    _rate_mode: bool | str = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
+        if isinstance(self.rate_is_price, str) and self.rate_is_price != "adjacent":
+            raise ValueError(f"rate_is_price must be True, False or 'adjacent', not {self.rate_is_price!r}")
+        rate_mode = "adjacent" if self.rate_is_price == "adjacent" else bool(self.rate_is_price)
         scale = {word.lower(): value for word, value in self.magnitudes.items()}
         words = _either(f"{re.escape(word)}s?" if len(word) > 2 else re.escape(word) for word in scale)
-        amount = _NUMBER_TEXT + r"\s*(?:(" + words + r")\b)?"
+        unspaced_names = [name for name in self.currency_names if _UNSPACED_NAME.fullmatch(name)]
+        unspaced = _either(map(re.escape, unspaced_names))
+        # A magnitude ends at a word boundary, or runs into a name written without one: "5万円".
+        magnitude_end = f"(?:\\b|(?=(?:{unspaced})))" if unspaced_names else r"\b"
+        amount = _NUMBER_TEXT + r"\s*(?:(" + words + ")" + magnitude_end + ")?"
         symbol = "[" + re.escape(self.currency_symbols) + "]" if self.currency_symbols else _NEVER
         codes = [re.escape(code) for code in self.currency_codes]
         before = _either([*self.currency_prefixes, *codes])
@@ -171,6 +203,17 @@ class Locale:
         money_magnitudes = {word.lower(): value for word, value in self.money_magnitudes.items()}
         money_magnitude = _either(map(re.escape, money_magnitudes))
         after_words = _either([*self.currency_names, *self.names_after_words, *codes])
+        # "5000円です", "5万円": no word boundary after the name, nor between it and the number.
+        right_after = f"|{_NOT_IN_WORD}{amount}(?:{unspaced})" if unspaced_names else ""
+        dot_right_after = f"|{_NOT_IN_WORD}{_DOT_NUMBER}[^\\S\\r\\n]?(?:{unspaced})" if unspaced_names else ""
+        range_right_after = (
+            f"|{_NOT_IN_WORD}{amount}\\s*(?:{joiner})\\s*{amount}(?:{unspaced})" if unspaced_names else ""
+        )
+        name_starts = _either(re.escape(name[:end]) for name in unspaced_names for end in range(1, len(name) + 1))
+        rate_price = {
+            True: r"\b" + _DIGITS + f"(?:\\s+[^\\W\\d_]+)?(?:{rate})",
+            "adjacent": r"\b" + _DIGITS + f"(?:{_either(map(_rate_pattern, self.adjacent_rates))})",
+        }
         compiled = {
             "_scale": scale,
             "_number": re.compile(amount, re.IGNORECASE),
@@ -179,14 +222,16 @@ class Locale:
                 f"|(?<![A-Za-z])(?:{before})\\s*{amount}"
                 f"|{amount}\\s*(?:{after})\\b"
                 f"|{amount}\\s*{symbol}"
-                f"|{amount}\\s*(?:{effort})",
+                f"|{amount}\\s*(?:{effort})"
+                f"{right_after}",
                 re.IGNORECASE,
             ),
             "_range": re.compile(f"({symbol})?\\s*{amount}\\s*(?:{joiner})\\s*({symbol})?\\s*{amount}", re.IGNORECASE),
             # A range priced by a code or a name ("USD 40 to 65", "40 to 65 euros") rather than by a symbol.
             "_range_named": re.compile(
                 f"(?<![A-Za-z])(?:{before})\\s*{amount}\\s*(?:{joiner})\\s*{amount}"
-                f"|{amount}\\s*(?:{joiner})\\s*{amount}\\s*(?:{after})\\b",
+                f"|{amount}\\s*(?:{joiner})\\s*{amount}\\s*(?:{after})\\b"
+                f"{range_right_after}",
                 re.IGNORECASE,
             ),
             "_bare_magnitude": re.compile(r"\b" + _DIGITS + r"\s*(" + words + r")\b", re.IGNORECASE),
@@ -216,8 +261,12 @@ class Locale:
             "_codes": frozenset(code.lower() for code in self.currency_codes),
             "_work": re.compile(f"(?:{_either([self.price_of_work])}){amount}{_CLAUSE_END}", re.IGNORECASE),
             "_open_work": re.compile(f"(?:{_either([self.price_of_work])})\\d[\\d,.]*\\s*\\Z", re.IGNORECASE),
-            "_rate_price": re.compile(
-                r"\b" + _DIGITS + f"(?:\\s+[^\\W\\d_]+)?(?:{rate})" if self.rate_is_price else _NEVER, re.IGNORECASE
+            "_rate_mode": rate_mode,
+            "_rate_price": re.compile(rate_price.get(rate_mode, _NEVER), re.IGNORECASE),
+            "_adjacent": tuple(_written_rate(f" {form}") for form in self.adjacent_rates if form.strip()),
+            "_open_unspaced": re.compile(
+                f"{_OPEN_UNSPACED}(?:(?:{words})\\s*)?(?:{name_starts})?\\Z" if unspaced_names else _NEVER,
+                re.IGNORECASE,
             ),
             # The money magnitude that ends a figure, which "99grand" runs into its number.
             "_money_magnitude": re.compile(f"(?:{money_magnitude})\\Z", re.IGNORECASE),
@@ -225,6 +274,7 @@ class Locale:
             "_dot": re.compile(
                 f"(?:{symbol}|(?<![A-Za-z])(?:{before}))[^\\S\\r\\n]?{_DOT_NUMBER}"
                 f"|{_DOT_NUMBER}[^\\S\\r\\n]?(?:{symbol}|(?:{after})\\b)"
+                f"{dot_right_after}"
                 if self.dot_thousands
                 else _NEVER,
                 re.IGNORECASE,
@@ -232,6 +282,21 @@ class Locale:
         }
         for name, value in compiled.items():
             object.__setattr__(self, name, value)
+
+
+def _rate_pattern(form: str) -> str:
+    """One of `adjacent_rates` as a pattern: "/hr" is `\\s*/\\s*hr\\b`, "an hour" `\\s+an\\s+hour\\b`."""
+    tokens = re.findall(r"/|[^\s/]+", form)
+    pattern = "".join(
+        (r"\s*" if "/" in (before, token) else r"\s+") + re.escape(token)
+        for before, token in zip(["", *tokens], tokens, strict=False)
+    )
+    return pattern + r"\b" if tokens and re.search(r"\w\Z", tokens[-1]) else pattern
+
+
+def _written_rate(text: str) -> str:
+    """A rate after a number as `_rate_pattern` reads it, so that one still being written can be compared: "/hr"."""
+    return re.sub(r"\s+", " ", re.sub(r"\s*/\s*", "/", text)).lower()
 
 
 ENGLISH = Locale()
@@ -366,16 +431,23 @@ def _magnitude_value(match: re.Match[str], locale: Locale) -> str:
 
 def _dot_keys(written: str) -> set[str]:
     """
-    How a price with dots between thousands is compared: its thousands ("5000"), its value with the cents ("5000.50")
-    and its digits as written ("5.000,50"). Not the decimal "5" the same digits would otherwise read as: a source's
-    "5" does not ground it (a source's "5.000" still lists "5" too, since `numbers_in` keeps both readings).
+    How a price with dots between thousands is compared: by its value, "5000", or "5000.50" with the cents, as
+    `$5,000.50` is. Not by its digits as written, which a version number ("1.500") would ground, nor the decimal "5".
     """
     whole, _, cents = written.partition(",")
     thousands = whole.replace(".", "")
-    keys = {thousands, written, whole}
-    if cents:
-        keys |= _amount_keys(f"{thousands}.{cents}", None, {})
-    return keys
+    return _amount_keys(f"{thousands}.{cents}", None, {}) if cents else {thousands}
+
+
+def _without(text: str, spans: Iterable[tuple[int, int]]) -> str:
+    """
+    `text` with each span blanked, so that offsets into it still hold: a price with dots between thousands, read once by
+    `_dot`, which no other reading may read again as a decimal. The blank is no space, so that a currency before it
+    does not reach a number after it.
+    """
+    for start, end in spans:
+        text = text[:start] + "\x00" * (end - start) + text[end:]
+    return text
 
 
 def _dot_number(text: str) -> str:
@@ -386,14 +458,16 @@ def _dot_number(text: str) -> str:
 
 def _keys(text: str, locale: Locale) -> set[str]:
     keys: set[str] = set()
+    dots = list(locale._dot.finditer(text))
+    for match in dots:
+        keys |= _dot_keys(_dot_number(match.group(0)))
+    text = _without(text, (match.span() for match in dots))
     for number, magnitude in locale._number.findall(text):
         keys |= _amount_keys(number, magnitude or None, locale._scale)
     keys |= {key for _, key, _ in _ranges(text, locale)}
     keys |= {str(_spelled_value(match.group(0), locale)) for match in locale._spelled.finditer(text)}
     for pattern in (locale._spelled_magnitude, locale._magnitude):
         keys |= {_magnitude_value(match, locale) for match in pattern.finditer(text)}
-    for match in locale._dot.finditer(text):
-        keys |= _dot_keys(_dot_number(match.group(0)))
     return keys
 
 
@@ -403,7 +477,7 @@ def numbers_in(*texts: str | None, locale: Locale = ENGLISH) -> set[str]:
     key (`range:low-high`): the grounded set for the amount guard. A text is read as written and as `reveal` reads it,
     and a number written in another script's digits is listed in 0-9 only, so `$500` in Arabic-Indic digits grounds
     `$500`. An amount in words is listed by its value ("five hundred dollars" as "500"), and a price with dots between
-    thousands, when the locale reads those, both ways.
+    thousands, when the locale reads those and a currency is beside it, by its value.
     """
     keys: set[str] = set()
     for text in texts:
@@ -518,6 +592,8 @@ def _figures(
         whole.append(match.span())
         unsupported = _dot_keys(_dot_number(match.group(0))).isdisjoint(grounded)
         report(match, unsupported if complete or text[match.end() :] not in ("", ".", ",") else None)
+    # Every other reading, and `settled`, sees the text without them.
+    text = _without(text, whole)
     money = list(locale._money.finditer(text))
 
     def overlaps(match: re.Match[str], spans: Iterable[tuple[int, int]]) -> bool:
@@ -615,7 +691,8 @@ def _hold_figures(text: str, grounded: Collection[str], locale: Locale) -> int |
     A money figure or a currency symbol that ends the text may still grow, grounded or not ("$5" then "00"). A bare
     magnitude no source states is a price only if a cost word comes within the window after it, so it is held until
     that window has streamed. A number at the end may still become a magnitude ("60" before " thousand"), the price of
-    the work ("for 5" before "."), a rate ("40 an" before "hour") or a price with dots between thousands ("5.000,").
+    the work ("for 5" before "."), a rate ("40 an" before "hour"), a price with dots between thousands ("5.000,") or
+    one with a currency name written without a space ("5000" before "円").
     """
     open_figures = [
         match.start()
@@ -625,30 +702,39 @@ def _hold_figures(text: str, grounded: Collection[str], locale: Locale) -> int |
     ]
     if symbol := locale._trailing_symbol.search(text):
         open_figures.append(symbol.start())
-    for pattern in (
-        locale._open_work,
-        *((_DOT_OPEN,) if locale.dot_thousands else ()),
-        *((_OPEN_RATE,) if locale.rate_is_price else ()),
-    ):
-        if open_figure := pattern.search(text):
+    opening = [
+        pattern.search(text)
+        for pattern in (
+            locale._open_work,
+            locale._open_unspaced,
+            *((_DOT_OPEN,) if locale.dot_thousands else ()),
+            *((_OPEN_RATE,) if locale._rate_mode is True else ()),
+        )
+    ]
+    if locale._rate_mode == "adjacent" and (rate := _OPEN_ADJACENT.search(text)):
+        written = _written_rate(rate.group(1))
+        opening.append(rate if any(form.startswith(written) for form in locale._adjacent) else None)
+    for open_figure in opening:
+        if open_figure:
             # From the number, and a currency right before it; the words that lead into it ("do it for ") are shown.
             start = open_figure.start() + len(_LEAD.match(open_figure.group(0)).group(0))  # type: ignore[union-attr]
             currency = locale._currency_before.search(text, 0, start)
             open_figures.append(currency.start() if currency else start)
     if open_figures:
         return min(open_figures)
+    read = _without(text, (match.span() for match in locale._dot.finditer(text)))
     starts: set[int] = set()
-    for match in locale._bare_magnitude.finditer(text):
-        unsettled = len(text) < match.end() + _COST_WORD_WINDOW
+    for match in locale._bare_magnitude.finditer(read):
+        unsettled = len(read) < match.end() + _COST_WORD_WINDOW
         if unsettled and _amount_keys(match.group(1), match.group(2), locale._scale).isdisjoint(grounded):
             return match.start()
         starts.add(match.start())
     for pattern in (locale._spelled_magnitude, locale._magnitude):
-        for match in pattern.finditer(text):
-            if len(text) < match.end() + _COST_WORD_WINDOW and _magnitude_value(match, locale) not in grounded:
+        for match in pattern.finditer(read):
+            if len(read) < match.end() + _COST_WORD_WINDOW and _magnitude_value(match, locale) not in grounded:
                 return match.start()
-    for match in locale._rate.finditer(text):
-        if len(text) < match.end() + _COST_WORD_WINDOW and _amount_keys(match.group(1), None, locale._scale).isdisjoint(
+    for match in locale._rate.finditer(read):
+        if len(read) < match.end() + _COST_WORD_WINDOW and _amount_keys(match.group(1), None, locale._scale).isdisjoint(
             grounded
         ):
             return match.start()

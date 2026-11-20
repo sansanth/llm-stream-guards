@@ -40,6 +40,22 @@ const DOT_OPEN = compile(String.raw`(?<![\d.,])[1-9]\d{0,2}(?:\.\d{3})*(?:\.\d{0
 const CLAUSE_END = String.raw`(?=[.;:!?](?!\d)|[)\r\n]|,\s)`;
 // A number at the end of a streaming text and the words after it, which may still become a rate: "40 an", "40/".
 const OPEN_RATE = compile(String.raw`\b\d[\d,.]*(?:(?:[^\S\n]|/)+[\p{L}\p{Nl}\p{No}]+){0,3}(?:[^\S\n]|/)*\Z`);
+// The same, for a rate written straight after the number: what follows it is checked against `adjacentRates`.
+const OPEN_ADJACENT = compile(String.raw`\b\d[\d,.]*((?:\s|/|[\p{L}\p{Nl}\p{No}])*)\Z`);
+// Han, Hiragana, Katakana and Hangul, whose words are written without a space before a particle or the next word: a
+// currency name in them comes right after the digits and runs on into the sentence ("5000円です").
+const UNSPACED =
+  String.raw`\u1100-\u11ff\u3040-\u30ff\u3130-\u318f\u31f0-\u31ff\u3400-\u4dbf\u4e00-\u9fff\ua960-\ua97f\uac00-\ud7ff` +
+  String.raw`\uf900-\ufaff\uff66-\uff9f\u{20000}-\u{3134f}`;
+const UNSPACED_NAME = compile(`\\A[${UNSPACED}]+\\Z`);
+// Not right after a letter of another script: a number there is part of a word ("v2").
+const NOT_IN_WORD = `(?<!(?![${UNSPACED}])[\\p{L}\\p{Nl}\\p{No}])`;
+// A number at the end that a name in those scripts may still follow.
+const OPEN_UNSPACED = `${NOT_IN_WORD}(?<!\\d)(?<!\\d[,.])\\d[\\d,.]*(?:[^\\S\\r\\n]\\d[\\d,.]*)*\\s*`;
+const RATE_TOKEN = compile(String.raw`/|[^\s/]+`);
+const WORD_END = compile(String.raw`\w\Z`);
+const AROUND_SLASH = compile(String.raw`\s*/\s*`);
+const SPACE_RUN = compile(String.raw`\s+`);
 const LEAD = /^\P{Nd}*/u;
 const LAST_WORD = compile(String.raw`\w+\Z`);
 
@@ -66,7 +82,11 @@ export interface LocaleOptions {
   readonly currencyCodes: readonly string[];
   /** Regex fragments written before an amount, besides the codes: `Rs. 50,000`. */
   readonly currencyPrefixes: readonly string[];
-  /** Regex fragments written after an amount: `40 euros`, `40 US dollars`. */
+  /**
+   * Regex fragments written after an amount: `40 euros`, `40 US dollars`. A name written in Han, Hiragana, Katakana or
+   * Hangul characters only (`元`, `円`, `원`) also counts right after the digits with the sentence running on:
+   * `5000円です`, `价格是5000元左右`.
+   */
   readonly currencyNames: readonly string[];
   /**
    * A word after a number that multiplies it, so `$2M` and `$2,000,000` compare equal. A word longer than two letters
@@ -112,13 +132,21 @@ export interface LocaleOptions {
    */
   readonly priceOfWork: string;
   /**
-   * A number followed by `rate`, with at most one word between (`40/hr`, `120 requests per hour`), is a price with no
-   * cost word near it. Off, since `120 requests per hour` is a throughput.
+   * `true` makes a number followed by `rate`, with at most one word between (`40/hr`, `120 requests per hour`), a price
+   * with no cost word near it. `"adjacent"` makes only a number followed by one of `adjacentRates` one (`40/hr`, `40 an
+   * hour`, `40 / hour`): `120 per hour` is still a price only near a cost word. Off, since `120 requests per hour` is a
+   * throughput.
    */
-  readonly rateIsPrice: boolean;
+  readonly rateIsPrice: boolean | "adjacent";
+  /**
+   * What `rateIsPrice: "adjacent"` reads straight after a number, ignoring case. White space may be written around a
+   * `/` and is written before a word.
+   */
+  readonly adjacentRates: readonly string[];
   /**
    * A number shaped `5.000` or `12.500,50`, right beside a currency (`R$ 5.000,50`, `1.499 €`), is read with `.` between
-   * thousands and `,` before the cents. Off, for English.
+   * thousands and `,` before the cents, and only as that: it grounds no `5` or `5.000`, and a source's `5.000` with no
+   * currency beside it does not ground `R$ 5.000`. Off, for English.
    */
   readonly dotThousands: boolean;
 }
@@ -150,7 +178,9 @@ interface Compiled {
   codes: ReadonlySet<string>;
   dot: RegExp;
   dotThousands: boolean;
-  rateIsPrice: boolean;
+  rateIsPrice: boolean | "adjacent";
+  adjacent: readonly string[];
+  openUnspaced: RegExp;
 }
 
 const COMPILED = new WeakMap<Locale, Compiled>();
@@ -193,6 +223,7 @@ const DEFAULTS: LocaleOptions = {
     String.raw`\b(?:do|build|deliver|get|have)\s+(?:it|this|that|the\s+\w+)\s+for\s+` +
     String.raw`(?:(?:just|only|about|around|roughly)\s+)?`,
   rateIsPrice: false,
+  adjacentRates: ["/hr", "/hour", "/day", "an hour", "a hour"],
   dotThousands: false,
 };
 
@@ -222,7 +253,8 @@ export class Locale implements LocaleOptions {
   readonly namesAfterWords: readonly string[];
   readonly moneyMagnitudes: Readonly<Record<string, number>>;
   readonly priceOfWork: string;
-  readonly rateIsPrice: boolean;
+  readonly rateIsPrice: boolean | "adjacent";
+  readonly adjacentRates: readonly string[];
   readonly dotThousands: boolean;
 
   constructor(options: Partial<LocaleOptions> = {}) {
@@ -248,7 +280,11 @@ export class Locale implements LocaleOptions {
     this.namesAfterWords = Object.freeze([...fields.namesAfterWords]);
     this.moneyMagnitudes = Object.freeze({ ...fields.moneyMagnitudes });
     this.priceOfWork = fields.priceOfWork;
+    if (typeof fields.rateIsPrice === "string" && fields.rateIsPrice !== "adjacent") {
+      throw new RangeError(`rateIsPrice must be true, false or "adjacent", not ${JSON.stringify(fields.rateIsPrice)}`);
+    }
     this.rateIsPrice = fields.rateIsPrice;
+    this.adjacentRates = Object.freeze([...fields.adjacentRates]);
     this.dotThousands = fields.dotThousands;
     COMPILED.set(this, compileLocale(this));
     Object.freeze(this);
@@ -263,7 +299,12 @@ export class Locale implements LocaleOptions {
 function compileLocale(locale: LocaleOptions): Compiled {
   const scale = new Map(Object.entries(locale.magnitudes).map(([word, value]) => [lower(word), value]));
   const words = either([...scale.keys()].map((word) => (length(word) > 2 ? `${reEscape(word)}s?` : reEscape(word))));
-  const amount = `${NUMBER_TEXT}\\s*(?:(${words})\\b)?`;
+  const unspacedNames = locale.currencyNames.filter((name) => search(UNSPACED_NAME, name) !== null);
+  const unspaced = either(unspacedNames.map(reEscape));
+  // A magnitude ends at a word boundary, or runs into a name written without one: "5万円".
+  const magnitudeEnd = unspacedNames.length > 0 ? `(?:\\b|(?=(?:${unspaced})))` : "\\b";
+  const amount = `${NUMBER_TEXT}\\s*(?:(${words})${magnitudeEnd})?`;
+  const rateMode = locale.rateIsPrice === "adjacent" ? "adjacent" : Boolean(locale.rateIsPrice);
   const symbol = locale.currencySymbols ? `[${reEscape(locale.currencySymbols)}]` : NEVER;
   const codes = locale.currencyCodes.map(reEscape);
   const before = either([...locale.currencyPrefixes, ...codes]);
@@ -291,6 +332,23 @@ function compileLocale(locale: LocaleOptions): Compiled {
   const moneyMagnitude = either([...moneyMagnitudes.keys()].map(reEscape));
   const afterWords = either([...locale.currencyNames, ...locale.namesAfterWords, ...codes]);
   const work = either([locale.priceOfWork]);
+  // "5000円です", "5万円": no word boundary after the name, nor between it and the number.
+  const rightAfter = unspacedNames.length > 0 ? `|${NOT_IN_WORD}${amount}(?:${unspaced})` : "";
+  const dotRightAfter = unspacedNames.length > 0 ? `|${NOT_IN_WORD}${DOT_NUMBER}[^\\S\\r\\n]?(?:${unspaced})` : "";
+  const rangeRightAfter =
+    unspacedNames.length > 0 ? `|${NOT_IN_WORD}${amount}\\s*(?:${joiner})\\s*${amount}(?:${unspaced})` : "";
+  const nameStarts = either(
+    unspacedNames.flatMap((name) => {
+      const chars = [...name];
+      return chars.map((_, end) => reEscape(chars.slice(0, end + 1).join("")));
+    }),
+  );
+  const ratePrice =
+    rateMode === true
+      ? `\\b${DIGITS}(?:\\s+[\\p{L}\\p{Nl}\\p{No}]+)?(?:${rate})`
+      : rateMode === "adjacent"
+        ? `\\b${DIGITS}(?:${either(locale.adjacentRates.map(ratePattern))})`
+        : NEVER;
   return {
     numbers,
     scales: new Map([...scaleWords, ...moneyMagnitudes]),
@@ -301,8 +359,10 @@ function compileLocale(locale: LocaleOptions): Compiled {
     codes: new Set(locale.currencyCodes.map(lower)),
     work: compile(`(?:${work})${amount}${CLAUSE_END}`, ignoreCase),
     openWork: compile(`(?:${work})\\d[\\d,.]*\\s*\\Z`, ignoreCase),
-    ratePrice: compile(
-      locale.rateIsPrice ? `\\b${DIGITS}(?:\\s+[\\p{L}\\p{Nl}\\p{No}]+)?(?:${rate})` : NEVER,
+    ratePrice: compile(ratePrice, ignoreCase),
+    adjacent: locale.adjacentRates.filter((form) => strip(form) !== "").map((form) => writtenRate(` ${form}`)),
+    openUnspaced: compile(
+      unspacedNames.length > 0 ? `${OPEN_UNSPACED}(?:(?:${words})\\s*)?(?:${nameStarts})?\\Z` : NEVER,
       ignoreCase,
     ),
     // The money magnitude that ends a figure, which "99grand" runs into its number.
@@ -311,12 +371,13 @@ function compileLocale(locale: LocaleOptions): Compiled {
     dot: compile(
       locale.dotThousands
         ? `(?:${symbol}|(?<![A-Za-z])(?:${before}))[^\\S\\r\\n]?${DOT_NUMBER}` +
-            `|${DOT_NUMBER}[^\\S\\r\\n]?(?:${symbol}|(?:${after})\\b)`
+            `|${DOT_NUMBER}[^\\S\\r\\n]?(?:${symbol}|(?:${after})\\b)` +
+            dotRightAfter
         : NEVER,
       ignoreCase,
     ),
     dotThousands: locale.dotThousands,
-    rateIsPrice: locale.rateIsPrice,
+    rateIsPrice: rateMode,
     scale,
     number: compile(amount, ignoreCase),
     money: compile(
@@ -325,14 +386,16 @@ function compileLocale(locale: LocaleOptions): Compiled {
         `|(?<![A-Za-z\\u0130\\u0131])(?:${before})\\s*${amount}` +
         `|${amount}\\s*(?:${after})\\b` +
         `|${amount}\\s*${symbol}` +
-        `|${amount}\\s*(?:${effort})`,
+        `|${amount}\\s*(?:${effort})` +
+        rightAfter,
       ignoreCase,
     ),
     range: compile(`(${symbol})?\\s*${amount}\\s*(?:${joiner})\\s*(${symbol})?\\s*${amount}`, ignoreCase),
     // A range priced by a code or a name ("USD 40 to 65", "40 to 65 euros") rather than by a symbol.
     rangeNamed: compile(
       `(?<![A-Za-z])(?:${before})\\s*${amount}\\s*(?:${joiner})\\s*${amount}` +
-        `|${amount}\\s*(?:${joiner})\\s*${amount}\\s*(?:${after})\\b`,
+        `|${amount}\\s*(?:${joiner})\\s*${amount}\\s*(?:${after})\\b` +
+        rangeRightAfter,
       ignoreCase,
     ),
     bareMagnitude: compile(`\\b${DIGITS}\\s*(${words})\\b`, ignoreCase),
@@ -353,6 +416,26 @@ function compileLocale(locale: LocaleOptions): Compiled {
       ignoreCase,
     ),
   };
+}
+
+/** One of `adjacentRates` as a pattern: white space may come around a "/", and comes before a word. */
+function ratePattern(form: string): string {
+  const tokens = findAll(RATE_TOKEN, form).map(([token]) => token);
+  const pattern = tokens
+    .map((token, index) => ([tokens[index - 1], token].includes("/") ? "\\s*" : "\\s+") + reEscape(token))
+    .join("");
+  return tokens.length > 0 && search(WORD_END, tokens.at(-1) as string) !== null ? `${pattern}\\b` : pattern;
+}
+
+/** A rate after a number as `ratePattern` reads it, so that one still being written can be compared: "/hr". */
+function writtenRate(text: string): string {
+  return lower(
+    sub(
+      SPACE_RUN,
+      sub(AROUND_SLASH, text, () => "/"),
+      () => " ",
+    ),
+  );
 }
 
 function compiled(locale: Locale): Compiled {
@@ -520,24 +603,41 @@ function magnitudeValue(match: RegExpExecArray, patterns: Compiled): string {
 }
 
 /**
- * How a price with dots between thousands is compared: its thousands ("5000"), its value with the cents ("5000.50")
- * and its digits as written ("5.000,50"). Not the decimal "5" the same digits would otherwise read as: a source's "5"
- * does not ground it (a source's "5.000" still lists "5" too, since `numbersIn` keeps both readings).
+ * How a price with dots between thousands is compared: by its value, "5000", or "5000.50" with the cents, as
+ * `$5,000.50` is. Not by its digits as written, which a version number ("1.500") would ground, nor the decimal "5".
  */
 function dotKeys(written: string): string[] {
   const [whole, cents] = written.split(",") as [string, string | undefined];
   const thousands = whole.replaceAll(".", "");
-  const keys = [thousands, written, whole];
-  if (cents) keys.push(...amountKeys(`${thousands}.${cents}`, undefined, new Map()));
-  return keys;
+  return cents ? amountKeys(`${thousands}.${cents}`, undefined, new Map()) : [thousands];
+}
+
+/**
+ * `text` with each span blanked, so that offsets into it still hold: a price with dots between thousands, read once by
+ * `dot`, which no other reading may read again as a decimal. The blank is no space, so that a currency before it does
+ * not reach a number after it. One blank a character, as long in UTF-16 units, so that offsets and lengths both hold.
+ */
+function without(text: string, spans: Iterable<RegExpExecArray>): string {
+  let out = text;
+  for (const match of spans) {
+    const end = match.index + match[0].length;
+    const blank = [...match[0]].map((char) => (char.length === 1 ? "\x00" : "\u{f0000}")).join("");
+    out = out.slice(0, match.index) + blank + out.slice(end);
+  }
+  return out;
 }
 
 function dotNumber(text: string): string {
   return (search(DOT_NUMBER_FIND, text) as RegExpExecArray)[1] as string;
 }
 
-function keysIn(text: string, patterns: Compiled): Set<string> {
+function keysIn(written: string, patterns: Compiled): Set<string> {
   const keys = new Set<string>();
+  const dots = findAll(patterns.dot, written);
+  for (const match of dots) {
+    for (const key of dotKeys(dotNumber(match[0]))) keys.add(key);
+  }
+  const text = without(written, dots);
   for (const match of findAll(patterns.number, text)) {
     for (const key of amountKeys(match[1] as string, match[2], patterns.scale)) keys.add(key);
   }
@@ -545,9 +645,6 @@ function keysIn(text: string, patterns: Compiled): Set<string> {
   for (const match of findAll(patterns.spelled, text)) keys.add(String(spelledValue(match[0], patterns)));
   for (const pattern of [patterns.spelledMagnitude, patterns.magnitude]) {
     for (const match of findAll(pattern, text)) keys.add(magnitudeValue(match, patterns));
-  }
-  for (const match of findAll(patterns.dot, text)) {
-    for (const key of dotKeys(dotNumber(match[0]))) keys.add(key);
   }
   return keys;
 }
@@ -557,7 +654,8 @@ function keysIn(text: string, patterns: Compiled): Set<string> {
  * (`range:low-high`): the grounded set for the amount guard. Pass `{ locale }` last to read another locale. A text is
  * read as written and as `reveal` reads it, and a number written in another script's digits is listed in 0-9 only, so
  * `$500` in Arabic-Indic digits grounds `$500`. An amount in words is listed by its value ("five hundred dollars" as
- * "500"), and a price with dots between thousands, when the locale reads those, both ways.
+ * "500"), and a price with dots between thousands, when the locale reads those and a currency is beside it, by its
+ * value.
  */
 export function numbersIn(...args: Text[] | [...Text[], LocaleOption]): Set<string> {
   const last = args.at(-1);
@@ -654,12 +752,13 @@ function find(
  * `unsupported` is that `known` does not state it, so `unsupportedAmounts` reports it, or null while it may still grow.
  */
 function figures(
-  text: string,
+  written: string,
   known: ReadonlySet<string>,
   complete: boolean,
   patterns: Compiled,
 ): [number, number, string, boolean | null][] {
   const { scale } = patterns;
+  let text = written;
   const found: [number, number, string, boolean | null][] = [];
   const report = (match: RegExpExecArray, unsupported: boolean | null, skip = 0): void => {
     const figure = match[0].slice(skip);
@@ -686,12 +785,15 @@ function figures(
   // A price with dots between thousands, or with a money magnitude ("$5 grand"), is judged as one, not as the number
   // its first digits would read as.
   const whole: [number, number][] = [];
-  for (const match of findAll(patterns.dot, text)) {
+  const dots = findAll(patterns.dot, text);
+  for (const match of dots) {
     const end = match.index + match[0].length;
     whole.push([match.index, end]);
     const unsupported = disjoint(dotKeys(dotNumber(match[0])), known);
     report(match, complete || !["", ".", ","].includes(text.slice(end)) ? unsupported : null);
   }
+  // Every other reading, and `settled`, sees the text without them.
+  text = without(text, dots);
   const money = findAll(patterns.money, text);
   const overlaps = (match: RegExpExecArray, spans: readonly (readonly [number, number])[]): boolean =>
     spans.some(([start, end]) => match.index < end && start < match.index + match[0].length);
@@ -792,8 +894,8 @@ function holdWritten(text: string, grounded: ReadonlySet<string>, patterns: Comp
  * A money figure or a currency symbol that ends the text may still grow, grounded or not ("$5" then "00"). A bare
  * magnitude or a rate no source states is a price only if a cost word comes within the window after it, so it is held
  * until that window has streamed. A number at the end may still become a magnitude ("60" before " thousand"), the
- * price of the work ("for 5" before "."), a rate ("40 an" before "hour") or a price with dots between thousands
- * ("5.000,").
+ * price of the work ("for 5" before "."), a rate ("40 an" before "hour"), a price with dots between thousands
+ * ("5.000,") or one with a currency name written without a space ("5000" before "円").
  */
 function holdFigures(text: string, grounded: ReadonlySet<string>, patterns: Compiled): number | null {
   const openFigures = [patterns.money, patterns.spelled, patterns.spelledMagnitude, patterns.magnitude, patterns.dot]
@@ -802,10 +904,17 @@ function holdFigures(text: string, grounded: ReadonlySet<string>, patterns: Comp
     .map((match) => match.index);
   const symbol = search(patterns.trailingSymbol, text);
   if (symbol !== null) openFigures.push(symbol.index);
-  const opening = [patterns.openWork, ...(patterns.dotThousands ? [DOT_OPEN] : [])];
-  if (patterns.rateIsPrice) opening.push(OPEN_RATE);
-  for (const pattern of opening) {
-    const open = search(pattern, text);
+  const opening = [patterns.openWork, patterns.openUnspaced, ...(patterns.dotThousands ? [DOT_OPEN] : [])];
+  if (patterns.rateIsPrice === true) opening.push(OPEN_RATE);
+  const opened = opening.map((pattern) => search(pattern, text));
+  if (patterns.rateIsPrice === "adjacent") {
+    const rate = search(OPEN_ADJACENT, text);
+    if (rate !== null) {
+      const written = writtenRate(rate[1] as string);
+      if (patterns.adjacent.some((form) => form.startsWith(written))) opened.push(rate);
+    }
+  }
+  for (const open of opened) {
     if (open === null) continue;
     // From the number, and a currency right before it; the words that lead into it ("do it for ") are shown.
     const start = open.index + (LEAD.exec(open[0]) as RegExpExecArray)[0].length;
@@ -813,22 +922,23 @@ function holdFigures(text: string, grounded: ReadonlySet<string>, patterns: Comp
     openFigures.push(currency === null ? start : currency.index);
   }
   if (openFigures.length > 0) return Math.min(...openFigures);
+  const read = without(text, findAll(patterns.dot, text));
   const starts = new Set<number>();
-  for (const match of findAll(patterns.bareMagnitude, text)) {
-    const unsettled = length(text.slice(match.index + match[0].length)) < COST_WORD_WINDOW;
+  for (const match of findAll(patterns.bareMagnitude, read)) {
+    const unsettled = length(read.slice(match.index + match[0].length)) < COST_WORD_WINDOW;
     if (unsettled && disjoint(amountKeys(match[1] as string, match[2], patterns.scale), grounded)) {
       return match.index;
     }
     starts.add(match.index);
   }
   for (const pattern of [patterns.spelledMagnitude, patterns.magnitude]) {
-    for (const match of findAll(pattern, text)) {
-      const unsettled = length(text.slice(match.index + match[0].length)) < COST_WORD_WINDOW;
+    for (const match of findAll(pattern, read)) {
+      const unsettled = length(read.slice(match.index + match[0].length)) < COST_WORD_WINDOW;
       if (unsettled && !grounded.has(magnitudeValue(match, patterns))) return match.index;
     }
   }
-  for (const match of findAll(patterns.rate, text)) {
-    const unsettled = length(text.slice(match.index + match[0].length)) < COST_WORD_WINDOW;
+  for (const match of findAll(patterns.rate, read)) {
+    const unsettled = length(read.slice(match.index + match[0].length)) < COST_WORD_WINDOW;
     if (unsettled && disjoint(amountKeys(match[1] as string, undefined, patterns.scale), grounded)) return match.index;
   }
   const trailing = search(TRAILING_NUMBER, text);

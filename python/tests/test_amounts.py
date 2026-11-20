@@ -265,3 +265,15 @@ def test_an_empty_list_in_a_locale_matches_nothing() -> None:
     assert unsupported_amounts(text, set(), locale=empty) == []
     assert _hold_start("It costs $5", set(), empty) is None
     assert numbers_in("60k and 3-5", locale=empty) == {"60", "3", "5", "range:3-5"}
+
+
+@pytest.mark.parametrize("mode", ["Adjacent", "yes"])
+def test_rate_is_price_refuses_a_mode_it_does_not_know(mode: str) -> None:
+    with pytest.raises(ValueError, match="rate_is_price"):
+        replace(ENGLISH, rate_is_price=mode)  # type: ignore[arg-type]
+
+
+def test_rate_is_price_reads_any_other_value_as_on_or_off() -> None:
+    text = "We allow 120 requests per hour."
+    assert unsupported_amounts(text, set(), locale=replace(ENGLISH, rate_is_price=None)) == []  # type: ignore[arg-type]
+    assert unsupported_amounts(text, set(), locale=replace(ENGLISH, rate_is_price=1)) == ["120 requests per hour"]
