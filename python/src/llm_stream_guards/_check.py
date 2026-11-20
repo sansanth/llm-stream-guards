@@ -1,5 +1,6 @@
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 
+from ._reveal import reveal, reveal_with_offsets, to_source
 from ._stream import Blocked, next_anchor
 
 
@@ -11,11 +12,13 @@ class CheckStream:
     called with each piece added, with `complete` False: text that ends the reply so far may be unfinished, so judge
     nothing its next characters could change. It is called once more, with `complete` True, on the finished reply. A
     reply with something wrong is blocked, with `reason` and what was returned as `found`, before the piece that
-    completes it is shown.
+    completes it is shown. The text a check is given is the reply as a reader sees it (see `reveal`): `$\\u200b500`,
+    or `$500` in fullwidth characters, is given as `$500`. What is shown is the reply's own characters.
 
     `hold(text)` says where, in `text`, what is shown must stop for now, because the reply's next characters decide it
     ("$5" before "00"), or None. A negative offset (`str.rfind` finding nothing) also means nothing to hold, and one
-    past the end of `text` holds nothing. Without `hold` nothing is held back. `text` is the last 320 to 640
+    past the end of `text` holds nothing. It is given the same revealed text, and an offset into it holds back from the
+    character it came from. Without `hold` nothing is held back. `text` is the last 320 to 640
     characters of the reply, so that the time a reply takes grows with its length and not with its square; the
     finished reply is judged whole.
     """
@@ -42,9 +45,7 @@ class CheckStream:
     def feed(self, delta: str) -> str:
         self._check(delta, complete=False)
         window = self._text[self._anchor :]
-        held = self._hold(window) if self._hold is not None else None
-        if held is not None and held < 0:
-            held = None
+        held = self._held(window)
         upto = len(self._text) if held is None else max(self._anchor + min(held, len(window)), self._released)
         released = self._release(upto)
         # Never past what is still held: the hold has to see all of it.
@@ -63,13 +64,31 @@ class CheckStream:
             raise self._blocked
         self._text += delta
         text = self._text if complete else self._text[self._anchor :]
-        result = self._check_text(text, complete)
-        found = ((result,) if result else ()) if isinstance(result, str) else tuple(result or ())
+        found = self._judge(text, complete)
         if found:
             self._blocked = Blocked(self._reason, found)
             raise self._blocked
+
+    def _judge(self, text: str, complete: bool) -> tuple[str, ...]:
+        """What is wrong with `text`, a window of the reply's own characters, as the check finds it in their reading."""
+        result = self._check_text(reveal(text), complete)
+        return ((result,) if result else ()) if isinstance(result, str) else tuple(result or ())
+
+    def _held(self, window: str) -> int | None:
+        """Where, in `window`, what is shown must stop for now, or None."""
+        if self._hold is None:
+            return None
+        revealed, offsets = reveal_with_offsets(window)
+        return _held_in(window, revealed, offsets, self._hold(revealed))
 
     def _release(self, upto: int) -> str:
         released = self._text[self._released : upto]
         self._released = upto
         return released
+
+
+def _held_in(window: str, revealed: str, offsets: Sequence[int], held: int | None) -> int | None:
+    """A hold found in `revealed` as an offset into `window`, the text it was revealed from."""
+    if held is None or held < 0 or held >= len(revealed):
+        return None
+    return to_source(offsets, len(revealed), len(window), held)

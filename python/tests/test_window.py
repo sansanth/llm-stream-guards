@@ -125,7 +125,7 @@ def test_a_quotation_is_caught_across_pieces_and_words_still_being_written() -> 
         stream.feed("istant for")
     assert blocked.value.found == ("prompt",)
     # A word that is still growing is judged as it stands, and a reply that grows past it is not a quotation.
-    stream = LeakStream(LeakGuard({"p": "alpha beta gamma delta epsilon"}, words=5))
+    stream = LeakStream(LeakGuard({"p": "alpha beta gamma delta epsilon"}, words=5, chars=100, short="skip"))
     stream.feed("alpha beta gamma delta epsilonx")
     assert stream.finish() == ""
 
@@ -134,7 +134,7 @@ def test_a_leak_stream_keeps_only_the_last_words_it_could_still_need() -> None:
     stream = LeakStream(LeakGuard({"p": "one two three four five six"}, words=4))
     for word in ("zero ", "one ", "two ", "three ", "x ") * 50:
         stream.feed(word)
-    assert len(stream._words) <= 3
+    assert all(len(words) <= 3 for words, _ in stream._readings)
     with pytest.raises(Blocked):
         for word in ("three ", "four ", "five ", "six "):
             stream.feed(word)

@@ -1,8 +1,44 @@
 import re
-from collections.abc import Collection, Iterable
+from collections.abc import Callable, Collection, Iterable
 from urllib.parse import urlparse
 
+from ._reveal import changed_near, foreign_digits, reveal, reveal_with_offsets, sub_revealed, to_source
 from ._stream import next_anchor
+
+# `pattern.sub` with the characters a match came from: those of the text itself, or, over its revealed reading, those
+# that read as the match.
+_Sub = Callable[[re.Pattern[str], str, Callable[[re.Match[str], str], str]], str]
+
+
+def _sub_all(pattern: re.Pattern[str], text: str, replace: Callable[[re.Match[str], str], str]) -> str:
+    return pattern.sub(lambda match: replace(match, match.group(0)), text)
+
+
+def _sub_written(pattern: re.Pattern[str], text: str, replace: Callable[[re.Match[str], str], str]) -> str:
+    """
+    `pattern.sub` over `text` as written, but for a match that a character which reads otherwise touches
+    ("sa\\u200bles@acme.example", a host in fullwidth letters): that one is judged as it reads, on the revealed pass.
+    """
+
+    def judged(match: re.Match[str]) -> str:
+        if changed_near(text, match.start(), match.end()):
+            return match.group(0)
+        return replace(match, match.group(0))
+
+    return pattern.sub(judged, text)
+
+
+def _rewrite(text: str, clean: Callable[[str, _Sub, _Sub], str]) -> str:
+    """
+    `clean(text, sub, hold)` run on `text` as written, then on what is left as `reveal` reads it: what a reader would
+    see as a link, address or number is taken out too, and every other character is kept as it is. `hold` is the `sub`
+    for what is set aside rather than judged.
+    """
+    if text.isascii():
+        return clean(text, _sub_all, _sub_all)
+    cleaned = clean(text, _sub_written, _sub_all)
+    return cleaned if cleaned.isascii() else clean(cleaned, sub_revealed, sub_revealed)
+
 
 REMOVED = "[removed]"
 
@@ -71,11 +107,14 @@ def _unreadable(url: str) -> str:
 
 
 def hosts_of(urls: Iterable[str]) -> set[str]:
-    """The hosts of `urls`, in the form `strip_untrusted_links` compares against: lowercase, without `www.`."""
-    return {host for url in urls if (host := _host_of(url))}
+    """
+    The hosts of `urls`, in the form `strip_untrusted_links` compares against: lowercase, without `www.`. A URL is read
+    as written and as `reveal` reads it, so a host written in fullwidth letters is listed as written and in ASCII.
+    """
+    return {host for url in urls for reading in {url, reveal(url)} if (host := _host_of(reading))}
 
 
-def strip_untrusted_links(text: str, allowed_hosts: Collection[str]) -> str:
+def strip_untrusted_links(text: str, allowed_hosts: Collection[str], *, removed: list[str] | None = None) -> str:
     """
     `text` without the web links whose host is not in `allowed_hosts` (see `hosts_of`).
 
@@ -83,18 +122,29 @@ def strip_untrusted_links(text: str, allowed_hosts: Collection[str]) -> str:
     becomes its host in inline code, so the sentence around it still reads. A link with no usable host, or a
     `javascript:` one, is dropped. Relative links, fragments, mailto links and URLs inside inline code stay. A host
     matches exactly: allowing `example.com` does not allow `docs.example.com`.
+
+    A link a reader sees is taken out even when it is written in fullwidth letters or with an invisible character in
+    it (see `reveal`); the rest of the text keeps its characters. With `removed`, the host of each link taken out is
+    appended to it as it is taken out, a link with no usable host as its scheme (`javascript:`) or `(no host)`. A link
+    seen only once the text is revealed is taken out, and listed, after the others.
     """
-    return _strip_links(text, allowed_hosts, None)
+    return _strip_links(text, allowed_hosts, removed)
 
 
 def _strip_links(text: str, allowed_hosts: Collection[str], removed: list[str] | None) -> str:
-    """`strip_untrusted_links`, adding the host of each link it takes out to `removed`."""
+    return _rewrite(text, lambda text, sub, hold: _strip_pass(text, allowed_hosts, removed, sub, hold))
+
+
+def _strip_pass(text: str, allowed_hosts: Collection[str], removed: list[str] | None, sub: _Sub, hold_sub: _Sub) -> str:
+    """`strip_untrusted_links` over one reading of `text`, adding the host of each link it takes out to `removed`."""
     held: list[str] = []
 
-    def hold(match: re.Match[str]) -> str:
-        if match.group(1) is None:
-            return match.group(0)
-        held.append(match.group(0))
+    def hold(match: re.Match[str], written: str) -> str:
+        # A span that reads as code only once revealed (fullwidth backticks) is no code span to a Markdown reader.
+        ticks = match.group(1)
+        if ticks is None or not (written.startswith(ticks) and written.endswith(ticks)):
+            return written
+        held.append(written)
         return f"{_HOLD_OPEN}{len(held) - 1}{_HOLD_CLOSE}"
 
     def untrusted(url: str) -> str | None:
@@ -111,22 +161,22 @@ def _strip_links(text: str, allowed_hosts: Collection[str], removed: list[str] |
     def shown(host: str) -> str:
         return f"`{host}`" if host else ""
 
-    def link(match: re.Match[str]) -> str:
+    def link(match: re.Match[str], written: str) -> str:
         _, label, url = match.groups()
         host = untrusted(url)
         if host is None:
-            return match.group(0)
+            return written
         return label if label.strip() else shown(host)
 
-    def autolink(match: re.Match[str]) -> str:
+    def autolink(match: re.Match[str], written: str) -> str:
         host = untrusted(match.group(1))
-        return match.group(0) if host is None else shown(host)
+        return written if host is None else shown(host)
 
-    def definition(match: re.Match[str]) -> str:
+    def definition(match: re.Match[str], written: str) -> str:
         host = untrusted(match.group(2) or match.group(3))
-        return match.group(0) if host is None else match.group(1) + shown(host)
+        return written if host is None else match.group(1) + shown(host)
 
-    def bare(match: re.Match[str]) -> str:
+    def bare(match: re.Match[str], written: str) -> str:
         found = match.group(0)
         lead = found[: len(found) - len(found.lstrip(" \t"))]
         url = found.strip()
@@ -136,15 +186,15 @@ def _strip_links(text: str, allowed_hosts: Collection[str], removed: list[str] |
             url = url[:-1]
         host = untrusted(url)
         if host is None:
-            return found
+            return written
         return (lead + shown(host) if host else "") + trailing
 
     # The placeholder characters are private-use ones; a reply that holds them would be handed other text's spans.
-    cleaned = _CODE_SPAN.sub(hold, text.replace(_HOLD_OPEN, "").replace(_HOLD_CLOSE, ""))
-    cleaned = _LINK_DEFINITION.sub(definition, cleaned)
-    cleaned = _AUTOLINK.sub(autolink, cleaned)
-    cleaned = _MARKDOWN_LINK.sub(link, cleaned)
-    cleaned = _BARE_URL.sub(bare, cleaned)
+    cleaned = hold_sub(_CODE_SPAN, text.replace(_HOLD_OPEN, "").replace(_HOLD_CLOSE, ""), hold)
+    cleaned = sub(_LINK_DEFINITION, cleaned, definition)
+    cleaned = sub(_AUTOLINK, cleaned, autolink)
+    cleaned = sub(_MARKDOWN_LINK, cleaned, link)
+    cleaned = sub(_BARE_URL, cleaned, bare)
 
     def restore(match: re.Match[str]) -> str:
         # A host shown in inline code next to a span would join their backtick runs, and a longer run closes nothing:
@@ -164,39 +214,56 @@ _EMAIL_IN_TEXT = re.compile(r"<(?:mailto:)?(" + _EMAIL + r")>|(?:mailto:)?(" + _
 
 
 def emails_in(*texts: str | None) -> set[str]:
-    """The email addresses written in `texts`, lowercased: the grounded set for `without_ungrounded_emails`."""
-    return {found.lower() for text in texts for found in _EMAIL_FIND.findall(text or "")}
+    """
+    The email addresses written in `texts`, lowercased, read as written and as `reveal` reads them: the grounded set
+    for `without_ungrounded_emails`.
+    """
+    return {
+        found.lower()
+        for text in texts
+        for reading in {text or "", reveal(text or "")}
+        for found in _EMAIL_FIND.findall(reading)
+    }
 
 
-def without_ungrounded_emails(text: str, grounded: Collection[str], *, replacement: str = REMOVED) -> str:
+def without_ungrounded_emails(
+    text: str, grounded: Collection[str], *, replacement: str = REMOVED, removed: list[str] | None = None
+) -> str:
     """
     `text` with every email address not in `grounded` (lowercase, see `emails_in`) replaced by `replacement`, and
     a `mailto:` link to one replaced by its text. A model with no address to give writes a plausible one from a
-    company's name, and someone then writes to it.
+    company's name, and someone then writes to it. An address a reader sees is replaced even with an invisible
+    character in it (see `reveal`). With `removed`, each address replaced is appended to it, lowercased.
     """
-    return _scrub_emails(text, grounded, replacement, None)
+    return _scrub_emails(text, grounded, replacement, removed)
 
 
 def _scrub_emails(text: str, grounded: Collection[str], replacement: str, removed: list[str] | None) -> str:
-    """`without_ungrounded_emails`, adding each address it takes out to `removed`."""
+    return _rewrite(text, lambda text, sub, _: _scrub_emails_pass(text, grounded, replacement, removed, sub))
 
-    def mailto(match: re.Match[str]) -> str:
+
+def _scrub_emails_pass(
+    text: str, grounded: Collection[str], replacement: str, removed: list[str] | None, sub: _Sub
+) -> str:
+    """`without_ungrounded_emails` over one reading of `text`, adding each address it takes out to `removed`."""
+
+    def mailto(match: re.Match[str], written: str) -> str:
         found = _EMAIL_FIND.search(match.group(2))
         if found is None or found.group(0).lower() in grounded:
-            return match.group(0)
+            return written
         if removed is not None:
             removed.append(found.group(0).lower())
         return match.group(1).strip() or replacement
 
-    def address(match: re.Match[str]) -> str:
+    def address(match: re.Match[str], written: str) -> str:
         found = match.group(1) or match.group(2)
         if found.lower() in grounded:
-            return match.group(0)
+            return written
         if removed is not None:
             removed.append(found.lower())
         return replacement
 
-    return _EMAIL_IN_TEXT.sub(address, _MAILTO_LINK.sub(mailto, text))
+    return sub(_EMAIL_IN_TEXT, sub(_MAILTO_LINK, text, mailto), address)
 
 
 # A telephone number as it reads in prose, on one line: an optional "+", digits grouped by spaces, dots, hyphens or
@@ -219,21 +286,41 @@ def _phone_digits(found: str) -> str | None:
 
 
 def phones_in(*texts: str | None) -> set[str]:
-    """The telephone numbers written in `texts`, as digits only: the grounded set for `without_ungrounded_phones`."""
-    return {digits for text in texts for found in _PHONE.findall(text or "") if (digits := _phone_digits(found))}
+    """
+    The telephone numbers written in `texts`, as digits 0-9 only, read as written and as `reveal` reads them: the
+    grounded set for `without_ungrounded_phones`. A number in another script's digits is listed by its revealed
+    reading.
+    """
+    return {
+        digits
+        for text in texts
+        for reading in {text or "", reveal(text or "")}
+        for found in _PHONE.findall(reading)
+        if not foreign_digits(found) and (digits := _phone_digits(found))
+    }
 
 
-def without_ungrounded_phones(text: str, grounded: Collection[str], *, replacement: str = REMOVED) -> str:
+def without_ungrounded_phones(
+    text: str, grounded: Collection[str], *, replacement: str = REMOVED, removed: list[str] | None = None
+) -> str:
     """
     `text` with every telephone number not in `grounded` (digits, see `phones_in`) replaced by `replacement`.
     Numbers compare by their digits, and one that is the other without its country code, or with a trunk zero, is
-    the same number: `020 7946 0001` is grounded by `+44 20 7946 0001`.
+    the same number: `020 7946 0001` is grounded by `+44 20 7946 0001`. A number a reader sees is judged as `reveal`
+    reads it, so one with an invisible character in it, or in another script's digits, is replaced too. With
+    `removed`, the digits of each number replaced are appended to it.
     """
-    return _scrub_phones(text, grounded, replacement, None)
+    return _scrub_phones(text, grounded, replacement, removed)
 
 
 def _scrub_phones(text: str, grounded: Collection[str], replacement: str, removed: list[str] | None) -> str:
-    """`without_ungrounded_phones`, adding the digits of each number it takes out to `removed`."""
+    return _rewrite(text, lambda text, sub, _: _scrub_phones_pass(text, grounded, replacement, removed, sub))
+
+
+def _scrub_phones_pass(
+    text: str, grounded: Collection[str], replacement: str, removed: list[str] | None, sub: _Sub
+) -> str:
+    """`without_ungrounded_phones` over one reading of `text`, adding the digits it takes out to `removed`."""
 
     def known(digits: str) -> bool:
         national = digits.lstrip("0")
@@ -246,15 +333,18 @@ def _scrub_phones(text: str, grounded: Collection[str], replacement: str, remove
                 return True
         return False
 
-    def phone(match: re.Match[str]) -> str:
+    def phone(match: re.Match[str], written: str) -> str:
+        # A number in another script's digits is judged as it reads: in 0-9, on the revealed pass.
+        if foreign_digits(match.group(0)):
+            return written
         digits = _phone_digits(match.group(0))
         if digits is None or known(digits):
-            return match.group(0)
+            return written
         if removed is not None:
             removed.append(digits)
         return replacement
 
-    return _PHONE.sub(phone, text)
+    return sub(_PHONE, text, phone)
 
 
 # A link still being written: a URL running to the end of the text, the start of a scheme, or a Markdown link whose
@@ -345,7 +435,17 @@ class LinkStream:
         return self._release(self._anchor + self._held_from(self._raw[self._anchor :]), final=False)
 
     def _held_from(self, window: str) -> int:
-        """Where, in `window`, a link, address or number still being written starts: the text before it may go out."""
+        """
+        Where, in `window`, a link, address or number still being written starts, as written or as revealed: the text
+        before it may go out.
+        """
+        cut = self._open_start(window)
+        if not window.isascii():
+            revealed, offsets = reveal_with_offsets(window)
+            cut = min(cut, to_source(offsets, len(revealed), len(window), self._open_start(revealed)))
+        return cut
+
+    def _open_start(self, window: str) -> int:
         cut = _open_link_start(window)
         if self._emails is not None:
             cut = min(cut, _held_from(_OPEN_WORD, window, _MAX_HELD_WORD_CHARS))

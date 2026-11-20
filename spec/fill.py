@@ -11,6 +11,7 @@ what you meant to change should have. A case that already has its result is othe
 
 import importlib.util
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -20,6 +21,15 @@ assert runner_spec is not None and runner_spec.loader is not None
 runner = importlib.util.module_from_spec(runner_spec)
 runner_spec.loader.exec_module(runner)
 
+# Characters that show nothing are written as escapes, so that a case can be read before it is trusted.
+UNSEEN = re.compile(r"[\u00ad\u034f\u061c\u180e\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufe00-\ufe0f\ufeff\ue000-\uf8ff]")
+
+
+def dump(cases: list[object]) -> str:
+    text = json.dumps(cases, indent=2, ensure_ascii=False)
+    return UNSEEN.sub(lambda match: f"\\u{ord(match.group(0)):04x}", text) + "\n"
+
+
 refresh = "--refresh" in sys.argv
 filled = 0
 for path in sorted((SPEC / "cases").glob("*.json")):
@@ -27,7 +37,7 @@ for path in sorted((SPEC / "cases").glob("*.json")):
     changed = False
     for case in cases:
         if "call" in case and (refresh or "returns" not in case):
-            result: dict[str, object] = {"returns": runner.call(case)}
+            result: dict[str, object] = runner.call(case)
         elif "stream" in case and (refresh or "shown" not in case):
             result = runner.stream(case)
         else:
@@ -37,5 +47,5 @@ for path in sorted((SPEC / "cases").glob("*.json")):
             changed = True
             filled += 1
     if changed:
-        path.write_text(json.dumps(cases, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        path.write_text(dump(cases), encoding="utf-8")
 print(f"{filled} case(s) written", file=sys.stderr)

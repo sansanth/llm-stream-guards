@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   AmountStream,
+  amountHoldStart,
   Blocked,
   Chain,
   CheckStream,
@@ -14,7 +15,9 @@ import {
   containsCodeDeliverable,
   ENGLISH,
   emailsIn,
+  fold,
   hostsOf,
+  InvisibleStream,
   isGrounded,
   LeakGuard,
   LeakStream,
@@ -22,6 +25,8 @@ import {
   type LocaleOptions,
   numbersIn,
   phonesIn,
+  reveal,
+  revealWithOffsets,
   type StreamGuard,
   stripUntrustedLinks,
   TagStream,
@@ -51,7 +56,7 @@ function options(raw: Record<string, Json> = {}): Record<string, Json> {
 }
 
 const FUNCTIONS: Record<string, (args: Json[], options: Record<string, Json>) => Json> = {
-  strip_untrusted_links: ([text, hosts]) => stripUntrustedLinks(text, hosts),
+  strip_untrusted_links: ([text, hosts], o) => stripUntrustedLinks(text, hosts, o),
   hosts_of: ([urls]) => hostsOf(urls),
   without_ungrounded_emails: ([text, grounded], o) => withoutUngroundedEmails(text, grounded, o),
   emails_in: (texts) => emailsIn(...texts),
@@ -59,10 +64,14 @@ const FUNCTIONS: Record<string, (args: Json[], options: Record<string, Json>) =>
   phones_in: (texts) => phonesIn(...texts),
   unsupported_amounts: ([text, grounded], o) => unsupportedAmounts(text, grounded, o),
   numbers_in: (texts, o) => numbersIn(...texts, o),
+  amount_hold_start: ([text, grounded], o) => amountHoldStart(text, grounded, o),
   is_grounded: ([number, grounded], o) => isGrounded(number, grounded, o),
   contains_code_deliverable: ([text]) => containsCodeDeliverable(text),
   tidy_cut_off: ([text]) => tidyCutOff(text),
   "LeakGuard.match": ([protectedTexts, text], o) => new LeakGuard(protectedTexts, o).match(text),
+  reveal: ([text]) => reveal(text),
+  reveal_with_offsets: ([text]) => revealWithOffsets(text),
+  fold: ([text, gap]) => fold(text, gap),
 };
 
 // Python's sorted() orders strings by code point; JavaScript's sort() by UTF-16 unit.
@@ -75,11 +84,16 @@ function byCodePoint(a: string, b: string): number {
   return x.length - y.length;
 }
 
+// What the call returns, and with `options.removed`, the list it was given as it is afterwards.
 function call(test: Json): Json {
   const run = FUNCTIONS[test.call];
   if (run === undefined) throw new Error(`unknown call ${test.call}`);
-  const result = run(test.args ?? [], options(test.options));
-  return result instanceof Set ? [...result].sort(byCodePoint) : result;
+  const given = options(test.options);
+  if ("removed" in given) given.removed = [...given.removed];
+  const result = run(test.args ?? [], given);
+  const returned = { returns: result instanceof Set ? [...result].sort(byCodePoint) : result } as Json;
+  if ("removed" in given) returned.removed = given.removed;
+  return returned;
 }
 
 function guard(spec: Record<string, Json>): StreamGuard {
@@ -92,13 +106,9 @@ function guard(spec: Record<string, Json>): StreamGuard {
     case "amount":
       return new AmountStream(raw.grounded, { locale: locale(raw.locale) });
     case "leak":
-      return new LeakStream(
-        new LeakGuard(raw.protected, {
-          words: raw.words ?? 8,
-          short: raw.short ?? "error",
-          allowed: raw.allowed ?? [],
-        }),
-      );
+      return new LeakStream(new LeakGuard(raw.protected, options({ ...raw, protected: undefined })));
+    case "invisible":
+      return new InvisibleStream();
     case "citation":
       return new CitationStream(raw.count);
     case "tag":
@@ -153,7 +163,9 @@ for (const file of files) {
       const label = `${index}: ${JSON.stringify(spec.args?.[0] ?? spec.deltas).slice(0, 80)}`;
       test(label, () => {
         if ("call" in spec) {
-          expect(call(spec)).toEqual(spec.returns);
+          expect(call(spec)).toEqual(
+            Object.fromEntries(["returns", "removed"].filter((key) => key in spec).map((key) => [key, spec[key]])),
+          );
         } else {
           const expected = Object.fromEntries(
             ["shown", "text", "blocked", "removed", "cited"]

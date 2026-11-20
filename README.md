@@ -21,8 +21,9 @@ The two packages have the same guards, the same behaviour and the same version n
 
 - **Links**: a link to a host you did not supply is removed, from its first character, while it is still being written.
 - **Email addresses and phone numbers** that none of your sources holds.
-- **Prices and effort estimates** that none of your sources states: `$120`, `40 euros`, `300 engineering hours`, `60k` near a cost word.
-- **A quoted system prompt**: a reply that repeats a protected text eight words in a row.
+- **Prices and effort estimates** that none of your sources states: `$120`, `40 euros`, `five grand`, `300 engineering hours`, `60k` near a cost word.
+- **A quoted system prompt**: a reply that repeats a protected text eight words in a row, or spells it out with its letters run together, reversed, under rot13 or in base64.
+- **Hidden characters**: a link, address, number, price or quotation is read as a person sees it, so a zero-width space, fullwidth letters or another script's digits do not hide one, and `InvisibleStream` takes such characters out of what is shown.
 - **Code** a reply was not meant to hand over: stopped at the first fence.
 - **Citation markers** (`[1]`, `[1, 3]`) taken out of what is shown, with a list of the sources the reply cited.
 - **Hidden blocks**, such as the `<think>...</think>` of a reasoning model, dropped from what is shown.
